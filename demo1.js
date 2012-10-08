@@ -360,11 +360,55 @@ Player.prototype.judgeChupaiType = function(){
  找出一副牌中只能组成一种牌型的牌（3条，对子，单张为一种牌型。）意思就是有一张牌和剩余牌中的任何一张牌没有联系。
  */
 Player.prototype.findAlonePai = function(){		
-	return this.getSortedPaiArray(this.cardArray, this.findPaiCmpFunction);
+	var array =  this.getSortedPaiArray(this.cardArray, this.findPaiCmpFunction), alonePai = {}, array = array || [];	
+	var i = 0, size = array.length;
+	if(size <= 2) return ;
+	
+	var oneArray = [];
+	var curPai = array[0], pai0Seq = curPai[0].cardSeq;
+	//大王
+	if(pai0Seq == 15){
+		i++;
+		if(array[1][0].cardSeq == 14){
+			i++;
+		}else{
+			oneArray.push(curPai);			
+		}
+	}else if(pai0Seq == 14){
+		i++;
+		oneArray.push(curPai);
+	}	
+	if(i < size){
+		var lianxuCount = 1,curPai = array[i], preSeq = curPai[0].cardSeq, curSeq,tmp = [curPai];
+		for(i++; i < size ; i++){
+			curPai = array[i], curSeq = curPai[0].cardSeq;
+			
+			if(preSeq == (curSeq + 1)){
+				lianxuCount++;
+				tmp.push(curPai);				
+			}else{
+				if(lianxuCount >= 5){
+					
+				}else{
+					for(var p = 0, q = tmp.length; p < q; p++){				
+						oneArray.push(tmp[p]);
+					}					
+				}
+				tmp = [curPai];
+				lianxuCount = 1;
+			}
+			preSeq = curSeq;
+		}	
+		if(lianxuCount < 5){
+			for(var p = 0, q = tmp.length; p < q; p++){				
+							oneArray.push(tmp[p]);
+			}
+		}		
+	}
+	return oneArray;
 }
 
-Player.prototype.findPaiCmpFunction = function(pai1, pai2){
-	
+Player.prototype.findPaiCmpFunction = function(pai1, pai2){	
 	if(pai1[0].cardSeq > pai2[0].cardSeq){
 		return 1;
 	}else{
