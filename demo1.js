@@ -308,28 +308,28 @@ Player.prototype.registeSelectCardAction = function(){
 
 Player.prototype.registeChupaiAction = function(){
 	var that = this,  chupaiBtn = CommonUtil.$id(this.chupaiId);	
-	chupaiBtn && chupaiBtn.addEventListener('click', function(){
-		that.selectPaiArray = [];
-		var cardImgs = CommonUtil.$class('card_img', that.areaObj), curImg;
-		for(var i = 0, j = cardImgs.length; i < j; i++){
-			curImg = cardImgs[i];
-			if(curImg.selected){
-				that.selectPaiArray.push(curImg.mapCard);
-			}
-		}
-		
-		var paiType = that.judgeChupaiType();
-		console.log(paiType);
+	chupaiBtn && chupaiBtn.addEventListener('click', function(){		
+		that.judgeChupaiType();		
 		ddz.placeCards();		
 	});
 }
 
+Player.prototype.getSelectedCards = function(){
+	var selectCards = [];
+	var cardImgs = CommonUtil.$class('card_img', this.areaObj), curImg;
+	for(var i = 0, j = cardImgs.length; i < j; i++){
+		curImg = cardImgs[i];
+		if(curImg.selected){
+			selectCards.push(curImg.mapCard);
+		}
+	}
+	return selectCards;
+}
 
-Player.prototype.judgeChupaiType = function(){
-	var cards = this.selectPaiArray;
+
+Player.prototype.getSortedPaiArray = function(cardArray, cmpFunction){
+	var cards = cardArray || [];
 	if(cards.length == 0) return;
-	//因为selectPaiArray已经为有序，所以无需再排序
-	//cards = this.sortCards(cards);
 	var curCard = cards[0], curSeq = curCard.cardSeq;
 	var cardCount = cards.length, mapCardArray = [curCard], paiArray = [mapCardArray];	
 	
@@ -344,11 +344,32 @@ Player.prototype.judgeChupaiType = function(){
 			mapCardArray = [curCard];			
 			paiArray.push(mapCardArray);			
 		}
-	}	
-	console.log(paiArray);	
-	var sortedArray = CommonUtil.bubbleSort(paiArray, this.chupaiCmpFunction);
+	}		
+	var sortedArray = CommonUtil.bubbleSort(paiArray,cmpFunction);
+	return sortedArray;
+	
+}
+Player.prototype.judgeChupaiType = function(){
+	var selectCards = this.getSelectedCards();
+	var sortedArray = this.getSortedPaiArray(selectCards, this.chupaiCmpFunction);
 	var judger = new PaiTypeJudger(sortedArray);
-	judger.doJudge(sortedArray);
+	return judger.doJudge(sortedArray);
+}
+
+/*
+ 找出一副牌中只能组成一种牌型的牌（3条，对子，单张为一种牌型。）意思就是有一张牌和剩余牌中的任何一张牌没有联系。
+ */
+Player.prototype.findAlonePai = function(){		
+	return this.getSortedPaiArray(this.cardArray, this.findPaiCmpFunction);
+}
+
+Player.prototype.findPaiCmpFunction = function(pai1, pai2){
+	
+	if(pai1[0].cardSeq > pai2[0].cardSeq){
+		return 1;
+	}else{
+		return -1;
+	}	
 }
 
 Player.prototype.cardCmpFunction = function(card1, card2){
@@ -461,11 +482,11 @@ ddz.assignCards = function(){
 		switch(t){
 			case 0 :
 				player1_card.push(new Card(cards[i]) )
-				player3_card.push(new Card(cards[i]));
-				;break;
+				//player3_card.push(new Card(cards[i]));
+				break;
 			case 1 :
 				player2_card.push(new Card(cards[i]));
-				player3_card.push(new Card(cards[i]));
+				//player3_card.push(new Card(cards[i]));
 				break;
 			case 2 :
 				player3_card.push(new Card(cards[i]));break;			
