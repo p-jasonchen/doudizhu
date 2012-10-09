@@ -364,7 +364,7 @@ Player.prototype.findAlonePai = function(){
 	var i = 0, size = array.length;
 	if(size <= 2) return ;
 	
-	var oneArray = [];
+	var aloneArray = [];
 	var curPai = array[0], pai0Seq = curPai[0].cardSeq;
 	//大王
 	if(pai0Seq == 15){
@@ -372,11 +372,11 @@ Player.prototype.findAlonePai = function(){
 		if(array[1][0].cardSeq == 14){
 			i++;
 		}else{
-			oneArray.push(curPai);			
+			aloneArray.push(curPai);			
 		}
 	}else if(pai0Seq == 14){
 		i++;
-		oneArray.push(curPai);
+		aloneArray.push(curPai);
 	}	
 	if(i < size){
 		var lianxuCount = 1,curPai = array[i], preSeq = curPai[0].cardSeq, curSeq,tmp = [curPai];
@@ -391,7 +391,7 @@ Player.prototype.findAlonePai = function(){
 					
 				}else{
 					for(var p = 0, q = tmp.length; p < q; p++){				
-						oneArray.push(tmp[p]);
+						aloneArray.push(tmp[p]);
 					}					
 				}
 				tmp = [curPai];
@@ -401,11 +401,64 @@ Player.prototype.findAlonePai = function(){
 		}	
 		if(lianxuCount < 5){
 			for(var p = 0, q = tmp.length; p < q; p++){				
-							oneArray.push(tmp[p]);
+							aloneArray.push(tmp[p]);
 			}
 		}		
 	}
-	return oneArray;
+	
+	//从低于5连的aloneArray中找出单张，三张
+	var  oneArray = [], threeArray = [];
+	for(i = 0, size = aloneArray.length; i < size; i++){
+		curPai = aloneArray[i];		
+		switch(curPai.length){
+			case 1:
+				oneArray.push(curPai);break;
+			case 3:			
+				threeArray.push(curPai);break;
+		}
+	}
+	
+	
+	//从低于5连的aloneArray中找出低于3连的对子
+	lianxuCount = 0, twoArray = [];
+	for(i = 0, size = aloneArray.length; i < size; i++){
+		curPai = aloneArray[i];
+		if(curPai.length == 2){
+			lianxuCount++, i++;
+			preSeq = curPai[0].cardSeq;
+			break;
+		}
+	}
+	if(lianxuCount == 1){
+		tmp = [curPai];
+		for(; i < size; i++){
+			curPai = aloneArray[i];			
+			if(curPai.length == 2){
+				curSeq = curPai[0].cardSeq;
+				if(preSeq == (curSeq + 1)){
+					lianxuCount++;
+					tmp.push(curPai);
+				}else{
+					if(lianxuCount >= 3){
+						
+					}else{
+						for(var p = 0, q = tmp.length; p < q; p++){				
+							twoArray.push(tmp[p]);
+						}					
+					}
+					tmp = [curPai];
+					lianxuCount = 1;
+				}
+			}				
+			preSeq = curSeq;				
+		}
+		if(lianxuCount < 3){
+			for(var p = 0, q = tmp.length; p < q; p++){				
+				twoArray.push(tmp[p]);
+			}
+		}
+	}
+	return {oneArray:oneArray, twoArray: twoArray, threeArray: threeArray};
 }
 
 Player.prototype.findPaiCmpFunction = function(pai1, pai2){	
