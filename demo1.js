@@ -1,4 +1,4 @@
-var CommonUtil = {
+ï»¿var CommonUtil = {
 	format : function(){    
 		var args = arguments;    
 		return this.replace(/\{(\d+)\}/g,                    
@@ -19,8 +19,8 @@ var CommonUtil = {
 	
 	bubbleSort: function(dataArray, cmpFunc){
 		var length = dataArray.length, temp, data1 ,data2, ret=0;
-	¡¡¡¡for(var i = 0; i < length - 1; i++){
-		¡¡¡¡for (var j = length -1; j >=1;j--) {
+		for(var i = 0; i < length - 1; i++){
+			for (var j = length -1; j >=1;j--) {
 				
 				data1 = dataArray[j], data2 = dataArray[j-1];
 				ret = cmpFunc(data1, data2);
@@ -29,19 +29,19 @@ var CommonUtil = {
 					dataArray[j] = data2;
 					dataArray[j-1] = temp;
 				}					
-		¡¡¡¡}
-	¡¡¡¡}
-	¡¡¡¡return dataArray;
+			}
+		}
+		return dataArray;
 	},
 	
 	fire: function (elem, type){  
 		var evt;  
-		if(document.createEventObject){// IEä¯ÀÀÆ÷Ö§³ÖfireEvent·½·¨  
+		if(document.createEventObject){// IEæµè§ˆå™¨æ”¯æŒfireEventæ–¹æ³•  
 			elem.fireEvent('on'+type);  
-		}else{// ÆäËû±ê×¼ä¯ÀÀÆ÷Ê¹ÓÃdispatchEvent·½·¨  
+		}else{// å…¶ä»–æ ‡å‡†æµè§ˆå™¨ä½¿ç”¨dispatchEventæ–¹æ³•  
 			evt = document.createEvent('HTMLEvents');  
-			// initEvent½ÓÊÜ3¸ö²ÎÊı£º  
-			// ÊÂ¼şÀàĞÍ£¬ÊÇ·ñÃ°Åİ£¬ÊÇ·ñ×èÖ¹ä¯ÀÀÆ÷µÄÄ¬ÈÏĞĞÎª  
+			// initEventæ¥å—3ä¸ªå‚æ•°ï¼š  
+			// äº‹ä»¶ç±»å‹ï¼Œæ˜¯å¦å†’æ³¡ï¼Œæ˜¯å¦é˜»æ­¢æµè§ˆå™¨çš„é»˜è®¤è¡Œä¸º  
 			evt.initEvent(type, true, true);  
 			elem.dispatchEvent(evt);  
 		}  
@@ -54,7 +54,7 @@ var CommonUtil = {
 
 var PaiTypeConstants = {
 	type:[0, 1, 2,3, 4, 5, 6, 7, 8, 9, 10, 11,12, 13, 14],
-	name:['Ë«ÍõÕ¨µ¯', 'ËÄÕÅÕ¨µ¯','ËÄ´ø¶şµ¥ÕÅ','ËÄ´øÒ»¶Ô','ËÄ´øÁ½¶Ô', 'µ¥ÕÅ', 'µ¥¶Ô', 'Á¬ÅÆ','Á¬¶Ó','ÈıÕÅ²»´ø','ÈıÕÅ´øÒ»','ÈıÕÅ´ø¶Ô','·É»ú²»´ø','·É»ú´øµ¥ÕÅ','·É»ú´ø¶Ô']
+	name:['åŒç‹ç‚¸å¼¹', 'å››å¼ ç‚¸å¼¹','å››å¸¦äºŒå•å¼ ','å››å¸¦ä¸€å¯¹','å››å¸¦ä¸¤å¯¹', 'å•å¼ ', 'å•å¯¹', 'è¿ç‰Œ','è¿é˜Ÿ','ä¸‰å¼ ä¸å¸¦','ä¸‰å¼ å¸¦ä¸€','ä¸‰å¼ å¸¦å¯¹','é£æœºä¸å¸¦','é£æœºå¸¦å•å¼ ','é£æœºå¸¦å¯¹']
 }
 
 var PaiTypeJudger = function(sortedPaiArray){
@@ -257,7 +257,7 @@ var FeiJi = {
 			paiType = -1;			
 		}
 		if(paiType == -1){
-			CommonUtil.print('·Ç·¨ÅÆĞÍ');
+			CommonUtil.print('éæ³•ç‰Œå‹');
 			var  mapCard;
 			for(var i = 0; i < length; i++){
 				curArray = paiArray[i];
@@ -309,8 +309,12 @@ Player.prototype.registeSelectCardAction = function(){
 Player.prototype.registeChupaiAction = function(){
 	var that = this,  chupaiBtn = CommonUtil.$id(this.chupaiId);	
 	chupaiBtn && chupaiBtn.addEventListener('click', function(){		
-		that.judgeChupaiType();		
-		ddz.placeCards();		
+		//that.judgeChupaiType();		
+		//ddz.placeCards();		
+		p = ddz.player3;
+		p.doChaiPai();
+		//console.log(p.findAlonePai());
+		
 	});
 }
 
@@ -357,21 +361,21 @@ Player.prototype.judgeChupaiType = function(){
 }
 
 /*
- ÕÒ³öÒ»¸±ÅÆÖĞÖ»ÄÜ×é³ÉÒ»ÖÖÅÆĞÍµÄÅÆ£¨3Ìõ£¬¶Ô×Ó£¬µ¥ÕÅÎªÒ»ÖÖÅÆĞÍ¡££©ÒâË¼¾ÍÊÇÓĞÒ»ÕÅÅÆºÍÊ£ÓàÅÆÖĞµÄÈÎºÎÒ»ÕÅÅÆÃ»ÓĞÁªÏµ¡£
+ æ‰¾å‡ºä¸€å‰¯ç‰Œä¸­åªèƒ½ç»„æˆä¸€ç§ç‰Œå‹çš„ç‰Œï¼ˆ3æ¡ï¼Œå¯¹å­ï¼Œå•å¼ ä¸ºä¸€ç§ç‰Œå‹ã€‚ï¼‰æ„æ€å°±æ˜¯æœ‰ä¸€å¼ ç‰Œå’Œå‰©ä½™ç‰Œä¸­çš„ä»»ä½•ä¸€å¼ ç‰Œæ²¡æœ‰è”ç³»ã€‚
  */
 Player.prototype.findAlonePai = function(){		
 	var array =  this.getSortedPaiArray(this.cardArray, this.findPaiCmpFunction), array = array || [];	
 	var i = 0, size = array.length;
 	if(size <= 2) return ;
 	
-	var aloneArray = [], lianPaiArray = [], bomb = [];
+	var aloneArray = [], lianPaiArray = [], aloneBomb = [];
 	var curPai = array[0], pai0Seq = curPai[0].cardSeq;
-	//´óÍõ
+	//å¤§ç‹
 	if(pai0Seq == 15){
 		i++;
 		if(array[1][0].cardSeq == 14){
 			i++;
-			bomb.push([ array[0][0], array[1][0] ]);
+			aloneBomb.push([ array[0][0], array[1][0] ]);
 		}else{
 			aloneArray.push(curPai);			
 		}
@@ -388,29 +392,38 @@ Player.prototype.findAlonePai = function(){
 				lianxuCount++;
 				tmp.push(curPai);				
 			}else{
-				var arrayToUse = lianPaiArray;
+				var arrayToUse = null;
 				if(lianxuCount < 5){
 					arrayToUse = aloneArray;					
+				}else{
+					arrayToUse = [];
 				}
 				for(var p = 0, q = tmp.length; p < q; p++){				
 					arrayToUse.push(tmp[p]);
 				}					
-				
+				if(arrayToUse !== aloneArray){
+					lianPaiArray.push(arrayToUse);
+				}
 				tmp = [curPai];
 				lianxuCount = 1;
 			}
 			preSeq = curSeq;
 		}	
-		arrayToUse = lianPaiArray;
+		arrayToUse = null;
 		if(lianxuCount < 5){
 			arrayToUse = aloneArray;
+		}else{
+			arrayToUse = [];
 		}
 		for(var p = 0, q = tmp.length; p < q; p++){				
 			arrayToUse.push(tmp[p]);
-		}		
+		}	
+		if(arrayToUse !== aloneArray){
+			lianPaiArray.push(arrayToUse);
+		}
 	}
 	
-	//´ÓµÍÓÚ5Á¬µÄaloneArrayÖĞÕÒ³öµ¥ÕÅ£¬ÈıÕÅ
+	//ä»ä½äº5è¿çš„aloneArrayä¸­æ‰¾å‡ºå•å¼ ï¼Œä¸‰å¼ 
 	var  oneArray = [], threeArray = [];
 	for(i = 0, size = aloneArray.length; i < size; i++){
 		curPai = aloneArray[i];		
@@ -420,12 +433,12 @@ Player.prototype.findAlonePai = function(){
 			case 3:			
 				threeArray.push(curPai);break;
 			case 4:
-				bomb.push(curPai);break;
+				aloneBomb.push(curPai);break;
 		}
 	}
 	
 	
-	//´ÓµÍÓÚ5Á¬µÄaloneArrayÖĞÕÒ³öµÍÓÚ3Á¬µÄ¶Ô×Ó
+	//ä»ä½äº5è¿çš„aloneArrayä¸­æ‰¾å‡ºä½äº3è¿çš„å¯¹å­
 	lianxuCount = 0, twoArray = [], lianDuiArray = [];
 	for(i = 0, size = aloneArray.length; i < size; i++){
 		curPai = aloneArray[i];
@@ -444,15 +457,18 @@ Player.prototype.findAlonePai = function(){
 				if(preSeq == (curSeq + 1)){
 					lianxuCount++;
 					tmp.push(curPai);
-				}else{
-					arrayToUse = lianDuiArray;	
+				}else{					
 					if(lianxuCount < 3){
 						arrayToUse = twoArray;
+					}else{
+						arrayToUse = [];
 					}
 					for(var p = 0, q = tmp.length; p < q; p++){				
 						arrayToUse.push(tmp[p]);
 					}					
-					
+					if(arrayToUse !== twoArray){
+						lianDuiArray.push(arrayToUse);
+					}
 					tmp = [curPai];
 					lianxuCount = 1;
 				}
@@ -460,12 +476,17 @@ Player.prototype.findAlonePai = function(){
 			preSeq = curSeq;				
 		}
 		
-		arrayToUse = lianDuiArray;	
+		
 		if(lianxuCount < 3){
 			arrayToUse = twoArray;
+		}else{
+			arrayToUse = [];
 		}
 		for(var p = 0, q = tmp.length; p < q; p++){				
 			arrayToUse.push(tmp[p]);
+		}	
+		if(arrayToUse !== twoArray){
+			lianDuiArray.push(arrayToUse);
 		}		
 	}
 	aloneArray = null, tmp = null;
@@ -473,10 +494,76 @@ Player.prototype.findAlonePai = function(){
 		oneArray:oneArray, 
 		twoArray: twoArray, 
 		threeArray: threeArray, 
-		bomb:bomb,
+		aloneBomb:aloneBomb,
 		lianPaiArray:lianPaiArray, 
 		lianDuiArray:lianDuiArray		
 	};
+}
+
+Player.prototype.doChaiPai = function(){
+	var data = this.findAlonePai() || {},
+		lianPaiArray = data.lianPaiArray;
+	for(var i = 0, size = lianPaiArray.length; i < size; i++){
+		this.doChaiLianPai(lianPaiArray[i]);
+	}
+}
+
+/*
+ä»å¤§ç‰Œå¼€å§‹æ‹†è¿ç‰Œ
+*/
+
+Player.prototype.doChaiLianPai = function(lianPai){	
+	var lianPaiArray = lianPai || [],
+		size = lianPaiArray.length,
+		curPai = null,arrayToUse = null,
+		duizi = [], sanzhang =[], zhadan = [];
+	if(size == 0) return;
+	for(var i = 0 ; i < size; i++ ){
+		curPai = lianPaiArray[i];
+		switch(curPai.length){
+			case 2:
+				arrayToUse = duizi;break;
+			case 3:
+				arrayToUse = sanzhang;break;
+			case 4:
+				arrayToUse = zhadan;break;
+			default:
+				arrayToUse = null;break;
+		}
+		arrayToUse && arrayToUse.push(curPai);
+	}
+	
+	var maxCount = size -5, paiSelected, selectedLength = 0,
+		maxSelectedSeq, minSelectedSeq,
+		minLianPaiSeq = lianPaiArray[lianPaiArray.length -1][0].cardSeq,
+		maxLianPaiSeq = lianPaiArray[0][0].cardSeq;
+	for(var  j = 0; j <= maxCount; j++){
+		paiSelected = this.selectSomePai4ChaiPai(lianPaiArray, j);
+		selectedLength = paiSelected.length;
+		if(selectedLength >0){
+			minSelectedSeq = (paiSelected[selectedLength - 1][0].cardSeq);
+			maxSelectedSeq = (paiSelected[0][0].cardSeq);
+			if(maxSelectedSeq > minLianPaiSeq + 4  || minSelectedSeq > maxLianPaiSeq -4){
+				CommonUtil.print('æ‹†æ‹Ok');
+			}else{
+				CommonUtil.print('æ‹†æ‹error');
+			}
+		}
+	}
+		
+}
+
+Player.prototype.selectSomePai4ChaiPai = function(lianPaiArray, count){
+	lianPaiArray = lianPaiArray || [];
+	var paiSelected = [];
+	for(var i = 0, size = lianPaiArray.length; i < size; i++ ){
+		curPai = lianPaiArray[i];
+		if(curPai.length > 1 && paiSelected.length < count){
+			curPai[0].flag4ChaiPai = true;
+			paiSelected.push(curPai);
+		}		
+	}
+	return paiSelected;
 }
 
 Player.prototype.findPaiCmpFunction = function(pai1, pai2){	
@@ -512,12 +599,12 @@ Player.prototype.chupaiCmpFunction = function(pai1, pai2){
 }
 
 /*
-cardType Ö¸Ã÷ÅÆµÄÀàĞÍ
-cardSeq Ö¸Ã÷Ä³ÖÖÅÆĞÍÄÚµÄĞòºÅ
+cardType æŒ‡æ˜ç‰Œçš„ç±»å‹
+cardSeq æŒ‡æ˜æŸç§ç‰Œå‹å†…çš„åºå·
 */	
 var Card = function(index){
 	if(index < 0 || index > 53){
-		throw "·Ç·¨ĞòºÅµÄÅÆ";
+		throw "éæ³•åºå·çš„ç‰Œ";
 	}
 	this.index = index;
 	
@@ -546,9 +633,9 @@ var Card = function(index){
 		case 1:
 			this.cardSrc = 'dawang.png'; break;
 		default:
-			throw '·Ç·¨ĞòºÅµÄÅÆ';
+			throw 'éæ³•åºå·çš„ç‰Œ';
 		}
-		//ÎªÁË±ãÓÚ°ÑÍõÅÆÔÚ×î´ó
+		//ä¸ºäº†ä¾¿äºæŠŠç‹ç‰Œåœ¨æœ€å¤§
 		remain += 14;
 	}else{
 		switch(remain){
@@ -572,7 +659,7 @@ var Card = function(index){
 
 var ddz = {};
 /*
- ¶¨ÒåÒ»¸öÓµÓĞ54¸öÔªËØµÄÒ»Î¬Êı£¬ÒÀ´Î¸³ÖµÎª1------53£¬ Ëæ»ú54´Î£¬Ã¿´ÎËæ»ú³öÒ»¸öÊı×Ö£¬ºÍµÚi¸öÎ»ÖÃµÄÊı×Ö½»»»
+ å®šä¹‰ä¸€ä¸ªæ‹¥æœ‰54ä¸ªå…ƒç´ çš„ä¸€ç»´æ•°ï¼Œä¾æ¬¡èµ‹å€¼ä¸º1------53ï¼Œ éšæœº54æ¬¡ï¼Œæ¯æ¬¡éšæœºå‡ºä¸€ä¸ªæ•°å­—ï¼Œå’Œç¬¬iä¸ªä½ç½®çš„æ•°å­—äº¤æ¢
 */
 ddz.createRandomCards = function(){
 	var d = [], ranPos, t;
@@ -693,7 +780,7 @@ ddz.placeCards = function(){
 	}
 	
 	left = left - xOffset + 60;
-	var btnTemplate = "<button id='chupai' style='position:absolute;top:{0}px;left:{1}px'>³öÅÆ</button>";
+	var btnTemplate = "<button id='chupai' style='position:absolute;top:{0}px;left:{1}px'>å‡ºç‰Œ</button>";
 	tStr = CommonUtil.format.call(btnTemplate, top, left);
 	player_area.innerHTML = htmls.join('')+ tStr;	
 	
@@ -702,12 +789,12 @@ ddz.placeCards = function(){
 }
 
 /*
-54¸öËæ»úÊıÉú³ÉËã·¨
+54ä¸ªéšæœºæ•°ç”Ÿæˆç®—æ³•
 */
 var ddz1 = {};
 
 /*
-ÓÃÁ´±í£¬´Ó0µ½53ÒÀ´Î²åÈëÁ´±íÖĞµÄËæ»úÎ»ÖÃ
+ç”¨é“¾è¡¨ï¼Œä»0åˆ°53ä¾æ¬¡æ’å…¥é“¾è¡¨ä¸­çš„éšæœºä½ç½®
 */
 ddz1.createRandomCard = function(){
 	var card = [], rPos;
@@ -720,9 +807,9 @@ ddz1.createRandomCard = function(){
 
 var ddz2 = {};
 /*
-1.Èç¹ûĞèÒª½«ÒÑÓĞµÄvectorÊı×éÖØĞÂÅÅĞò£¬Ö±½Ó´ÓÔ­Êı×éÖĞËæ»ú³éÇ©£¬Ë³ĞòÌí¼Óµ½ĞÂÊı×é£¬²¢É¾³ıÔ­Êı×éÖĞ±»³éµ½µÄÔªËØ
+1.å¦‚æœéœ€è¦å°†å·²æœ‰çš„vectoræ•°ç»„é‡æ–°æ’åºï¼Œç›´æ¥ä»åŸæ•°ç»„ä¸­éšæœºæŠ½ç­¾ï¼Œé¡ºåºæ·»åŠ åˆ°æ–°æ•°ç»„ï¼Œå¹¶åˆ é™¤åŸæ•°ç»„ä¸­è¢«æŠ½åˆ°çš„å…ƒç´ 
 
-2..»òÕßÖ±½Ó´ÓÔ­vectorÊı×éË³Ğò³éÈ¡ÔªËØ£¬·ÅÖÃµ½ĞÂ¶¯Ì¬Êı×éÖĞµÄËæ»úÎ»ÖÃ
+2..æˆ–è€…ç›´æ¥ä»åŸvectoræ•°ç»„é¡ºåºæŠ½å–å…ƒç´ ï¼Œæ”¾ç½®åˆ°æ–°åŠ¨æ€æ•°ç»„ä¸­çš„éšæœºä½ç½®
 */
 ddz2.createRandomCard = function(){
 }
