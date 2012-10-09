@@ -360,11 +360,11 @@ Player.prototype.judgeChupaiType = function(){
  找出一副牌中只能组成一种牌型的牌（3条，对子，单张为一种牌型。）意思就是有一张牌和剩余牌中的任何一张牌没有联系。
  */
 Player.prototype.findAlonePai = function(){		
-	var array =  this.getSortedPaiArray(this.cardArray, this.findPaiCmpFunction), alonePai = {}, array = array || [];	
+	var array =  this.getSortedPaiArray(this.cardArray, this.findPaiCmpFunction), array = array || [];	
 	var i = 0, size = array.length;
 	if(size <= 2) return ;
 	
-	var aloneArray = [];
+	var aloneArray = [], lianPaiArray = [];
 	var curPai = array[0], pai0Seq = curPai[0].cardSeq;
 	//大王
 	if(pai0Seq == 15){
@@ -387,22 +387,25 @@ Player.prototype.findAlonePai = function(){
 				lianxuCount++;
 				tmp.push(curPai);				
 			}else{
-				if(lianxuCount >= 5){
-					
-				}else{
-					for(var p = 0, q = tmp.length; p < q; p++){				
-						aloneArray.push(tmp[p]);
-					}					
+				var arrayToUse = lianPaiArray;
+				if(lianxuCount < 5){
+					arrayToUse = aloneArray;					
 				}
+				for(var p = 0, q = tmp.length; p < q; p++){				
+					arrayToUse.push(tmp[p]);
+				}					
+				
 				tmp = [curPai];
 				lianxuCount = 1;
 			}
 			preSeq = curSeq;
 		}	
+		arrayToUse = lianPaiArray;
 		if(lianxuCount < 5){
-			for(var p = 0, q = tmp.length; p < q; p++){				
-							aloneArray.push(tmp[p]);
-			}
+			arrayToUse = aloneArray;
+		}
+		for(var p = 0, q = tmp.length; p < q; p++){				
+			arrayToUse.push(tmp[p]);
 		}		
 	}
 	
@@ -420,7 +423,7 @@ Player.prototype.findAlonePai = function(){
 	
 	
 	//从低于5连的aloneArray中找出低于3连的对子
-	lianxuCount = 0, twoArray = [];
+	lianxuCount = 0, twoArray = [], lianDuiArray = [];
 	for(i = 0, size = aloneArray.length; i < size; i++){
 		curPai = aloneArray[i];
 		if(curPai.length == 2){
@@ -439,26 +442,37 @@ Player.prototype.findAlonePai = function(){
 					lianxuCount++;
 					tmp.push(curPai);
 				}else{
-					if(lianxuCount >= 3){
-						
-					}else{
-						for(var p = 0, q = tmp.length; p < q; p++){				
-							twoArray.push(tmp[p]);
-						}					
+					arrayToUse = lianDuiArray;	
+					if(lianxuCount < 3){
+						arrayToUse = twoArray;
 					}
+					for(var p = 0, q = tmp.length; p < q; p++){				
+						arrayToUse.push(tmp[p]);
+					}					
+					
 					tmp = [curPai];
 					lianxuCount = 1;
 				}
 			}				
 			preSeq = curSeq;				
 		}
+		
+		arrayToUse = lianDuiArray;	
 		if(lianxuCount < 3){
-			for(var p = 0, q = tmp.length; p < q; p++){				
-				twoArray.push(tmp[p]);
-			}
+			arrayToUse = twoArray;
 		}
+		for(var p = 0, q = tmp.length; p < q; p++){				
+			arrayToUse.push(tmp[p]);
+		}		
 	}
-	return {oneArray:oneArray, twoArray: twoArray, threeArray: threeArray};
+	aloneArray = null, tmp = null;
+	return {
+		oneArray:oneArray, 
+		twoArray: twoArray, 
+		threeArray: threeArray, 
+		lianPaiArray:lianPaiArray, 
+		lianDuiArray:lianDuiArray		
+	};
 }
 
 Player.prototype.findPaiCmpFunction = function(pai1, pai2){	
