@@ -364,13 +364,14 @@ Player.prototype.findAlonePai = function(){
 	var i = 0, size = array.length;
 	if(size <= 2) return ;
 	
-	var aloneArray = [], lianPaiArray = [];
+	var aloneArray = [], lianPaiArray = [], bomb = [];
 	var curPai = array[0], pai0Seq = curPai[0].cardSeq;
 	//´óÍõ
 	if(pai0Seq == 15){
 		i++;
 		if(array[1][0].cardSeq == 14){
 			i++;
+			bomb.push([ array[0][0], array[1][0] ]);
 		}else{
 			aloneArray.push(curPai);			
 		}
@@ -418,6 +419,8 @@ Player.prototype.findAlonePai = function(){
 				oneArray.push(curPai);break;
 			case 3:			
 				threeArray.push(curPai);break;
+			case 4:
+				bomb.push(curPai);break;
 		}
 	}
 	
@@ -470,6 +473,7 @@ Player.prototype.findAlonePai = function(){
 		oneArray:oneArray, 
 		twoArray: twoArray, 
 		threeArray: threeArray, 
+		bomb:bomb,
 		lianPaiArray:lianPaiArray, 
 		lianDuiArray:lianDuiArray		
 	};
