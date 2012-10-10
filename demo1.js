@@ -274,6 +274,16 @@ var FeiJi = {
 	}	
 }
 
+var PaiInfo4ChaiPai = function(array){
+	if(array instanceof Array){
+		this.array = array;
+		this.remainCards4ChaiPai = array.length;
+		this.cardSeq = array[0].cardSeq;
+	}else{
+		throw '传入参数必须是数组';
+	}
+	
+}
 
 
 
@@ -331,7 +341,7 @@ Player.prototype.getSelectedCards = function(){
 }
 
 
-Player.prototype.getSortedPaiArray = function(cardArray, cmpFunction){
+Player.prototype.getSortedPaiInfo = function(cardArray, cmpFunction){
 	var cards = cardArray || [];
 	if(cards.length == 0) return;
 	var curCard = cards[0], curSeq = curCard.cardSeq;
@@ -349,91 +359,116 @@ Player.prototype.getSortedPaiArray = function(cardArray, cmpFunction){
 			paiArray.push(mapCardArray);			
 		}
 	}		
-	var sortedArray = CommonUtil.bubbleSort(paiArray,cmpFunction);
-	return sortedArray;
+	var sortedArray = CommonUtil.bubbleSort(paiArray,cmpFunction), paiInfoArray = [];
+	for(var i = 0, j = sortedArray.length; i < j; i++ ){
+		paiInfoArray.push(new PaiInfo4ChaiPai(sortedArray[i]));
+	}
+	return {
+		paiInfoArray:paiInfoArray,
+		sortedArray:sortedArray
+	};
 	
 }
 Player.prototype.judgeChupaiType = function(){
 	var selectCards = this.getSelectedCards();
-	var sortedArray = this.getSortedPaiArray(selectCards, this.chupaiCmpFunction);
+	var sortedInfo = this.getSortedPaiInfo(selectCards, this.chupaiCmpFunction), 
+		sortedArray = sortedInfo.sortedArray;
 	var judger = new PaiTypeJudger(sortedArray);
 	return judger.doJudge(sortedArray);
 }
 
-/*
- 找出一副牌中只能组成一种牌型的牌（3条，对子，单张为一种牌型。）意思就是有一张牌和剩余牌中的任何一张牌没有联系。
- */
-Player.prototype.findAlonePai = function(){		
-	var array =  this.getSortedPaiArray(this.cardArray, this.findPaiCmpFunction), array = array || [];	
+
+Player.prototype.findAlonePaiBasedOnSortedPaiInfoArray = function(sortedPaiInfoArray){
+	var array = sortedPaiInfoArray || [];
 	var i = 0, size = array.length;
 	if(size <= 2) return ;
 	
 	var aloneArray = [], lianPaiArray = [], aloneBomb = [];
-	var curPai = array[0], pai0Seq = curPai[0].cardSeq;
+	var curPaiInfo = array[0], pai0Seq = curPaiInfo.cardSeq;
 	//大王
 	if(pai0Seq == 15){
 		i++;
-		if(array[1][0].cardSeq == 14){
+		if(array[1].cardSeq == 14){
 			i++;
-			aloneBomb.push([ array[0][0], array[1][0] ]);
+			aloneBomb.push([ array[0], array[1] ]);
 		}else{
-			aloneArray.push(curPai);			
+			aloneArray.push(curPaiInfo);			
 		}
 	}else if(pai0Seq == 14){
 		i++;
-		aloneArray.push(curPai);
+		aloneArray.push(curPaiInfo);
 	}	
 	if(i < size){
-		var lianxuCount = 1,curPai = array[i], preSeq = curPai[0].cardSeq, curSeq,tmp = [curPai];
-		for(i++; i < size ; i++){
-			curPai = array[i], curSeq = curPai[0].cardSeq;
-			
-			if(preSeq == (curSeq + 1)){
-				lianxuCount++;
-				tmp.push(curPai);				
-			}else{
-				var arrayToUse = null;
-				if(lianxuCount < 5){
-					arrayToUse = aloneArray;					
-				}else{
-					arrayToUse = [];
-				}
-				for(var p = 0, q = tmp.length; p < q; p++){				
-					arrayToUse.push(tmp[p]);
-				}					
-				if(arrayToUse !== aloneArray){
-					lianPaiArray.push(arrayToUse);
-				}
-				tmp = [curPai];
+		var lianxuCount = 0,curPaiInfo = null, preSeq = -1, curSeq,tmp = [];
+		for(; i < size ; i++){
+			curPaiInfo = array[i];
+			if(curPaiInfo.remainCards4ChaiPai != 0){
 				lianxuCount = 1;
+				preSeq = curPaiInfo.cardSeq;
+				tmp.push(curPaiInfo);
+				i++;
+				break;
+			}else{
+				aloneArray.push(curPaiInfo);
+			}
+		}
+		for(; i < size ; i++){
+			curPaiInfo = array[i], curSeq = curPaiInfo.cardSeq;
+			
+			if(curPaiInfo.remainCards4ChaiPai != 0 && preSeq == (curSeq + 1)){
+				lianxuCount++;
+				tmp.push(curPaiInfo);				
+			}else{					
+				if(lianxuCount < 5){
+					for(var p = 0, q = tmp.length; p < q; p++){				
+						aloneArray.push(tmp[p]);
+					}			
+				}else{
+					var lianPai = [];
+					for(var p = 0, q = tmp.length; p < q; p++){				
+						lianPai.push(tmp[p]);
+					}
+					lianPaiArray.push(lianPai);
+				}	
+				
+				if(curPaiInfo.remainCards4ChaiPai == 0){					
+					curPaiInfo.remainCards4ChaiPai = curPaiInfo.array.length;
+					aloneArray.push(curPaiInfo);
+					tmp = [];
+					lianxuCount = 0;
+				}else{
+					tmp = [curPaiInfo];
+					lianxuCount = 1;
+				}
+				
 			}
 			preSeq = curSeq;
 		}	
-		arrayToUse = null;
+		
 		if(lianxuCount < 5){
-			arrayToUse = aloneArray;
+			for(var p = 0, q = tmp.length; p < q; p++){				
+				aloneArray.push(tmp[p]);
+			}	
 		}else{
-			arrayToUse = [];
-		}
-		for(var p = 0, q = tmp.length; p < q; p++){				
-			arrayToUse.push(tmp[p]);
-		}	
-		if(arrayToUse !== aloneArray){
-			lianPaiArray.push(arrayToUse);
-		}
+			var lianPai = [];
+			for(var p = 0, q = tmp.length; p < q; p++){				
+				lianPai.push(tmp[p]);
+			}
+			lianPaiArray.push(lianPai);
+		}		
 	}
 	
 	//从低于5连的aloneArray中找出单张，三张
 	var  oneArray = [], threeArray = [];
 	for(i = 0, size = aloneArray.length; i < size; i++){
-		curPai = aloneArray[i];		
-		switch(curPai.length){
+		curPaiInfo = aloneArray[i];		
+		switch(curPaiInfo.remainCards4ChaiPai){
 			case 1:
-				oneArray.push(curPai);break;
+				oneArray.push(curPaiInfo);break;
 			case 3:			
-				threeArray.push(curPai);break;
+				threeArray.push(curPaiInfo);break;
 			case 4:
-				aloneBomb.push(curPai);break;
+				aloneBomb.push(curPaiInfo);break;
 		}
 	}
 	
@@ -441,22 +476,22 @@ Player.prototype.findAlonePai = function(){
 	//从低于5连的aloneArray中找出低于3连的对子
 	lianxuCount = 0, twoArray = [], lianDuiArray = [];
 	for(i = 0, size = aloneArray.length; i < size; i++){
-		curPai = aloneArray[i];
-		if(curPai.length == 2){
+		curPaiInfo = aloneArray[i];
+		if(curPaiInfo.remainCards4ChaiPai == 2){
 			lianxuCount++, i++;
-			preSeq = curPai[0].cardSeq;
+			preSeq = curPaiInfo.cardSeq;
 			break;
 		}
 	}
 	if(lianxuCount == 1){
-		tmp = [curPai];
+		tmp = [curPaiInfo];
 		for(; i < size; i++){
-			curPai = aloneArray[i];			
-			if(curPai.length == 2){
-				curSeq = curPai[0].cardSeq;
+			curPaiInfo = aloneArray[i];			
+			if(curPaiInfo.remainCards4ChaiPai == 2){
+				curSeq = curPaiInfo.cardSeq;
 				if(preSeq == (curSeq + 1)){
 					lianxuCount++;
-					tmp.push(curPai);
+					tmp.push(curPaiInfo);
 				}else{					
 					if(lianxuCount < 3){
 						arrayToUse = twoArray;
@@ -469,7 +504,7 @@ Player.prototype.findAlonePai = function(){
 					if(arrayToUse !== twoArray){
 						lianDuiArray.push(arrayToUse);
 					}
-					tmp = [curPai];
+					tmp = [curPaiInfo];
 					lianxuCount = 1;
 				}
 			}				
@@ -498,10 +533,20 @@ Player.prototype.findAlonePai = function(){
 		lianPaiArray:lianPaiArray, 
 		lianDuiArray:lianDuiArray		
 	};
+	
+}
+/*
+ 找出一副牌中只能组成一种牌型的牌（3条，对子，单张为一种牌型。）意思就是有一张牌和剩余牌中的任何一张牌没有联系。
+ */
+Player.prototype.findAlonePaiBaseOnCardArray = function(){		
+	var paiInfo =  this.getSortedPaiInfo(this.cardArray, this.findPaiCmpFunction) || {},
+		paiInfoArray = paiInfo.paiInfoArray || [];	
+	return this.findAlonePaiBasedOnSortedPaiInfoArray(paiInfoArray);
+	
 }
 
 Player.prototype.doChaiPai = function(){
-	var data = this.findAlonePai() || {},
+	var data = this.findAlonePaiBaseOnCardArray() || {},
 		lianPaiArray = data.lianPaiArray;
 	for(var i = 0, size = lianPaiArray.length; i < size; i++){
 		this.doChaiLianPai(lianPaiArray[i]);
@@ -515,36 +560,45 @@ Player.prototype.doChaiPai = function(){
 Player.prototype.doChaiLianPai = function(lianPai){	
 	var lianPaiArray = lianPai || [],
 		size = lianPaiArray.length,
-		curPai = null,arrayToUse = null,
+		curPaiInfo = null,arrayToUse = null,
 		duizi = [], sanzhang =[], zhadan = [];
-	if(size == 0) return;
-	for(var i = 0 ; i < size; i++ ){
-		curPai = lianPaiArray[i];
-		switch(curPai.length){
-			case 2:
-				arrayToUse = duizi;break;
-			case 3:
-				arrayToUse = sanzhang;break;
-			case 4:
-				arrayToUse = zhadan;break;
-			default:
-				arrayToUse = null;break;
-		}
-		arrayToUse && arrayToUse.push(curPai);
-	}
+	if(size == 0) return;	
 	
 	var maxCount = size -5, paiSelected, selectedLength = 0,
 		maxSelectedSeq, minSelectedSeq,
-		minLianPaiSeq = lianPaiArray[lianPaiArray.length -1][0].cardSeq,
-		maxLianPaiSeq = lianPaiArray[0][0].cardSeq;
+		minLianPaiSeq = lianPaiArray[lianPaiArray.length -1].array[0].cardSeq,
+		maxLianPaiSeq = lianPaiArray[0].array[0].cardSeq;
 	for(var  j = 0; j <= maxCount; j++){
 		paiSelected = this.selectSomePai4ChaiPai(lianPaiArray, j);
 		selectedLength = paiSelected.length;
 		if(selectedLength >0){
-			minSelectedSeq = (paiSelected[selectedLength - 1][0].cardSeq);
-			maxSelectedSeq = (paiSelected[0][0].cardSeq);
+			minSelectedSeq = (paiSelected[selectedLength - 1].array[0].cardSeq);
+			maxSelectedSeq = (paiSelected[0].array[0].cardSeq);
 			if(maxSelectedSeq > minLianPaiSeq + 4  || minSelectedSeq > maxLianPaiSeq -4){
-				CommonUtil.print('拆拍Ok');
+				var curLianPai, curPaiInfoSelected, start = 0;
+				for(var q = 0; q < selectedLength; q++){
+					for(var p = start; p < size; p++){
+						curLianPai = lianPaiArray[p], 
+						curPaiInfoSelected = paiSelected[q];
+						if(curLianPai.array[0].cardSeq == curPaiInfoSelected.array[0].cardSeq){
+							start = p + 1;
+							curLianPai.remainCards4ChaiPai = 0;
+							break;
+						}
+					}
+				}
+				var ret = this.findAlonePaiBasedOnSortedPaiInfoArray(lianPaiArray);
+				if(ret.lianPaiArray.length != 0)
+					CommonUtil.print('拆拍Ok');
+				else
+					CommonUtil.print('拆拍error');
+				/*
+				恢复lianPaiArray中的remainCards4ChaiPai字段
+				*/
+				for(var q = 0; q < selectedLength; q++){
+					paiSelected[q].remainCards4ChaiPai = curPaiInfoSelected.array[0].cardSeq;
+				}
+				
 			}else{
 				CommonUtil.print('拆拍error');
 			}
@@ -557,10 +611,9 @@ Player.prototype.selectSomePai4ChaiPai = function(lianPaiArray, count){
 	lianPaiArray = lianPaiArray || [];
 	var paiSelected = [];
 	for(var i = 0, size = lianPaiArray.length; i < size; i++ ){
-		curPai = lianPaiArray[i];
-		if(curPai.length > 1 && paiSelected.length < count){
-			curPai[0].flag4ChaiPai = true;
-			paiSelected.push(curPai);
+		curPaiInfo = lianPaiArray[i];
+		if(curPaiInfo.remainCards4ChaiPai > 1 && paiSelected.length < count){			
+			paiSelected.push(curPaiInfo);
 		}		
 	}
 	return paiSelected;
