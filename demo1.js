@@ -700,13 +700,15 @@ Player.prototype.doChaiLianPai = function(lianPaiInfo){
 			
 		}
 	}
+	
+	this.extractChaiPaiResult();
 		
 }
 
 /*
-计算拆牌方案时的权重，最后会选择权重最大的一次拆牌方案为最佳
+从chaiPaiStack中提取拆牌方案
 */
-Player.prototype.computeWeight4ChaiPai = function(paiInfoAfterChaiPai){
+Player.prototype.extractChaiPaiResult = function(){
 	var chaiPaiStack = this.chaiPaiStack || [], paiInfoAfterChaiPai = null;
 	for(var i = 0, size  = chaiPaiStack.length; i < size; i++){
 		paiInfoAfterChaiPai = chaiPaiStack[i];
@@ -715,23 +717,62 @@ Player.prototype.computeWeight4ChaiPai = function(paiInfoAfterChaiPai){
 		lianPaiInfoArray = paiInfoAfterChaiPai.lianPaiInfoArray,
 		oneArray = paiInfoAfterChaiPai.oneArray,
 		twoArray = paiInfoAfterChaiPai.twoArray,
-		threeArray = paiInfoAfterChaiPai.threeArray;
+		threeArray = paiInfoAfterChaiPai.threeArray;	
 		
 		var  length = lianPaiInfoArray.length, chupaiShouShu = 0;
-		for(var i = 0; i < length; i++){
-			//paiSelectedArray[i]
-			this.extractLianZiFromlianPaiInfoArray(lianPaiInfoArray[i]);
+		for(var t = 0; t < length; t++){			
+			var ret = this.extractLianZiFromlianPaiInfoArray(lianPaiInfoArray[t]);
+		}
+		
+		
+		var innerPaiInfoAfterChaiPai = null;
+		for(var j = i - 1; j >= 0; j--){
+			innerPaiInfoAfterChaiPai = chaiPaiStack[j];
+			
 		}
 	}
 }
+
 
 /*
 从连牌中提取符合规则的连牌或者连对
 */
 Player.prototype.extractLianZiFromlianPaiInfoArray = function(lianPaiInfo){
 	lianPaiInfo = lianPaiInfo || {};
-	var lianPai = lianPaiInfo.lianPai, minCards = lianPaiInfo.minCards;
-	var ret = this.findAlonePaiBasedOnSortedPaiInfoArray(lianPai);	
+	var lianPai = lianPaiInfo.lianPai, minCards = lianPaiInfo.minCards, curPaiInfo, remainCards = 0;
+	var danPai = [], danDui = [], sanZhang = [], lianZi = [];//肯能是单连，也可能是连对,还有可能是飞机
+	
+	for(var i = 0 , size = lianPai.length; i < size; i++){
+		curPaiInfo = lianPai[i];
+		remainCards = curPaiInfo.array.length - minCards;
+		switch(remainCards){
+			case 0:{
+				lianZi.push(curPaiInfo.cardSeq);break;
+			}
+			case 1:{
+				danPai.push(curPaiInfo.cardSeq);break;
+			}
+			case 2:{
+				danDui.push(curPaiInfo.cardSeq);break;
+			}
+			case 3:{
+				sanZhang.push(curPaiInfo.cardSeq);break;
+			}
+		}
+	}
+	
+	return {
+		danPai:danPai,
+		danDui:danDui,
+		sanZhang:sanZhang,
+		lianZi:lianZi
+	};	
+}
+
+/*
+计算拆牌方案时的权重，最后会选择权重最大的一次拆牌方案为最佳
+*/
+Player.prototype.computeWeight4ChaiPai = function(paiInfoAfterChaiPai){
 	
 }
 
