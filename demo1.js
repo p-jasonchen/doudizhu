@@ -706,11 +706,12 @@ Player.prototype.doChaiLianPai = function(lianPaiInfo){
 }
 
 /*
-从chaiPaiStack中提取拆牌方案
+从chaiPaiStack中提取拆牌方案,现在先实现最简单的（直接从从chaiPaiStack[0]中提取）
 */
 Player.prototype.extractChaiPaiResult = function(){
 	var chaiPaiStack = this.chaiPaiStack || [], paiInfoAfterChaiPai = null;
-	for(var i = 0, size  = chaiPaiStack.length; i < size; i++){
+	
+	for(var i = 0, size  = 1; i < size; i++){
 		paiInfoAfterChaiPai = chaiPaiStack[i];
 		var aloneBomb = paiInfoAfterChaiPai.aloneBomb,
 		lianDuiArray = paiInfoAfterChaiPai.lianDuiArray,
@@ -731,6 +732,9 @@ Player.prototype.extractChaiPaiResult = function(){
 			
 		}
 	}
+	this.chaiPaiResult = ret;
+	return ret;
+	
 }
 
 
@@ -745,10 +749,8 @@ Player.prototype.extractLianZiFromlianPaiInfoArray = function(lianPaiInfo){
 	for(var i = 0 , size = lianPai.length; i < size; i++){
 		curPaiInfo = lianPai[i];
 		remainCards = curPaiInfo.array.length - minCards;
-		switch(remainCards){
-			case 0:{
-				lianZi.push(curPaiInfo.cardSeq);break;
-			}
+		lianZi.push(curPaiInfo.cardSeq);
+		switch(remainCards){			
 			case 1:{
 				danPai.push(curPaiInfo.cardSeq);break;
 			}
