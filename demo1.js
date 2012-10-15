@@ -339,6 +339,7 @@ var Player = function(opt){
 	this.chupaiId = opt.chupaiId;
 	this.selectPaiArray = [];
 	this.chaiPaiStack = [];
+	this.chaiPaiResultStack = [];
 }
 
 Player.prototype.registeSelectCardAction = function(){
@@ -368,7 +369,7 @@ Player.prototype.registeChupaiAction = function(){
 		// that.judgeChupaiType();		
 		// ddz.placeCards();		
 		p = ddz.player3;
-		p.doChaiPai();
+		p.doSimpleChaiPai();
 		//console.log(p.findAlonePai());
 		
 	});
@@ -606,11 +607,47 @@ Player.prototype.findAlonePaiBaseOnCardArray = function(){
 	
 }
 
+Player.prototype.doSimpleChaiPai = function(){
+	var data = this.findAlonePaiBaseOnCardArray() || {},
+		lianPaiInfoArray = data.lianPaiInfoArray;
+	
+	if(lianPaiInfoArray.length == 0) return;
+	
+	var ret = this.extractLianZiFromlianPaiInfoArray(lianPaiInfoArray[0]);
+	
+	var aloneBomb = data.aloneBomb,
+		lianDuiArray = data.lianDuiArray[0] || [],		
+		oneArray = data.oneArray,
+		twoArray = data.twoArray,
+		threeArray = data.threeArray;	
+		for(var p = 0, q = oneArray.length; p < q; p++){
+				ret.danPai.push(oneArray[p].cardSeq);
+			}
+			
+			for(var p = 0, q = twoArray.length; p < q; p++){
+				ret.danDui.push(twoArray[p].cardSeq);
+			}
+			
+			for(var p = 0, q = threeArray.length; p < q; p++){
+				ret.sanZhang.push(threeArray[p].cardSeq);
+			}
+			
+			var lianDui = [];
+			for(var p = 0, q = lianDuiArray.length; p < q; p++){
+				lianDui.push(lianDuiArray[p].cardSeq);
+			}
+			if(lianDui.length != 0)
+				ret.lianDuiArray.push(lianDui);
+	return ret;
+	
+}
+
 
 Player.prototype.doChaiPai = function(){
 	var data = this.findAlonePaiBaseOnCardArray() || {},
 		lianPaiInfoArray = data.lianPaiInfoArray;
 	this.chaiPaiStack.length = 0;
+	this.chaiPaiResultStack.length = 0;
 	this.chaiPaiStack.push(data);
 	for(var i = 0, size = lianPaiInfoArray.length; i < size; i++){
 		this.doChaiLianPai(lianPaiInfoArray[i]);
@@ -711,30 +748,51 @@ Player.prototype.doChaiLianPai = function(lianPaiInfo){
 Player.prototype.extractChaiPaiResult = function(){
 	var chaiPaiStack = this.chaiPaiStack || [], paiInfoAfterChaiPai = null;
 	
-	for(var i = 0, size  = 1; i < size; i++){
-		paiInfoAfterChaiPai = chaiPaiStack[i];
+	//for(var i = 0, size  = 1; i < size; i++){
+		paiInfoAfterChaiPai = chaiPaiStack[0];
 		var aloneBomb = paiInfoAfterChaiPai.aloneBomb,
-		lianDuiArray = paiInfoAfterChaiPai.lianDuiArray,
+		lianDuiArray = paiInfoAfterChaiPai.lianDuiArray[0] || [],
 		lianPaiInfoArray = paiInfoAfterChaiPai.lianPaiInfoArray,
 		oneArray = paiInfoAfterChaiPai.oneArray,
 		twoArray = paiInfoAfterChaiPai.twoArray,
 		threeArray = paiInfoAfterChaiPai.threeArray;	
 		
+		//只拆牌一次，故而每次清空this.chaiPaiResultStack
+		this.chaiPaiResultStack.length = 0;
 		var  length = lianPaiInfoArray.length, chupaiShouShu = 0;
 		for(var t = 0; t < length; t++){			
 			var ret = this.extractLianZiFromlianPaiInfoArray(lianPaiInfoArray[t]);
+			
+			for(var p = 0, q = oneArray.length; p < q; p++){
+				ret.danPai.push(oneArray[p].cardSeq);
+			}
+			
+			for(var p = 0, q = twoArray.length; p < q; p++){
+				ret.danDui.push(twoArray[p].cardSeq);
+			}
+			
+			for(var p = 0, q = threeArray.length; p < q; p++){
+				ret.sanZhang.push(threeArray[p].cardSeq);
+			}
+			
+			var lianDui = [];
+			for(var p = 0, q = lianDuiArray.length; p < q; p++){
+				lianDui.push(lianDuiArray[p].cardSeq);
+			}
+			if(lianDui.length != 0)
+				ret.lianDuiArray.push(lianDui);
+			
+			this.chaiPaiResultStack.push(ret);
 		}
 		
-		
+		/*
 		var innerPaiInfoAfterChaiPai = null;
 		for(var j = i - 1; j >= 0; j--){
 			innerPaiInfoAfterChaiPai = chaiPaiStack[j];
 			
 		}
-	}
-	this.chaiPaiResult = ret;
-	return ret;
-	
+		*/
+	//}	
 }
 
 
@@ -744,12 +802,16 @@ Player.prototype.extractChaiPaiResult = function(){
 Player.prototype.extractLianZiFromlianPaiInfoArray = function(lianPaiInfo){
 	lianPaiInfo = lianPaiInfo || {};
 	var lianPai = lianPaiInfo.lianPai, minCards = lianPaiInfo.minCards, curPaiInfo, remainCards = 0;
-	var danPai = [], danDui = [], sanZhang = [], lianZi = [];//肯能是单连，也可能是连对,还有可能是飞机
+	var danPai = [], danDui = [], sanZhang = [], lianZi = [], lianDui = [];//肯能是单连，也可能是连对,还有可能是飞机
+	var lianToUse = lianZi;
+	if(minCards == 2){
+		lianToUse = lianDui;
+	}
 	
 	for(var i = 0 , size = lianPai.length; i < size; i++){
 		curPaiInfo = lianPai[i];
 		remainCards = curPaiInfo.array.length - minCards;
-		lianZi.push(curPaiInfo.cardSeq);
+		lianToUse.push(curPaiInfo.cardSeq);
 		switch(remainCards){			
 			case 1:{
 				danPai.push(curPaiInfo.cardSeq);break;
@@ -763,11 +825,14 @@ Player.prototype.extractLianZiFromlianPaiInfoArray = function(lianPaiInfo){
 		}
 	}
 	
+	var lianDuiArray = (lianDui.length != 0) ? [lianDui]  : lianDui;
+	
 	return {
 		danPai:danPai,
 		danDui:danDui,
 		sanZhang:sanZhang,
-		lianZi:lianZi
+		lianZi:lianZi,
+		lianDuiArray:lianDuiArray
 	};	
 }
 
