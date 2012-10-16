@@ -533,8 +533,8 @@ Player.prototype.findAlonePaiBasedOnSortedPaiInfoArray = function(sortedPaiInfoA
 		}		
 	}
 	
-	//从低于5连的aloneArray中找出单张，三张
-	var oneArray = [], threeArray = []
+	//从低于5连的aloneArray中找出单张，单对，三张
+	var oneArray = [], twoArray = [], threeArray = [];
 	for(i = 0, size = aloneArray.length; i < size; i++){
 		curPaiInfo = aloneArray[i];		
 		remainCards = curPaiInfo.remainCards4ChaiPai,
@@ -542,6 +542,8 @@ Player.prototype.findAlonePaiBasedOnSortedPaiInfoArray = function(sortedPaiInfoA
 		switch(cards){
 			case 1:
 				oneArray.push(curPaiInfo);break;
+			case 2:
+				twoArray.push(curPaiInfo);break;
 			case 3:			
 				threeArray.push(curPaiInfo);break;
 			case 4:
@@ -550,72 +552,86 @@ Player.prototype.findAlonePaiBasedOnSortedPaiInfoArray = function(sortedPaiInfoA
 	}
 	
 	
-	//从低于5连的aloneArray中找出低于3连的对子
-	lianxuCount = 0, twoArray = [], lianDuiArray = [];
-	for(i = 0, size = aloneArray.length; i < size; i++){
-		curPaiInfo = aloneArray[i];
-		remainCards = curPaiInfo.remainCards4ChaiPai,
-		cards = (remainCards == 0) ? curPaiInfo.array.length : remainCards;
-		if(cards == 2){
-			lianxuCount++, i++;
-			preSeq = curPaiInfo.cardSeq;
-			break;
-		}
+	//从twoArray中找出提取出连对和单对
+	var duiInfo = this.extractDuiInfoFromTwoArray(twoArray);
+	
+	//从threeArray中提取出飞机和三张
+	var threeInfo = this.extractThreeInfoFromThreeArray(threeArray);	
+	
+	aloneArray = null, tmp = null;
+	return {
+		oneArray:oneArray, 
+		duiInfo: duiInfo, 
+		threeInfo: threeInfo, 
+		aloneBomb:aloneBomb,
+		lianPaiInfoArray:lianPaiInfoArray			
+	};
+	
+}
+
+
+Player.prototype.commonExtractLianPaiFromArray = function(paiInfoArray, minValidPaiNum){
+	var lianxuCount = 0, paiInfoArray = paiInfoArray || [], lianPaiArray = [],danPaiArray= [];
+	for(i = 0, size = paiInfoArray.length; i < size; i++){
+		curPaiInfo = paiInfoArray[i];		
+		lianxuCount++, i++;
+		preSeq = curPaiInfo.cardSeq;
+		break;		
 	}
 	if(lianxuCount == 1){
 		tmp = [curPaiInfo];
 		for(; i < size; i++){
-			curPaiInfo = aloneArray[i];		
-			remainCards = curPaiInfo.remainCards4ChaiPai,
-			cards = (remainCards == 0) ? curPaiInfo.array.length : remainCards;			
-			if(cards == 2){
+			curPaiInfo = paiInfoArray[i];				
+			
 				curSeq = curPaiInfo.cardSeq;
 				if(preSeq == (curSeq + 1)){
 					lianxuCount++;
 					tmp.push(curPaiInfo);
 				}else{					
-					if(lianxuCount < 3){
-						arrayToUse = twoArray;
+					if(lianxuCount < minValidPaiNum){
+						arrayToUse = danPaiArray;
 					}else{
 						arrayToUse = [];
 					}
 					for(var p = 0, q = tmp.length; p < q; p++){				
 						arrayToUse.push(tmp[p]);
 					}					
-					if(arrayToUse !== twoArray){
-						lianDuiArray.push(arrayToUse);
+					if(arrayToUse !== danPaiArray){
+						lianPaiArray.push(arrayToUse);
 					}
 					tmp = [curPaiInfo];
 					lianxuCount = 1;
-				}
-			}				
+				}						
 			preSeq = curSeq;				
-		}
+		}		
 		
-		
-		if(lianxuCount < 3){
-			arrayToUse = twoArray;
+		if(lianxuCount < minValidPaiNum){
+			arrayToUse = danPaiArray;
 		}else{
 			arrayToUse = [];
 		}
 		for(var p = 0, q = tmp.length; p < q; p++){				
 			arrayToUse.push(tmp[p]);
 		}	
-		if(arrayToUse !== twoArray){
-			lianDuiArray.push(arrayToUse);
-		}		
+		if(arrayToUse !== danPaiArray){
+			lianPaiArray.push(arrayToUse);
+		}
 	}
-	aloneArray = null, tmp = null;
-	return {
-		oneArray:oneArray, 
-		twoArray: twoArray, 
-		threeArray: threeArray, 
-		aloneBomb:aloneBomb,
-		lianPaiInfoArray:lianPaiInfoArray, 
-		lianDuiArray:lianDuiArray		
-	};
-	
+
+	return {	
+		danPaiArray : danPaiArray,
+		lianPaiArray : lianPaiArray
+	}
 }
+
+Player.prototype.extractDuiInfoFromTwoArray = function(twoArray){
+	return this.commonExtractLianPaiFromArray(twoArray, 3);
+}
+
+Player.prototype.extractThreeInfoFromThreeArray = function(threeArray){
+	return this.commonExtractLianPaiFromArray(threeArray, 2);
+}
+
 /*
  找出一副牌中只能组成一种牌型的牌（3条，对子，单张为一种牌型。）意思就是有一张牌和剩余牌中的任何一张牌没有联系。
  */
@@ -870,7 +886,7 @@ Player.prototype.extractChaiPaiResult = function(){
 Player.prototype.extractLianZiFromlianPaiInfoArray = function(lianPaiInfo){
 	lianPaiInfo = lianPaiInfo || {};
 	var lianPai = lianPaiInfo.lianPai, minCards = lianPaiInfo.minCards, curPaiInfo, remainCards = 0;
-	var danPai = [], danDui = [], sanZhang = [], lianZi = [], lianDui = [];//肯能是单连，也可能是连对,还有可能是飞机
+	var oneArray = [], twoArray = [], threeArray = [], lianZi = [];//肯能是单连，也可能是连对,还有可能是飞机
 	var lianToUse = lianZi;
 	if(minCards == 2){
 		lianToUse = lianDui;
@@ -882,25 +898,26 @@ Player.prototype.extractLianZiFromlianPaiInfoArray = function(lianPaiInfo){
 		lianToUse.push(curPaiInfo.cardSeq);
 		switch(remainCards){			
 			case 1:{
-				danPai.push(curPaiInfo.cardSeq);break;
+				oneArray.push(curPaiInfo.cardSeq);break;
 			}
 			case 2:{
-				danDui.push(curPaiInfo.cardSeq);break;
+				twoArray.push(curPaiInfo.cardSeq);break;
 			}
 			case 3:{
-				sanZhang.push(curPaiInfo.cardSeq);break;
+				threeArray.push(curPaiInfo.cardSeq);break;
 			}
 		}
 	}
 	
-	var lianDuiArray = (lianDui.length != 0) ? [lianDui]  : lianDui;
+	var duiInfo = this.extractDuiInfoFromTwoArray(twoArray);
+	
+	var threeInfo = this.extractThreeInfoFromThreeArray(threeArray);	
 	
 	return {
-		danPai:danPai,
-		danDui:danDui,
-		sanZhang:sanZhang,
-		lianZi:lianZi,
-		lianDuiArray:lianDuiArray
+		oneArray:oneArray,
+		duiInfo:duiInfo,
+		threeInfo:threeInfo,
+		lianZi:lianZi	
 	};	
 }
 
