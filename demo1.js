@@ -52,9 +52,22 @@
 	}
 }
 
-var PaiTypeConstants = {
-	type:[0, 1, 2,3, 4, 5, 6, 7, 8, 9, 10, 11,12, 13, 14],
-	name:['双王炸弹', '四张炸弹','四带二单张','四带一对','四带两对', '单张', '单对', '连牌','连队','三张不带','三张带一','三张带对','飞机不带','飞机带单张','飞机带对']
+var PaiTypeConstants = {	
+	shuangWang:'双王炸弹',
+	siZhang        :'四张炸弹',
+	siDai2DanZhang :'四带二单张',
+	siDai1Dui      :'四带一对',
+	siDai2Dui      :'四带两对',
+	danZhang       :'单张',
+	danDui         :'单对', 
+	lianPai        :'连牌',
+	lianDui        :'连队',
+	sanZhang       :'三张不带',
+	sanDai1        :'三张带一',
+	sanDaiDui      :'三张带对',
+	feiJi          :'飞机不带',
+	feiJiDai1      :'飞机带单张',
+	feiJiDaiDui    :'飞机带对'
 }
 
 var PaiTypeJudger = function(sortedPaiArray){
@@ -70,8 +83,8 @@ var ShuangWang = {
 	doJudge: function(paiTypeJudger){		
 		var paiArray = paiTypeJudger.sortedPaiArray, length = paiArray.length, paiType;
 		if(length == 2 && (paiArray[0][0].cardSeq + paiArray[1][0].cardSeq == 29)){
-			paiType = 0;
-			CommonUtil.print(PaiTypeConstants.name[paiType]);
+			paiType = 'shuangWang';
+			CommonUtil.print(PaiTypeConstants[paiType]);
 			paiTypeJudger.paiType = paiType;
 		}else{
 			paiTypeJudger.judger = FourBomb;
@@ -84,8 +97,8 @@ var FourBomb = {
 	doJudge: function(paiTypeJudger){
 		var paiArray = paiTypeJudger.sortedPaiArray, length = paiArray.length, paiType;
 		if(length == 1 && paiArray[0].length == 4){
-			paiType = 1;
-			CommonUtil.print(PaiTypeConstants.name[paiType]);
+			paiType = 'siZhang';
+			CommonUtil.print(PaiTypeConstants[paiType]);
 			paiTypeJudger.paiType = paiType;
 		}else{
 			paiTypeJudger.judger = Four11;
@@ -98,9 +111,9 @@ var Four11 = {
 	doJudge: function(paiTypeJudger){
 		var paiArray = paiTypeJudger.sortedPaiArray, length = paiArray.length, paiType;
 		if(length == 3 && paiArray[0].length == 4 && paiArray[1].length == 1 && paiArray[2].length == 1){
-			paiType = 2;
+			paiType = 'siDai2DanZhang';
 			paiTypeJudger.paiType = paiType;
-			CommonUtil.print(PaiTypeConstants.name[paiType]);
+			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = Four2;
 			paiTypeJudger.doJudge();
@@ -112,9 +125,9 @@ var Four2 = {
 	doJudge: function(paiTypeJudger){
 		var paiArray = paiTypeJudger.sortedPaiArray, length = paiArray.length, paiType;
 		if(length == 2 && paiArray[0].length == 4 && paiArray[1].length == 2){
-			paiType = 3;
+			paiType = 'siDai1Dui';
 			paiTypeJudger.paiType = paiType;
-			CommonUtil.print(PaiTypeConstants.name[paiType]);
+			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = Four22;
 			paiTypeJudger.doJudge();
@@ -126,9 +139,9 @@ var Four22 = {
 	doJudge: function(paiTypeJudger){
 		var paiArray = paiTypeJudger.sortedPaiArray, length = paiArray.length, paiType;
 		if(length == 3 && paiArray[0].length == 4 && paiArray[1].length == 2 && paiArray[2].length == 2){
-			paiType = 4;
+			paiType = 'siDai2Dui';
 			paiTypeJudger.paiType = paiType;
-			CommonUtil.print(PaiTypeConstants.name[paiType]);
+			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = SinglePai;
 			paiTypeJudger.doJudge();
@@ -142,9 +155,9 @@ var SinglePai = {
 			length = paiArray.length, paiType, 
 			start = paiArray[0];
 		if(length == 1 && start.length == 1){
-			paiType = 5;
+			paiType = 'danZhang';
 			paiTypeJudger.paiType = paiType;
-			CommonUtil.print(PaiTypeConstants.name[paiType]);
+			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = SingleDui;
 			paiTypeJudger.doJudge();
@@ -158,9 +171,9 @@ var SingleDui = {
 			length = paiArray.length, paiType, 
 			start = paiArray[0];
 		if(length == 1 && start.length == 2){
-			paiType = 6;
+			paiType = 'danDui';
 			paiTypeJudger.paiType = paiType;
-			CommonUtil.print(PaiTypeConstants.name[paiType]);
+			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = LianPai;
 			paiTypeJudger.doJudge();
@@ -174,9 +187,9 @@ var LianPai = {
 			length = paiArray.length, paiType, 
 			start = paiArray[0],  endIndex = length -1 ;
 		if(length >= 5 && (start.length == 1) && (endIndex != (start.cardSeq - paiArray[endIndex].cardSeq ) ) ){
-			paiType = 7;
+			paiType = 'lianPai';
 			paiTypeJudger.paiType = paiType;
-			CommonUtil.print(PaiTypeConstants.name[paiType]);
+			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = LianDui;
 			paiTypeJudger.doJudge();
@@ -189,9 +202,9 @@ var LianDui = {
 			length = paiArray.length, paiType, 
 			start = paiArray[0],  endIndex = length -1 ;
 		if(length >= 3 && (start.length == 2) && (endIndex == (start[0].cardSeq - paiArray[endIndex][0].cardSeq ) ) ){
-			paiType = 8;
+			paiType = 'lianDui';
 			paiTypeJudger.paiType = paiType;
-			CommonUtil.print(PaiTypeConstants.name[paiType]);
+			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = ThreeeX;
 			paiTypeJudger.doJudge();
@@ -207,15 +220,15 @@ var ThreeeX = {
 			if(start.length == 3){
 				switch(length){
 					case 1:{
-						paiType = 9;						
+						paiType = 'sanZhang';						
 						break;
 					}						
 					case 2:{
 						var daiLength = paiArray[1].length;
 						if(daiLength == 1){
-							paiType = 10;							
+							paiType = 'sanDai1';							
 						}else if(daiLength == 2){
-							paiType = 11;							
+							paiType = 'sanDaiDui';							
 						}						
 						break;
 					}					
@@ -225,7 +238,7 @@ var ThreeeX = {
 				paiTypeJudger.judger = FeiJi;
 				paiTypeJudger.doJudge();
 			}else{
-				CommonUtil.print(PaiTypeConstants.name[paiType]);
+				CommonUtil.print(PaiTypeConstants[paiType]);
 				paiTypeJudger.paiType = paiType;
 			}			
 		}
@@ -258,11 +271,11 @@ var FeiJi = {
 			}		
 			if(threeCount >= 2){
 				if(otherCount == 0){
-					paiType = 12;				
+					paiType = 'feiJi';				
 				}else if(otherCount == threeCount){
-					paiType = 13;				
+					paiType = 'feiJiDai1';				
 				}else if(otherCount == (threeCount + threeCount)){
-					paiType = 14;				
+					paiType = 'feiJiDaiDui';				
 				}
 			}
 		}else if(start.length == 4){
@@ -286,7 +299,7 @@ var FeiJi = {
 				}				
 			}	
 			if(fourCount != 1){
-				paiType = 13;
+				paiType = 'feiJiDai1';
 			}
 		}else{
 			paiType = -1;			
@@ -304,10 +317,16 @@ var FeiJi = {
 				
 			}
 		}else{
-			CommonUtil.print(PaiTypeConstants.name[paiType]);
+			CommonUtil.print(PaiTypeConstants[paiType]);
 			paiTypeJudger.paiType = paiType;
 		}		
 	}	
+}
+
+
+var  ChuPaiInfo = function(paiType, player){
+	this.paiType = paiType;
+	this.player = player;
 }
 
 var PaiInfo4ChaiPai = function(array){
@@ -607,6 +626,54 @@ Player.prototype.findAlonePaiBaseOnCardArray = function(){
 	
 }
 
+/*
+被动出牌
+*/
+Player.prototype.negativeChuPai = function(){
+	var paiType = ddz.chuPaiInfo.paiType;
+	var ret = this.doSimpleChaiPai();
+	switch(paiType){
+		case 'feiJiDaiDui':{
+		}
+		case 'feiJiDai1':{
+		}
+		case 'feiJi':{
+			
+		}
+		case 'sanDaiDui':{
+		}
+		case 'sanDai1':{
+		}
+		case 'sanZhang':{
+		}
+		case 'lianDui':{
+		}
+		case 'lianPai':{
+		}case 'danDui':{
+		}		
+		case 'danZhang':{
+		}
+		case 'siDai2Dui':{
+		}
+		case 'siDai1Dui':{
+		}
+		case 'siDai2DanZhang':{
+		}
+		case 'siZhang':{
+		}
+	}
+	
+	
+}
+
+/*
+主动出牌
+*/
+Player.prototype.positiveChuPai = function(){
+	this.doSimpleChaiPai();
+}
+
+
 Player.prototype.doSimpleChaiPai = function(){
 	var data = this.findAlonePaiBaseOnCardArray() || {},
 		lianPaiInfoArray = data.lianPaiInfoArray;
@@ -638,6 +705,7 @@ Player.prototype.doSimpleChaiPai = function(){
 			}
 			if(lianDui.length != 0)
 				ret.lianDuiArray.push(lianDui);
+		this.chaiPaiResult = ret;	
 	return ret;
 	
 }
@@ -946,7 +1014,10 @@ var Card = function(index){
 }
 
 
-var ddz = {};
+var ddz = {
+	playerArray:[],
+	diZhuIndex: 0
+};
 /*
  定义一个拥有54个元素的一维数，依次赋值为1------53， 随机54次，每次随机出一个数字，和第i个位置的数字交换
 */
@@ -1026,6 +1097,9 @@ ddz.initPlayers = function(){
 	CommonUtil.bubbleSort(player3.cardArray, player3.cardCmpFunction);
 	
 	this.player1 = player1, this.player2 = player2, this.player3 = player3;
+	this.playerArray.push(player1);
+	this.playerArray.push(player2);
+	this.playerArray.push(player3);
 	player1 = null, player2 = null, player3 = null;
 }
 
@@ -1077,6 +1151,18 @@ ddz.placeCards = function(){
 	this.player3.registeChupaiAction();
 }
 
+
+
+ddz.startGame = function(){
+	var diZhuIndex = this.diZhuIndex, 
+		playerArray = this.playerArray || [],
+		playerLength = playerArray.length,
+		curIndex = diZhuIndex;
+	for(var i = 0 ; i < playerLength; i ++){
+		curIndex = ( diZhuIndex + i ) % playerLength;
+		playerArray[curIndex].doSimpleChaiPai();
+	}
+}
 /*
 54个随机数生成算法
 */
