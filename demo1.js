@@ -48,7 +48,194 @@
 	},
 	
 	print: function(text){
-		//alert(text);
+		alert(text);
+	}
+}
+
+/*
+@param:	chaiPaiResult 
+	{
+		danZhangArray:danZhangArray,
+		danDuiArray:danDuiArray,
+		sanZhangArray:sanZhangArray,
+		validLianZiInfo:validLianZiInfo
+	}
+*/
+var PositiveChuPaiJudger = function(chaiPaiResult){
+		this.chaiPaiResult = chaiPaiResult || {};
+		this.judger = ChuFeiJi;
+}
+
+PositiveChuPaiJudger.prototype.doChuPaiJudge = function(){
+	this.judger.doChuPaiJudge(this);	
+}
+
+var ChuFeiJi = {
+	doChuPaiJudge: function(chuPaiJudger){
+		var chaiPaiResult = chuPaiJudger.chaiPaiResult;		
+		var validLianZiInfo = chaiPaiResult.validLianZiInfo, 
+			danZhangArray = chaiPaiResult.danZhangArray,
+			danDuiArray = chaiPaiResult.danDuiArray;
+		
+		var sameCount = validLianZiInfo.sameCount;
+		if(sameCount == 3){
+			var	lianZi = validLianZiInfo.lianZi,
+				lianXuCount = validLianZiInfo.lianXuCount, 
+				danZhangArrayLength = danZhangArray.length,
+				danDuiArrayLength = danDuiArray.length;
+			if(lianXuCount < danZhangArrayLength || lianXuCount < danDuiArrayLength){
+				var curPai;
+				for(var i = 0; i < lianXuCount; i ++){
+					curPai = lianZi[i];
+					curPai.array[0].mapImg.selected = true;
+					curPai.array[1].mapImg.selected = true;
+					curPai.array[2].mapImg.selected = true;
+					
+					curPai.array[0].dead = true;
+					curPai.array[1].dead = true;
+					curPai.array[2].dead = true;
+				}
+				if(lianXuCount < danZhangArrayLength){
+					for(var i = 0; i < lianXuCount; i ++){
+					curPai = danZhangArray[i];
+					curPai.array[0].mapImg.selected = true;						
+					curPai.array[0].dead = true;					
+				}
+				}else{
+					for(var i = 0; i < lianXuCount; i ++){
+					curPai = danDuiArray[i];
+					curPai.array[0].mapImg.selected = true;
+					curPai.array[1].mapImg.selected = true;				
+					
+					curPai.array[0].dead = true;
+					curPai.array[1].dead = true;					
+				}
+				}
+			}else {				
+				for(var i = 0; i < danZhangArrayLength; i ++){
+					curPai = lianZi[i];
+					curPai.array[0].mapImg.selected = true;
+					curPai.array[1].mapImg.selected = true;
+					curPai.array[2].mapImg.selected = true;
+					
+					curPai.array[0].dead = true;
+					curPai.array[1].dead = true;
+					curPai.array[2].dead = true;
+				}
+				
+				for(var i = 0; i < danZhangArrayLength; i ++){
+					curPai = danZhangArray[i];
+					curPai.array[0].mapImg.selected = true;						
+					curPai.array[0].dead = true;					
+				}
+			
+			}		
+		}else{
+			chuPaiJudger.judger = ChuSanZhang;
+			chuPaiJudger.doChuPaiJudge();
+		}		
+	}
+	
+}
+
+var ChuSanZhang = {
+	doChuPaiJudge: function(chuPaiJudger){
+		var chaiPaiResult = chuPaiJudger.chaiPaiResult;		
+		var sanZhangArray = chaiPaiResult.sanZhangArray, 
+			danZhangArray = chaiPaiResult.danZhangArray,
+			danDuiArray = chaiPaiResult.danDuiArray,
+			
+			danZhangArrayLength = danZhangArray.length,
+			danDuiArrayLength = danDuiArray.length;
+		if(sanZhangArray.length != 0){
+			var curPai = sanZhangArray[0];
+				curPai.array[0].mapImg.selected = true;
+				curPai.array[1].mapImg.selected = true;
+				curPai.array[2].mapImg.selected = true;
+						
+				curPai.array[0].dead = true;
+				curPai.array[1].dead = true;
+				curPai.array[2].dead = true;
+			if(danZhangArrayLength != 0){
+				curPai = danZhangArray[0];
+				curPai.array[0].mapImg.selected = true;						
+				curPai.array[0].dead = true;	
+			}else if(danDuiArrayLength != 0){
+				curPai = danDuiArray[0];
+				curPai.array[0].mapImg.selected = true;
+				curPai.array[1].mapImg.selected = true;				
+						
+				curPai.array[0].dead = true;
+				curPai.array[1].dead = true;	
+			}
+		}else{
+			chuPaiJudger.judger = ChuLianZi;
+			chuPaiJudger.doChuPaiJudge();
+		}
+		
+	}
+}
+
+var ChuLianZi = {
+	doChuPaiJudge : function(chuPaiJudger){
+		var chaiPaiResult = chuPaiJudger.chaiPaiResult,
+			validLianZiInfo = chaiPaiResult.validLianZiInfo,		
+			sameCount = validLianZiInfo.sameCount,
+			lianXuCount = validLianZiInfo.lianXuCount;
+			lianZi = validLianZiInfo.lianZi;
+		if(lianZi.length != 0){
+			var curPaiArray, curPaiArray;
+			for(var i = 0; i < lianXuCount; i ++){
+				curPaiArray = lianZi[i].array;
+				for(var j = 0; j < sameCount; j++){
+					curPaiArray[j].dead = true;
+					curPaiArray[j].mapImg.selected  = true;
+				}			
+			}
+		}else{
+			chuPaiJudger.judger = ChuDanZhang;
+			chuPaiJudger.doChuPaiJudge();
+		}		
+	}
+}
+
+var ChuDanZhang = {
+	doChuPaiJudge : function(chuPaiJudger){
+		var chaiPaiResult = chuPaiJudger.chaiPaiResult,
+			danZhangArray = chaiPaiResult.danZhangArray;
+			
+		if(danZhangArray.length != 0){
+			var card = danZhangArray[0].array[0];
+			card.dead = true;
+			card.mapImg.selected = true;
+		}else{
+			chuPaiJudger.judger = ChuDanDui;
+			chuPaiJudger.doChuPaiJudge();
+		}
+	}
+}
+
+var ChuDanDui = {
+	doChuPaiJudge : function(chuPaiJudger){
+		var chaiPaiResult = chuPaiJudger.chaiPaiResult,
+			danDuiArray = chaiPaiResult.danDuiArray;
+		if(danDuiArray.length != 0){
+			var card = danDuiArray[0].array[0];
+			card.dead = true;
+			card.mapImg.selected = true;
+			
+			card = danDuiArray[0].array[1];
+			card.dead = true;
+			card.mapImg.selected = true;
+		}else{
+			chuPaiJudger.judger = ChuZhaDan;
+			chuPaiJudger.doChuPaiJudge();
+		}		
+	}
+}
+
+var ChuZhaDan = {
+	doChuPaiJudge : function(chuPaiJudger){
 	}
 }
 
@@ -353,13 +540,17 @@ var LianPaiInfo = function(lianPai, minCards){
 /*
 符合规则的连牌信息
 */
-var ValidLianPaiInfo = function(startCardSeq, sameCount, lianXuCount){
-	this.startCardSeq = startCardSeq;
+var ValidLianPaiInfo = function(lianZi, sameCount){
+	lianZi = lianZi || [];
+	this.lianZi = lianZi;
+	this.lianXuCount = lianZi.length;
+	this.startCardSeq = lianZi[0].cardSeq;
 	this.sameCount = sameCount;
-	this.lianXuCount = lianXuCount;
+	
 }
 
 var Player = function(opt){
+	this.isDiZhu = opt.isDiZhu || false;
 	opt = opt || {};
 	this.cardArray = opt.cardArray;	
 	this.areaObj = CommonUtil.$id(opt.areaId);
@@ -375,13 +566,16 @@ Player.prototype.registeSelectCardAction = function(){
 		curCard = this.cardArray[i];		
 		curImg = cardImgs[i];		
 		curImg.mapCard = this.cardArray[parseInt(curImg.getAttribute('index'))];
-		curImg.mapCard.mapImg = curImg;
-		curImg.addEventListener('click', function(){
+		curImg.mapCard.mapImg = curImg;		
+		
+		this.isDiZhu && curImg.addEventListener('click', function(){
 			var s = this.style, selectOffset = 10, top;
 			if(this.selected){
+				this.mapCard.dead = false;
 				top = parseFloat(s.top) + selectOffset + 'px';
 				this.selected = false;
 			}else{
+				this.mapCard.dead = true;
 				this.selected = true;
 				top = parseFloat(s.top) - selectOffset + 'px';
 			}
@@ -390,13 +584,17 @@ Player.prototype.registeSelectCardAction = function(){
 	}
 }
 
+
+
 Player.prototype.registeChupaiAction = function(){
 	var that = this,  chupaiBtn = CommonUtil.$id(this.chupaiId);	
 	chupaiBtn && chupaiBtn.addEventListener('click', function(){		
 		// that.judgeChupaiType();		
-		// ddz.placeCards();		
+		 // ddz.placeCards();		
 		p = ddz.player3;
 		p.positiveChuPai();
+		
+		ddz.placeCards();
 		//console.log(p.findAlonePai());
 		
 	});
@@ -421,10 +619,10 @@ Player.prototype.getSortedPaiInfo = function(cardArray, cmpFunction){
 	var curCard = cards[0], curSeq = curCard.cardSeq;
 	var cardCount = cards.length, mapCardArray = [curCard], paiArray = [mapCardArray];	
 	
-	curCard.dead = true;
+	//curCard.dead = true;
 	for(var i = 1; i < cardCount; i++){
 		curCard = cards[i];
-		curCard.dead = true;
+		//curCard.dead = true;
 		if(curCard.cardSeq == curSeq){			
 			mapCardArray.push(curCard);
 		}else{	
@@ -444,11 +642,12 @@ Player.prototype.getSortedPaiInfo = function(cardArray, cmpFunction){
 	
 }
 Player.prototype.judgeChupaiType = function(){
-	var selectCards = this.getSelectedCards();
+	var selectCards = this.getSelectedCards() || [];
+	if(selectCards.length == 0) return;
 	var sortedInfo = this.getSortedPaiInfo(selectCards, this.chupaiCmpFunction), 
 		sortedArray = sortedInfo.sortedArray;
 	var judger = new PaiTypeJudger(sortedArray);
-	return judger.doJudge(sortedArray);
+	return judger.doJudge();
 }
 
 
@@ -694,7 +893,9 @@ Player.prototype.negativeChuPai = function(){
 主动出牌
 */
 Player.prototype.positiveChuPai = function(){
-	this.doSimpleChaiPai();
+	var chaiPaiResult = this.doSimpleChaiPai();
+	var  chaiPaiResult = new PositiveChuPaiJudger(chaiPaiResult);
+	chaiPaiResult.doChuPaiJudge();
 }
 
 
@@ -719,10 +920,15 @@ Player.prototype.doSimpleChaiPai = function(){
 	var danDuiArray = this.combineDanPaiInfo(duiInfoOrigin.danPaiArray, duiInfoInLianPai.danPaiArray);
 	//var duiLianArray = this.combineLianPaiInfo(duiInfoOrigin.lianPaiArray, duiInfoInLianPai.lianPaiArray);
 	var sanZhangArray = this.combineDanPaiInfo(threeInfoOrigin.danPaiArray, threeInfoInLianPai.danPaiArray);
-	//var feiJiArray = this.combineLianPaiInfo(threeInfoOrigin.lianPaiArray, threeInfoInLianPai.lianPaiArray);
-	
+	//var feiJiArray = this.combineLianPaiInfo(threeInfoOrigin.lianPaiArray, threeInfoInLianPai.lianPaiArray);	
 	
 	var bomb = data.aloneBomb;
+	return {
+		danZhangArray:danZhangArray,
+		danDuiArray:danDuiArray,
+		sanZhangArray:sanZhangArray,
+		validLianZiInfo:validLianZiInfo
+	}
 }
 /*
 
@@ -939,7 +1145,7 @@ Player.prototype.extractLianZiFromlianPaiInfoArray = function(lianPaiInfo){
 	
 	var startLianPai = lianZi[0], validLianZiInfo = [];
 	if(startLianPai){
-		validLianZiInfo = new ValidLianPaiInfo(startLianPai.cardSeq, minCards, lianZi.length);
+		validLianZiInfo = new ValidLianPaiInfo(lianZi, minCards);
 	}
 	
 	
@@ -1127,13 +1333,16 @@ ddz.assignCards = function(){
 
 ddz.initPlayers = function(){
 	var player1 = new Player({
-					cardArray:ddz.player1_card					
+					cardArray:ddz.player1_card,
+					areaId:'player1_area'
 				});	
 	var player2 = new Player({
-					cardArray:ddz.player2_card					
+					cardArray:ddz.player2_card,
+					areaId:'player2_area'					
 				});	
 	
 	var player3 = new Player({
+					isDiZhu : true,
 					cardArray:ddz.player3_card,
 					chupaiId:'chupai',
 					areaId:'player3_area'
@@ -1194,10 +1403,11 @@ ddz.placeCards = function(){
 	tStr = CommonUtil.format.call(btnTemplate, top, left);
 	player_area.innerHTML = htmls.join('')+ tStr;	
 	
+	this.player1.registeSelectCardAction();
+	this.player2.registeSelectCardAction();
 	this.player3.registeSelectCardAction();
 	this.player3.registeChupaiAction();
 }
-
 
 
 ddz.startGame = function(){
