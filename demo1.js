@@ -350,6 +350,14 @@ var LianPaiInfo = function(lianPai, minCards){
 	this.minCards = minCards;
 }
 
+/*
+符合规则的连牌信息
+*/
+var ValidLianPaiInfo = function(startCardSeq, sameCount, lianXuCount){
+	this.startCardSeq = startCardSeq;
+	this.sameCount = sameCount;
+	this.lianXuCount = lianXuCount;
+}
 
 var Player = function(opt){
 	opt = opt || {};
@@ -388,7 +396,7 @@ Player.prototype.registeChupaiAction = function(){
 		// that.judgeChupaiType();		
 		// ddz.placeCards();		
 		p = ddz.player3;
-		p.doSimpleChaiPai();
+		p.positiveChuPai();
 		//console.log(p.findAlonePai());
 		
 	});
@@ -698,34 +706,54 @@ Player.prototype.doSimpleChaiPai = function(){
 	
 	var ret = this.extractLianZiFromlianPaiInfoArray(lianPaiInfoArray[0]);
 	
-	var aloneBomb = data.aloneBomb,
-		lianDuiArray = data.lianDuiArray[0] || [],		
-		oneArray = data.oneArray,
-		twoArray = data.twoArray,
-		threeArray = data.threeArray;	
-		for(var p = 0, q = oneArray.length; p < q; p++){
-				ret.danPai.push(oneArray[p].cardSeq);
-			}
-			
-			for(var p = 0, q = twoArray.length; p < q; p++){
-				ret.danDui.push(twoArray[p].cardSeq);
-			}
-			
-			for(var p = 0, q = threeArray.length; p < q; p++){
-				ret.sanZhang.push(threeArray[p].cardSeq);
-			}
-			
-			var lianDui = [];
-			for(var p = 0, q = lianDuiArray.length; p < q; p++){
-				lianDui.push(lianDuiArray[p].cardSeq);
-			}
-			if(lianDui.length != 0)
-				ret.lianDuiArray.push(lianDui);
-		this.chaiPaiResult = ret;	
-	return ret;
+	var oneArrayOrigin = data.oneArray ,
+		duiInfoOrigin = data.duiInfo,
+		threeInfoOrigin = data.threeInfo,
+		
+		validLianZiInfo = ret.validLianZiInfo || {},
+		oneArrayInLianPai = ret.oneArray,
+		duiInfoInLianPai = ret.duiInfo,
+		threeInfoInLianPai = ret.threeInfo;
+		
+	var danZhangArray = this.combineDanPaiInfo(oneArrayOrigin, oneArrayInLianPai);
+	var danDuiArray = this.combineDanPaiInfo(duiInfoOrigin.danPaiArray, duiInfoInLianPai.danPaiArray);
+	//var duiLianArray = this.combineLianPaiInfo(duiInfoOrigin.lianPaiArray, duiInfoInLianPai.lianPaiArray);
+	var sanZhangArray = this.combineDanPaiInfo(threeInfoOrigin.danPaiArray, threeInfoInLianPai.danPaiArray);
+	//var feiJiArray = this.combineLianPaiInfo(threeInfoOrigin.lianPaiArray, threeInfoInLianPai.lianPaiArray);
 	
+	
+	var bomb = data.aloneBomb;
 }
+/*
 
+*/
+Player.prototype.combineDanPaiInfo = function(danPaiArray1, danPaiArray2){
+	var danPaiArray1 = danPaiArray1 || [], danPaiArray2 = danPaiArray2 || [];
+	var size = danPaiArray1.length,	danPaiArray = [];
+	for(var p = 0; p < size; p++){
+		danPaiArray.push(danPaiArray1[p]);
+	}
+	size = danPaiArray2.length;
+	for(var p = 0; p < size; p++){
+		danPaiArray.push(danPaiArray2[p]);	
+	}
+	return danPaiArray;
+}
+/*
+Player.prototype.combineLianPaiInfo = function(lianPaiArray1, lianPaiArray1){
+	var lianPaiArray1 = lianPaiArray1 || [], lianPaiArray2 = lianPaiArray2 ||[];
+	
+	var validLianPaiInfoArray = [] ,curLianPai =  lianPaiArray1[0];
+	if(curLianPai){
+		validLianPaiInfoArray.push(new ValidLianPaiInfo(curLianPai.cardSeq, lianPaiArray1.length));
+	}
+	curLianPai =  lianPaiArray2[0];
+	if(curLianPai){
+		validLianPaiInfoArray.push(new ValidLianPaiInfo(curLianPai.cardSeq, lianPaiArray2.length));
+	}
+		
+	return validLianPaiInfoArray;
+}*/
 
 Player.prototype.doChaiPai = function(){
 	var data = this.findAlonePaiBaseOnCardArray() || {},
@@ -886,25 +914,21 @@ Player.prototype.extractChaiPaiResult = function(){
 Player.prototype.extractLianZiFromlianPaiInfoArray = function(lianPaiInfo){
 	lianPaiInfo = lianPaiInfo || {};
 	var lianPai = lianPaiInfo.lianPai, minCards = lianPaiInfo.minCards, curPaiInfo, remainCards = 0;
-	var oneArray = [], twoArray = [], threeArray = [], lianZi = [];//肯能是单连，也可能是连对,还有可能是飞机
-	var lianToUse = lianZi;
-	if(minCards == 2){
-		lianToUse = lianDui;
-	}
+	var oneArray = [], twoArray = [], threeArray = [], lianZi = [];//肯能是单连，也可能是连对,还有可能是飞机	
 	
 	for(var i = 0 , size = lianPai.length; i < size; i++){
 		curPaiInfo = lianPai[i];
 		remainCards = curPaiInfo.array.length - minCards;
-		lianToUse.push(curPaiInfo.cardSeq);
+		lianZi.push(curPaiInfo);
 		switch(remainCards){			
 			case 1:{
-				oneArray.push(curPaiInfo.cardSeq);break;
+				oneArray.push(curPaiInfo);break;
 			}
 			case 2:{
-				twoArray.push(curPaiInfo.cardSeq);break;
+				twoArray.push(curPaiInfo);break;
 			}
 			case 3:{
-				threeArray.push(curPaiInfo.cardSeq);break;
+				threeArray.push(curPaiInfo);break;
 			}
 		}
 	}
@@ -913,11 +937,17 @@ Player.prototype.extractLianZiFromlianPaiInfoArray = function(lianPaiInfo){
 	
 	var threeInfo = this.extractThreeInfoFromThreeArray(threeArray);	
 	
+	var startLianPai = lianZi[0], validLianZiInfo = [];
+	if(startLianPai){
+		validLianZiInfo = new ValidLianPaiInfo(startLianPai.cardSeq, minCards, lianZi.length);
+	}
+	
+	
 	return {
 		oneArray:oneArray,
 		duiInfo:duiInfo,
 		threeInfo:threeInfo,
-		lianZi:lianZi	
+		validLianZiInfo:validLianZiInfo
 	};	
 }
 
