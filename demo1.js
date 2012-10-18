@@ -73,11 +73,11 @@ PositiveChuPaiJudger.prototype.doChuPaiJudge = function(){
 var ChuFeiJi = {
 	doChuPaiJudge: function(chuPaiJudger){
 		var chaiPaiResult = chuPaiJudger.chaiPaiResult;		
-		var validLianZiInfo = chaiPaiResult.validLianZiInfo, 
+		var validLianZiInfo = chaiPaiResult.validLianZiInfo || {}, 
 			danZhangArray = chaiPaiResult.danZhangArray,
 			danDuiArray = chaiPaiResult.danDuiArray;
 		
-		var sameCount = validLianZiInfo.sameCount;
+		var sameCount = validLianZiInfo.sameCount || 0;
 		if(sameCount == 3){
 			var	lianZi = validLianZiInfo.lianZi,
 				lianXuCount = validLianZiInfo.lianXuCount, 
@@ -99,7 +99,8 @@ var ChuFeiJi = {
 					for(var i = 0; i < lianXuCount; i ++){
 					curPai = danZhangArray[i];
 					curPai.array[0].mapImg.selected = true;						
-					curPai.array[0].dead = true;					
+					curPai.array[0].dead = true;	
+					chuPaiJudger.paiType = 'feiJiDai1';
 				}
 				}else{
 					for(var i = 0; i < lianXuCount; i ++){
@@ -108,7 +109,8 @@ var ChuFeiJi = {
 					curPai.array[1].mapImg.selected = true;				
 					
 					curPai.array[0].dead = true;
-					curPai.array[1].dead = true;					
+					curPai.array[1].dead = true;	
+					chuPaiJudger.paiType = 'feiJiDaiDui'
 				}
 				}
 			}else {				
@@ -128,8 +130,11 @@ var ChuFeiJi = {
 					curPai.array[0].mapImg.selected = true;						
 					curPai.array[0].dead = true;					
 				}
+				
+				chuPaiJudger.paiType = 'feiJiDai1';
 			
-			}		
+			}
+			CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);			
 		}else{
 			chuPaiJudger.judger = ChuSanZhang;
 			chuPaiJudger.doChuPaiJudge();
@@ -159,15 +164,20 @@ var ChuSanZhang = {
 			if(danZhangArrayLength != 0){
 				curPai = danZhangArray[0];
 				curPai.array[0].mapImg.selected = true;						
-				curPai.array[0].dead = true;	
+				curPai.array[0].dead = true;
+				chuPaiJudger.paiType = 'sanDai1';
 			}else if(danDuiArrayLength != 0){
 				curPai = danDuiArray[0];
 				curPai.array[0].mapImg.selected = true;
 				curPai.array[1].mapImg.selected = true;				
 						
 				curPai.array[0].dead = true;
-				curPai.array[1].dead = true;	
+				curPai.array[1].dead = true;
+				chuPaiJudger.paiType = 'sanDaiDui';
+			}else{
+				chuPaiJudger.paiType = 'sanZhang';
 			}
+			CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
 		}else{
 			chuPaiJudger.judger = ChuLianZi;
 			chuPaiJudger.doChuPaiJudge();
@@ -192,6 +202,13 @@ var ChuLianZi = {
 					curPaiArray[j].mapImg.selected  = true;
 				}			
 			}
+			switch(sameCount){
+				case 1:
+					chuPaiJudger.paiType = 'lianPai';break;
+				case 2:
+					chuPaiJudger.paiType = 'lianDui';break;
+			}
+			CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
 		}else{
 			chuPaiJudger.judger = ChuDanZhang;
 			chuPaiJudger.doChuPaiJudge();
@@ -208,6 +225,8 @@ var ChuDanZhang = {
 			var card = danZhangArray[0].array[0];
 			card.dead = true;
 			card.mapImg.selected = true;
+			chuPaiJudger.paiType = 'danZhang';
+			CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
 		}else{
 			chuPaiJudger.judger = ChuDanDui;
 			chuPaiJudger.doChuPaiJudge();
@@ -227,15 +246,86 @@ var ChuDanDui = {
 			card = danDuiArray[0].array[1];
 			card.dead = true;
 			card.mapImg.selected = true;
+			
+			chuPaiJudger.paiType = 'danDui';
+			CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
 		}else{
-			chuPaiJudger.judger = ChuZhaDan;
+			chuPaiJudger.judger = ChuSiZhangDaiX;
 			chuPaiJudger.doChuPaiJudge();
 		}		
 	}
 }
 
+var ChuSiZhangDaiX = {
+	doChuPaiJudge : function(chuPaiJudger){
+		var chaiPaiResult = chuPaiJudger.chaiPaiResult,
+			danZhangArray = chaiPaiResult.danZhangArray,
+			danDuiArray = chaiPaiResult.danDuiArray;
+			bomb = chaiPaiResult.bomb,
+		bombLength = bomb.length;
+		if(bombLength != 0){
+			zhaDan = bomb.pop();
+			if(zhaDan.length == 2){
+				chuPaiJudger.judger = ChuZhaDan;
+				chuPaiJudger.doChuPaiJudge();
+			}else{
+				card = zhaDan[0], card.dead = true,	card.mapImg.selected = true;
+				card = zhaDan[1], card.dead = true,	card.mapImg.selected = true;
+				card = zhaDan[2], card.dead = true,	card.mapImg.selected = true;
+				card = zhaDan[3], card.dead = true,	card.mapImg.selected = true;	
+				
+				var curPai1 = danZhangArray.pop(), curPai2 = danZhangArray.pop();
+				if(curPai1 && curPai2){
+					card = curPai1[0], card.dead = true,	card.mapImg.selected = true;
+					card = curPai2[0], card.dead = true,	card.mapImg.selected = true;
+					chuPaiJudger.paiType = 'siDai2DanZhang';
+					CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
+				}else{
+					curPai1 = danDuiArray.pop(), curPai2 = danDuiArray.pop();
+					if(curPai1 && curPai2){
+						card = curPai1[0], card.dead = true,	card.mapImg.selected = true;
+						card = curPai1[1], card.dead = true,	card.mapImg.selected = true;
+						
+						card = curPai2[0], card.dead = true,	card.mapImg.selected = true;
+						card = curPai2[1], card.dead = true,	card.mapImg.selected = true;
+						chuPaiJudger.paiType = 'siDai2Dui';
+						CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
+					}else if(curPai1){
+						card = curPai1[0], card.dead = true,	card.mapImg.selected = true;
+						card = curPai1[1], card.dead = true,	card.mapImg.selected = true;
+						chuPaiJudger.paiType = 'siDai1Dui';
+						CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
+					}else{
+						chuPaiJudger.judger = ChuZhaDan;
+						chuPaiJudger.doChuPaiJudge();
+					}
+				}
+			}
+		}
+		
+	}
+}
 var ChuZhaDan = {
 	doChuPaiJudge : function(chuPaiJudger){
+		var chaiPaiResult = chuPaiJudger.chaiPaiResult,			
+			bomb = chaiPaiResult.bomb,
+			zhaDan = bomb.pop(), card;
+		if(zhaDan){
+			if(zhaDan.length == 2){
+				chuPaiJudger.paiType = 'shuangWang';
+				CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
+				card = zhaDan[0], card.dead = true,	card.mapImg.selected = true;
+				card = zhaDan[1], card.dead = true,	card.mapImg.selected = true;
+			}else{
+				chuPaiJudger.paiType = 'siZhang';
+				CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
+				card = zhaDan[0], card.dead = true,	card.mapImg.selected = true;
+				card = zhaDan[1], card.dead = true,	card.mapImg.selected = true;
+				card = zhaDan[2], card.dead = true,	card.mapImg.selected = true;
+				card = zhaDan[3], card.dead = true,	card.mapImg.selected = true;				
+			}
+		}
+		
 	}
 }
 
@@ -553,6 +643,8 @@ var Player = function(opt){
 	this.isDiZhu = opt.isDiZhu || false;
 	opt = opt || {};
 	this.cardArray = opt.cardArray;	
+	this.sortedPaiInfoArray = null;
+	this.initSortedPaiInfoArray();
 	this.areaObj = CommonUtil.$id(opt.areaId);
 	this.chupaiId = opt.chupaiId;
 	this.selectPaiArray = [];
@@ -839,6 +931,12 @@ Player.prototype.extractThreeInfoFromThreeArray = function(threeArray){
 	return this.commonExtractLianPaiFromArray(threeArray, 2);
 }
 
+
+Player.prototype.initSortedPaiInfoArray = function(){
+	var paiInfo =  this.getSortedPaiInfo(this.cardArray, this.findPaiCmpFunction) || {},
+		paiInfoArray = paiInfo.paiInfoArray || [];
+	this.sortedPaiInfoArray = 	paiInfoArray;
+}
 /*
  找出一副牌中只能组成一种牌型的牌（3条，对子，单张为一种牌型。）意思就是有一张牌和剩余牌中的任何一张牌没有联系。
  */
@@ -899,19 +997,26 @@ Player.prototype.positiveChuPai = function(){
 }
 
 
-Player.prototype.doSimpleChaiPai = function(){
+Player.prototype.doSimpleChaiPai = function(){	
 	var data = this.findAlonePaiBaseOnCardArray() || {},
 		lianPaiInfoArray = data.lianPaiInfoArray;
 	
-	if(lianPaiInfoArray.length == 0) return;
-	
-	var ret = this.extractLianZiFromlianPaiInfoArray(lianPaiInfoArray[0]);
-	
 	var oneArrayOrigin = data.oneArray ,
 		duiInfoOrigin = data.duiInfo,
-		threeInfoOrigin = data.threeInfo,
+		threeInfoOrigin = data.threeInfo;
 		
-		validLianZiInfo = ret.validLianZiInfo || {},
+	if(lianPaiInfoArray.length == 0){
+		return {
+			danZhangArray:oneArrayOrigin,
+			danDuiArray:duiInfoOrigin.danPaiArray,
+			sanZhangArray:threeInfoOrigin.danPaiArray,
+			bomb : data.aloneBomb,
+			validLianZiInfo:{}
+		}
+	};
+	
+	var ret = this.extractLianZiFromlianPaiInfoArray(lianPaiInfoArray[0]);		
+	var	validLianZiInfo = ret.validLianZiInfo || {},
 		oneArrayInLianPai = ret.oneArray,
 		duiInfoInLianPai = ret.duiInfo,
 		threeInfoInLianPai = ret.threeInfo;
@@ -920,14 +1025,14 @@ Player.prototype.doSimpleChaiPai = function(){
 	var danDuiArray = this.combineDanPaiInfo(duiInfoOrigin.danPaiArray, duiInfoInLianPai.danPaiArray);
 	//var duiLianArray = this.combineLianPaiInfo(duiInfoOrigin.lianPaiArray, duiInfoInLianPai.lianPaiArray);
 	var sanZhangArray = this.combineDanPaiInfo(threeInfoOrigin.danPaiArray, threeInfoInLianPai.danPaiArray);
-	//var feiJiArray = this.combineLianPaiInfo(threeInfoOrigin.lianPaiArray, threeInfoInLianPai.lianPaiArray);	
+	//var feiJiArray = this.combineLianPaiInfo(threeInfoOrigin.lianPaiArray, threeInfoInLianPai.lianPaiArray);		
 	
-	var bomb = data.aloneBomb;
 	return {
 		danZhangArray:danZhangArray,
 		danDuiArray:danDuiArray,
 		sanZhangArray:sanZhangArray,
-		validLianZiInfo:validLianZiInfo
+		validLianZiInfo:validLianZiInfo,
+		bomb : data.aloneBomb
 	}
 }
 /*
