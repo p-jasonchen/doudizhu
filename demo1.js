@@ -276,7 +276,7 @@ var ChuSiZhangDaiX = {
 			bomb = chaiPaiResult.bomb,
 		bombLength = bomb.length;
 		if(bombLength != 0){
-			zhaDan = bomb.pop();
+			zhaDan = bomb[bombLength -1];
 			if(zhaDan.length == 2){
 				chuPaiJudger.judger = ChuZhaDan;
 				chuPaiJudger.doChuPaiJudge();
@@ -326,8 +326,8 @@ var ChuZhaDan = {
 			if(zhaDan.length == 2){
 				chuPaiJudger.paiType = 'shuangWang';
 				CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
-				card = zhaDan[0], card.dead = true,	card.mapImg.selected = true;
-				card = zhaDan[1], card.dead = true,	card.mapImg.selected = true;
+				card = zhaDan[0].array[0], card.dead = true,	card.mapImg.selected = true;
+				card = zhaDan[1].array[0], card.dead = true,	card.mapImg.selected = true;
 			}else{
 				chuPaiJudger.paiType = 'siZhang';
 				CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
@@ -696,11 +696,10 @@ Player.prototype.registeChupaiAction = function(){
 	var that = this,  chupaiBtn = CommonUtil.$id(this.chupaiId);	
 	chupaiBtn && chupaiBtn.addEventListener('click', function(){		
 		// that.judgeChupaiType();		
-		 // ddz.placeCards();		
-		p = ddz.player3;
-		p.positiveChuPai();
+		 // ddz.placeCards();	
 		
-		ddz.placeCards();
+		that.positiveChuPai();		
+		that.placeCards();
 		//console.log(p.findAlonePai());
 		
 	});
@@ -760,24 +759,28 @@ Player.prototype.judgeChupaiType = function(){
 Player.prototype.findAlonePaiBasedOnSortedPaiInfoArray = function(sortedPaiInfoArray){
 	var array = sortedPaiInfoArray || [];
 	var i = 0, size = array.length;
-	if(size <= 2) return ;
 	
 	//minCardsInlianPaiElem用于记录连牌中牌数最小的那个值，以便后来从lianPaiInfoArray中提取符合规则的连牌或连对。
-	var aloneArray = [], lianPaiInfoArray = [], aloneBomb = [], minCardsInlianPaiElem = 0;
+	var aloneArray = [], lianPaiInfoArray = [], aloneBomb = [], minCardsInlianPaiElem = 0;	
 	var curPaiInfo = array[0], pai0Seq = curPaiInfo.cardSeq;
-	//大王
-	if(pai0Seq == 15){
-		i++;
-		if(array[1].cardSeq == 14){
+	
+	if(size == 1){
+			aloneArray.push(curPaiInfo);
+	}else {
+		//大王
+		if(pai0Seq == 15){
 			i++;
-			aloneBomb.push([ array[0], array[1] ]);
-		}else{
-			aloneArray.push(curPaiInfo);			
-		}
-	}else if(pai0Seq == 14){
-		i++;
-		aloneArray.push(curPaiInfo);
-	}	
+			if(array[1].cardSeq == 14){
+				i++;
+				aloneBomb.push([ array[0], array[1] ]);
+			}else{
+				aloneArray.push(curPaiInfo);			
+			}
+		}else if(pai0Seq == 14){
+			i++;
+			aloneArray.push(curPaiInfo);
+		}	
+	}
 	if(i < size){
 		var lianxuCount = 0,curPaiInfo = null, preSeq = -1, curSeq,tmp = [];
 		for(; i < size ; i++){
@@ -1032,6 +1035,9 @@ Player.prototype.positiveChuPai = function(){
 	var  chaiPaiResult = new PositiveChuPaiJudger(chaiPaiResult);
 	chaiPaiResult.doChuPaiJudge();
 	this.updateSortedPaiInfoArray();
+	if(this.sortedPaiInfoArray.length == 0){
+		CommonUtil.print('一方牌数为0，游戏结束');
+	}
 }
 
 Player.prototype.placeLianPai2LianInfoArray = function(lianInfoArray, lianPaiArray, sameCount){
@@ -1396,6 +1402,35 @@ Player.prototype.chupaiCmpFunction = function(pai1, pai2){
 	}
 }
 
+Player.prototype.placeCards = function(){
+	var top = (this.top || ddz.top);
+	var  xOffset = 20, yOffset = 100,  left = 0,
+		tStr, htmls = [],template = "<img class='card_img' index={3} src='{0}'style='position:absolute;top:{1}px;left:{2}px'>";
+		
+	var curPlayer = this.cardArray;	
+		
+	for(var i = 0, j = curPlayer.length; i < j; i++){
+		if(!curPlayer[i].dead){
+			tStr = CommonUtil.format.call(template,curPlayer[i].cardSrc, top, left, i);
+			htmls.push(tStr);
+			left+= xOffset;	
+		}		
+	}
+	var cardsHtml = htmls.join('');
+	ddz.top += 100;
+	if(this.isDiZhu){
+		left = left - xOffset + 60;
+		var btnTemplate = "<button id='chupai' style='position:absolute;top:{0}px;left:{1}px'>出牌</button>";
+		tStr = CommonUtil.format.call(btnTemplate, top, left);
+		cardsHtml += tStr;
+	}
+	this.areaObj.innerHTML = cardsHtml;
+	this.top = top;
+	
+	this.registeSelectCardAction();
+	this.registeChupaiAction();
+}
+
 /*
 cardType 指明牌的类型
 cardSeq 指明某种牌型内的序号
@@ -1456,6 +1491,7 @@ var Card = function(index){
 
 
 var ddz = {
+	top:20,	
 	playerArray:[],
 	diZhuIndex: 0
 };
@@ -1521,22 +1557,27 @@ ddz.assignCards = function(){
 
 ddz.initPlayers = function(){
 	var player1 = new Player({
+	
 					cardArray:ddz.player1_card,
 					areaId:'player1_area'
 				});	
 	var player2 = new Player({
+				
 					cardArray:ddz.player2_card,
 					areaId:'player2_area'					
 				});	
 	
 	var player3 = new Player({
 					isDiZhu : true,
-					cardArray:ddz.player3_card,
-					chupaiId:'chupai',
+					chupaiId:'chupai',	
+					cardArray:ddz.player3_card,					
 					areaId:'player3_area'
 				});	
 	
-
+	ddz.diZhu = player2;
+	player1.placeCards();
+	player2.placeCards();
+	player3.placeCards();
 	
 	this.player1 = player1, this.player2 = player2, this.player3 = player3;
 	this.playerArray.push(player1);
