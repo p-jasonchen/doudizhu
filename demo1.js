@@ -189,7 +189,7 @@ var ChuSanZhang = {
 var ChuLianZi = {
 	doChuPaiJudge : function(chuPaiJudger){
 		var chaiPaiResult = chuPaiJudger.chaiPaiResult,
-			validLianZiInfo = chaiPaiResult.validLianZiInfo,		
+			validLianZiInfo = this.selectNiceLianZiInfo(chaiPaiResult),
 			sameCount = validLianZiInfo.sameCount,
 			lianXuCount = validLianZiInfo.lianXuCount;
 			lianZi = validLianZiInfo.lianZi;
@@ -213,7 +213,19 @@ var ChuLianZi = {
 			chuPaiJudger.judger = ChuDanZhang;
 			chuPaiJudger.doChuPaiJudge();
 		}		
+	},
+	
+	selectNiceLianZiInfo : function(chaiPaiResult){
+		var danLianInfoArray =chaiPaiResult.danLianInfoArray,
+			duiLianInfoArray = chaiPaiResult.duiLianInfoArray,
+			feiJiInfoArray = chaiPaiResult.feiJiInfoArray;
+		return danLianInfoArray.shift() 
+				|| duiLianInfoArray.shift() 
+				|| feiJiInfoArray.shift() 
+				|| {lianZi : [], sameCount : 0};
+		
 	}
+	
 }
 
 var ChuDanZhang = {
@@ -631,9 +643,11 @@ var LianPaiInfo = function(lianPai, minCards){
 符合规则的连牌信息
 */
 var ValidLianPaiInfo = function(lianZi, sameCount){
-	lianZi = lianZi || [];
+	lianZi = lianZi || [];	
 	this.lianZi = lianZi;
 	this.lianXuCount = lianZi.length;
+	if(this.lianXuCount == 0) 
+		throw 'lianZi length is 0, illegal lian pai info';
 	this.startCardSeq = lianZi[0].cardSeq;
 	this.sameCount = sameCount;
 	
@@ -933,9 +947,32 @@ Player.prototype.extractThreeInfoFromThreeArray = function(threeArray){
 
 
 Player.prototype.initSortedPaiInfoArray = function(){
+	CommonUtil.bubbleSort(this.cardArray, this.cardCmpFunction);
 	var paiInfo =  this.getSortedPaiInfo(this.cardArray, this.findPaiCmpFunction) || {},
 		paiInfoArray = paiInfo.paiInfoArray || [];
 	this.sortedPaiInfoArray = 	paiInfoArray;
+}
+
+Player.prototype.updateSortedPaiInfoArray = function(){
+	var curArray = this.sortedPaiInfoArray, curArrayInPaiInfo, firstCard;
+	for(var i = 0, size = curArray.length; i < size; i++){
+		curArrayInPaiInfo = curArray[i].array;
+		firstCard = curArrayInPaiInfo[0];
+		while(firstCard && firstCard.dead){
+			curArrayInPaiInfo.shift();
+			firstCard = curArrayInPaiInfo[0];
+		}		
+	}
+	var newSortedPaiInfoArray = [], arrayLength;
+	for(var i = 0, size = curArray.length; i < size; i++){
+		curPaiInfo = curArray[i];
+		arrayLength = curPaiInfo.array.length
+		if(arrayLength != 0){
+			curPaiInfo.remainCards4ChaiPai = arrayLength;
+			newSortedPaiInfoArray.push(curPaiInfo);			
+		}
+	}
+	this.sortedPaiInfoArray = newSortedPaiInfoArray;
 }
 /*
  找出一副牌中只能组成一种牌型的牌（3条，对子，单张为一种牌型。）意思就是有一张牌和剩余牌中的任何一张牌没有联系。
@@ -994,45 +1031,91 @@ Player.prototype.positiveChuPai = function(){
 	var chaiPaiResult = this.doSimpleChaiPai();
 	var  chaiPaiResult = new PositiveChuPaiJudger(chaiPaiResult);
 	chaiPaiResult.doChuPaiJudge();
+	this.updateSortedPaiInfoArray();
 }
 
+Player.prototype.placeLianPai2LianInfoArray = function(lianInfoArray, lianPaiArray, sameCount){
+	if(lianInfoArray || lianPaiArray) return;
+	try{
+		var lianInfo = new ValidLianPaiInfo(lianPaiArray, sameCount);
+		lianInfoArray.push(lianInfo);
+	}catch(error){}
+}
 
-Player.prototype.doSimpleChaiPai = function(){	
-	var data = this.findAlonePaiBaseOnCardArray() || {},
+Player.prototype.doSimpleChaiPai = function(){
+	var data = this.findAlonePaiBasedOnSortedPaiInfoArray(this.sortedPaiInfoArray);
+	// var data = this.findAlonePaiBaseOnCardArray() || {},
 		lianPaiInfoArray = data.lianPaiInfoArray;
-	
+		danLianInfoArray = [], duiLianInfoArray = [], feiJiInfoArray =  [];
 	var oneArrayOrigin = data.oneArray ,
 		duiInfoOrigin = data.duiInfo,
 		threeInfoOrigin = data.threeInfo;
+	
+	var duiLianPaiArray = duiInfoOrigin.lianPaiArray || [];
+	for(var i = 0 , size = duiLianPaiArray.length; i < size; i ++){
+		this.placeLianPai2LianInfoArray(duiLianInfoArray, duiLianPaiArray[i], 2);
+	}
+	
+	var feiJiPaiArray = threeInfoOrigin.lianPaiArray || [];
+	for(var i = 0 , size = feiJiPaiArray.length; i < size; i ++){
+		this.placeLianPai2LianInfoArray(feiJiInfoArray, feiJiPaiArray[i], 3);
+	}
+	
 		
 	if(lianPaiInfoArray.length == 0){
 		return {
 			danZhangArray:oneArrayOrigin,
-			danDuiArray:duiInfoOrigin.danPaiArray,
+			danDuiArray:duiInfoOrigin.danPaiArray,			
 			sanZhangArray:threeInfoOrigin.danPaiArray,
-			bomb : data.aloneBomb,
-			validLianZiInfo:{}
+			
+			danLianInfoArray : danLianInfoArray,
+			duiLianInfoArray:duiLianInfoArray,
+			feiJiInfoArray: feiJiInfoArray,				
+			
+			bomb : data.aloneBomb,		
 		}
 	};
 	
 	var ret = this.extractLianZiFromlianPaiInfoArray(lianPaiInfoArray[0]);		
-	var	validLianZiInfo = ret.validLianZiInfo || {},
+	var	validLianZiInfo = ret.validLianZiInfo || {sameCount : 0},
 		oneArrayInLianPai = ret.oneArray,
 		duiInfoInLianPai = ret.duiInfo,
 		threeInfoInLianPai = ret.threeInfo;
 		
-	var danZhangArray = this.combineDanPaiInfo(oneArrayOrigin, oneArrayInLianPai);
-	var danDuiArray = this.combineDanPaiInfo(duiInfoOrigin.danPaiArray, duiInfoInLianPai.danPaiArray);
-	//var duiLianArray = this.combineLianPaiInfo(duiInfoOrigin.lianPaiArray, duiInfoInLianPai.lianPaiArray);
-	var sanZhangArray = this.combineDanPaiInfo(threeInfoOrigin.danPaiArray, threeInfoInLianPai.danPaiArray);
-	//var feiJiArray = this.combineLianPaiInfo(threeInfoOrigin.lianPaiArray, threeInfoInLianPai.lianPaiArray);		
+	var danZhangArray = this.combineDanPaiInfo(oneArrayOrigin, oneArrayInLianPai),
+		danDuiArray = this.combineDanPaiInfo(duiInfoOrigin.danPaiArray, duiInfoInLianPai.danPaiArray),
+		sanZhangArray = this.combineDanPaiInfo(threeInfoOrigin.danPaiArray, threeInfoInLianPai.danPaiArray);
+	
+	
+	var duiLianPaiArray = duiInfoInLianPai.lianPaiArray || [];
+	for(var i = 0 , size = duiLianPaiArray.length; i < size; i ++){
+		this.placeLianPai2LianInfoArray(duiLianInfoArray, duiLianPaiArray[i], 2);
+	}
+	
+	var feiJiPaiArray = threeInfoInLianPai.lianPaiArray || [];
+	for(var i = 0 , size = feiJiPaiArray.length; i < size; i ++){
+		this.placeLianPai2LianInfoArray(feiJiInfoArray, feiJiPaiArray[i], 3);
+	}	
+		switch(validLianZiInfo.sameCount){
+			case 1:
+				danLianInfoArray.push(validLianZiInfo);break;
+			case 2:
+				duiLianInfoArray.push(validLianZiInfo);break;
+			case 3:		
+				feiJiInfoArray.push(validLianZiInfo);break;
+		}
+	
 	
 	return {
 		danZhangArray:danZhangArray,
 		danDuiArray:danDuiArray,
 		sanZhangArray:sanZhangArray,
-		validLianZiInfo:validLianZiInfo,
-		bomb : data.aloneBomb
+		
+		danLianInfoArray : danLianInfoArray,
+		duiLianInfoArray:duiLianInfoArray,
+		feiJiInfoArray: feiJiInfoArray,				
+			
+		bomb : data.aloneBomb,		
 	}
 }
 /*
@@ -1050,7 +1133,7 @@ Player.prototype.combineDanPaiInfo = function(danPaiArray1, danPaiArray2){
 	}
 	return danPaiArray;
 }
-/*
+
 Player.prototype.combineLianPaiInfo = function(lianPaiArray1, lianPaiArray1){
 	var lianPaiArray1 = lianPaiArray1 || [], lianPaiArray2 = lianPaiArray2 ||[];
 	
@@ -1064,7 +1147,7 @@ Player.prototype.combineLianPaiInfo = function(lianPaiArray1, lianPaiArray1){
 	}
 		
 	return validLianPaiInfoArray;
-}*/
+}
 
 Player.prototype.doChaiPai = function(){
 	var data = this.findAlonePaiBaseOnCardArray() || {},
@@ -1453,9 +1536,7 @@ ddz.initPlayers = function(){
 					areaId:'player3_area'
 				});	
 	
-	CommonUtil.bubbleSort(player1.cardArray, player1.cardCmpFunction);
-	CommonUtil.bubbleSort(player2.cardArray, player2.cardCmpFunction);
-	CommonUtil.bubbleSort(player3.cardArray, player3.cardCmpFunction);
+
 	
 	this.player1 = player1, this.player2 = player2, this.player3 = player3;
 	this.playerArray.push(player1);
