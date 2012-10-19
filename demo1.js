@@ -52,6 +52,8 @@
 	}
 }
 
+
+
 /*
 @param:	chaiPaiResult 
 	{
@@ -64,6 +66,7 @@
 var PositiveChuPaiJudger = function(chaiPaiResult){
 		this.chaiPaiResult = chaiPaiResult || {};
 		this.judger = ChuFeiJi;
+		this.chuPaiInfo  = null;
 }
 
 PositiveChuPaiJudger.prototype.doChuPaiJudge = function(){
@@ -72,20 +75,21 @@ PositiveChuPaiJudger.prototype.doChuPaiJudge = function(){
 
 var ChuFeiJi = {
 	doChuPaiJudge: function(chuPaiJudger){
-		var chaiPaiResult = chuPaiJudger.chaiPaiResult;		
-		var validLianZiInfo = chaiPaiResult.validLianZiInfo || {}, 
+		var chaiPaiResult = chuPaiJudger.chaiPaiResult, paiType, feiJiLength,startCardSeq;		
+		var feiJiInfoArray = chaiPaiResult.feiJiInfoArray || [], 
 			danZhangArray = chaiPaiResult.danZhangArray,
 			danDuiArray = chaiPaiResult.danDuiArray;
 		
-		var sameCount = validLianZiInfo.sameCount || 0;
-		if(sameCount == 3){
-			var	lianZi = validLianZiInfo.lianZi,
-				lianXuCount = validLianZiInfo.lianXuCount, 
+		feiJiLength = feiJiInfoArray.length;
+		if(feiJiLength != 0){
+			var	lianZi = feiJiInfoArray[feiJiLength - 1],
+				lianXuCount = feiJiInfoArray.length, 
 				danZhangArrayLength = danZhangArray.length,
 				danDuiArrayLength = danDuiArray.length;
 			if(lianXuCount < danZhangArrayLength || lianXuCount < danDuiArrayLength){
+				feiJiLength = lianXuCount;
 				var curPai;
-				for(var i = 0; i < lianXuCount; i ++){
+				for(var i = 0; i < feiJiLength; i ++){
 					curPai = lianZi[i];
 					curPai.array[0].mapImg.selected = true;
 					curPai.array[1].mapImg.selected = true;
@@ -95,26 +99,28 @@ var ChuFeiJi = {
 					curPai.array[1].dead = true;
 					curPai.array[2].dead = true;
 				}
-				if(lianXuCount < danZhangArrayLength){
-					for(var i = 0; i < lianXuCount; i ++){
+				startCardSeq = lianZi[0].cardSeq;
+				if(feiJiLength < danZhangArrayLength){
+					for(var i = 0; i < feiJiLength; i ++){
 					curPai = danZhangArray[i];
 					curPai.array[0].mapImg.selected = true;						
 					curPai.array[0].dead = true;	
-					chuPaiJudger.paiType = 'feiJiDai1';
+					paiType = 'feiJiDai1';
 				}
 				}else{
-					for(var i = 0; i < lianXuCount; i ++){
-					curPai = danDuiArray[i];
-					curPai.array[0].mapImg.selected = true;
-					curPai.array[1].mapImg.selected = true;				
-					
-					curPai.array[0].dead = true;
-					curPai.array[1].dead = true;	
-					chuPaiJudger.paiType = 'feiJiDaiDui'
+					for(var i = 0; i < feiJiLength; i ++){
+						curPai = danDuiArray[i];
+						curPai.array[0].mapImg.selected = true;
+						curPai.array[1].mapImg.selected = true;				
+						
+						curPai.array[0].dead = true;
+						curPai.array[1].dead = true;	
+						paiType = 'feiJiDaiDui';
+					}
 				}
-				}
-			}else {				
-				for(var i = 0; i < danZhangArrayLength; i ++){
+			}else {	
+				feiJiLength = danZhangArrayLength;
+				for(var i = 0; i < feiJiLength; i ++){
 					curPai = lianZi[i];
 					curPai.array[0].mapImg.selected = true;
 					curPai.array[1].mapImg.selected = true;
@@ -124,17 +130,23 @@ var ChuFeiJi = {
 					curPai.array[1].dead = true;
 					curPai.array[2].dead = true;
 				}
-				
-				for(var i = 0; i < danZhangArrayLength; i ++){
+				startCardSeq = lianZi[0].cardSeq;
+				for(var i = 0; i < feiJiLength; i ++){
 					curPai = danZhangArray[i];
 					curPai.array[0].mapImg.selected = true;						
 					curPai.array[0].dead = true;					
 				}
 				
-				chuPaiJudger.paiType = 'feiJiDai1';
+				paiType = 'feiJiDai1';
+				
+				chuPaiJudger.chuPaiInfo = {
+					length: feiJiLength,
+					startCardSeq:startCardSeq,
+					paiType:paiType
+				};
 			
 			}
-			CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);			
+			CommonUtil.print(PaiTypeConstants[paiType]);			
 		}else{
 			chuPaiJudger.judger = ChuSanZhang;
 			chuPaiJudger.doChuPaiJudge();
@@ -145,7 +157,7 @@ var ChuFeiJi = {
 
 var ChuSanZhang = {
 	doChuPaiJudge: function(chuPaiJudger){
-		var chaiPaiResult = chuPaiJudger.chaiPaiResult;		
+		var chaiPaiResult = chuPaiJudger.chaiPaiResult, paiType;		
 		var sanZhangArray = chaiPaiResult.sanZhangArray, 
 			danZhangArray = chaiPaiResult.danZhangArray,
 			danDuiArray = chaiPaiResult.danDuiArray,
@@ -165,7 +177,7 @@ var ChuSanZhang = {
 				curPai = danZhangArray[0];
 				curPai.array[0].mapImg.selected = true;						
 				curPai.array[0].dead = true;
-				chuPaiJudger.paiType = 'sanDai1';
+				paiType = 'sanDai1';
 			}else if(danDuiArrayLength != 0){
 				curPai = danDuiArray[0];
 				curPai.array[0].mapImg.selected = true;
@@ -173,11 +185,14 @@ var ChuSanZhang = {
 						
 				curPai.array[0].dead = true;
 				curPai.array[1].dead = true;
-				chuPaiJudger.paiType = 'sanDaiDui';
+				paiType = 'sanDaiDui';
 			}else{
-				chuPaiJudger.paiType = 'sanZhang';
+				paiType = 'sanZhang';
 			}
-			CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
+			chuPaiJudger.chuPaiInfo = {
+				paiType:paiType
+			};
+			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			chuPaiJudger.judger = ChuLianZi;
 			chuPaiJudger.doChuPaiJudge();
@@ -188,7 +203,7 @@ var ChuSanZhang = {
 
 var ChuLianZi = {
 	doChuPaiJudge : function(chuPaiJudger){
-		var chaiPaiResult = chuPaiJudger.chaiPaiResult,
+		var chaiPaiResult = chuPaiJudger.chaiPaiResult, paiTyp,
 			validLianZiInfo = this.selectNiceLianZiInfo(chaiPaiResult),
 			sameCount = validLianZiInfo.sameCount,
 			lianXuCount = validLianZiInfo.lianXuCount;
@@ -204,11 +219,15 @@ var ChuLianZi = {
 			}
 			switch(sameCount){
 				case 1:
-					chuPaiJudger.paiType = 'lianPai';break;
+					paiType = 'lianPai';break;
 				case 2:
-					chuPaiJudger.paiType = 'lianDui';break;
+					paiType = 'lianDui';break;
 			}
-			CommonUtil.print(PaiTypeConstants[chuPaiJudger.paiType]);
+			chuPaiJudger.chuPaiInfo = {
+				paiType :paiType,
+				length:lianXuCount
+			}
+			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			chuPaiJudger.judger = ChuDanZhang;
 			chuPaiJudger.doChuPaiJudge();
@@ -367,6 +386,9 @@ var PaiTypeJudger = function(sortedPaiArray){
 PaiTypeJudger.prototype.doJudge = function(){
 	this.judger.doJudge(this);
 }
+
+
+
 
 var ShuangWang = {
 	doJudge: function(paiTypeJudger){		
@@ -664,6 +686,53 @@ var Player = function(opt){
 	this.selectPaiArray = [];
 	this.chaiPaiStack = [];
 	this.chaiPaiResultStack = [];
+}
+
+Player.prototype.chuDanZhangNumSpecified = function(danZhangArray, num){
+	danZhangArray = danZhangArray || [];
+	var size = danZhangArray.length, curPaiInfo;
+	if(size < num) return;
+	for(; num > 0; num--){
+		curPaiInfo = danZhangArray[size-num];
+		curPaiInfo.array[0].mapImg.selected = true;						
+		curPaiInfo.array[0].dead = true;	
+	}
+}
+
+Player.prototype.chuDanDuiNumSpecified = function(danDuiArray, num){
+	danDuiArray = danDuiArray || [];
+	var size = danDuiArray.length, curPaiInfo;
+	if(size < num) return;
+	for(; num > 0; num--){
+		curPaiInfo = danDuiArray[size-num];
+		curPaiInfo.array[0].mapImg.selected = true;						
+		curPaiInfo.array[0].dead = true;	
+		curPaiInfo.array[1].mapImg.selected = true;						
+		curPaiInfo.array[2].dead = true;
+	}
+}
+
+/*
+可能飞机的长度大于出牌所需的feiJiLength,从中取合适的出
+*/
+Player.prototype.chuFeiJiNumSpecified  = function(feiJi, feiJiLength){
+	feiJi = feiJi || [];
+	var size = feiJi.length, curPaiInfo, num = feiJiLength;
+	if(size < num) return;
+	for(; num > 0; num--){
+		curPaiInfo = feiJi[size-num];
+		this.chuSanZhang(curPaiInfo);
+	}
+}
+Player.prototype.chuSanZhang = function(sanZhang){
+	var paiInfoArray = sanZhang.array;
+		paiInfoArray[0].mapImg.selected = true;
+		paiInfoArray[1].mapImg.selected = true;
+		paiInfoArray[2].mapImg.selected = true;
+						
+		paiInfoArray[0].dead = true;
+		paiInfoArray[1].dead = true;
+		paiInfoArray[2].dead = true;	
 }
 
 Player.prototype.registeSelectCardAction = function(){
@@ -991,23 +1060,82 @@ Player.prototype.findAlonePaiBaseOnCardArray = function(){
 被动出牌
 */
 Player.prototype.negativeChuPai = function(){
-	var paiType = ddz.chuPaiInfo.paiType;
-	var ret = this.doSimpleChaiPai();
+	var chiBuQi = '吃不起', isChiBuQi = true;
+	var chuPaiInfo = ddz.chuPaiInfo;
+	var paiType = chuPaiInfo.paiType;
+	var chaiPaiResult = this.doSimpleChaiPai(),		
+		danZhangArray = chaiPaiResult.danZhangArray,
+		danDuiArray = chaiPaiResult.danDuiArray,		
+		sanZhangArray = chaiPaiResult.sanZhangArray, 
+		bomb = chaiPaiResult.bomb,
+		
+		danLianInfoArray =chaiPaiResult.danLianInfoArray || [],
+		duiLianInfoArray = chaiPaiResult.duiLianInfoArray ||[],
+		feiJiInfoArray = chaiPaiResult.feiJiInfoArray || [];
+	
+	
 	switch(paiType){
-		case 'feiJiDaiDui':{
-		}
-		case 'feiJiDai1':{
-		}
+		case 'feiJiDaiDui':		
+		case 'feiJiDai1':		
 		case 'feiJi':{
-			
+			feiJi = feiJiInfoArray.pop();
+			feiJiLength = chuPaiInfo.length;
+			if(feiJi || feiJi.length < feiJiLength){
+				switch( paiType){
+					case 'feiJiDaiDui':	{
+						if(danDuiArray.length >= feiJiLength){
+							this.chuDanDuiNumSpecified(danDuiArray, feiJiLength);
+							isChiBuQi = false;
+						}
+						break;
+					}
+					case 'feiJiDai1':	{
+						if(danZhangArray.length >= feiJiLength){
+							this.chuDanZhangNumSpecified(danDuiArray, feiJiLength);
+							isChiBuQi = false;
+						}
+						break;
+					}
+				}
+				if(isChiBuQi){
+					CommonUtil.print(chiBuQi);
+				}else{
+					this.chuFeiJiNumSpecified(feiJi,feiJiLength);
+				}
+			}else{
+				CommonUtil.print(chiBuQi);
+			}
+			break;
 		}
-		case 'sanDaiDui':{
-		}
-		case 'sanDai1':{
-		}
+		case 'sanDaiDui':
+		case 'sanDai1':
 		case 'sanZhang':{
+			sanZhang = sanZhangArray.pop();
+			if(sanZhang){
+				switch(paiType){
+					case 'sanDaiDui':{
+						if(danDuiArray.length >= 1){
+							this.chuDanDuiNumSpecified(danDuiArray, 1);
+							isChiBuQi = false;
+						}
+						break;
+					}
+					case 'sanDai1':{
+						if(danZhangArray.length >= 1){
+							this.chuDanZhangNumSpecified(danDuiArray, 1);
+							isChiBuQi = false;
+						}
+						break;
+					}
+					this.chuSanZhang(sanZhang);
+				}
+			}else{
+				CommonUtil.print(chiBuQi);
+			}
+			break;
 		}
 		case 'lianDui':{
+			
 		}
 		case 'lianPai':{
 		}case 'danDui':{
@@ -1556,20 +1684,22 @@ ddz.assignCards = function(){
 }
 
 ddz.initPlayers = function(){
-	var player1 = new Player({
-	
+	var player1 = new Player({	
+					isDiZhu : true,
+					chupaiId:'chupai',	
 					cardArray:ddz.player1_card,
 					areaId:'player1_area'
 				});	
-	var player2 = new Player({
-				
+	var player2 = new Player({	
+					// isDiZhu : true,
+					// chupaiId:'chupai',		
 					cardArray:ddz.player2_card,
 					areaId:'player2_area'					
 				});	
 	
 	var player3 = new Player({
-					isDiZhu : true,
-					chupaiId:'chupai',	
+					// isDiZhu : true,
+					// chupaiId:'chupai',	
 					cardArray:ddz.player3_card,					
 					areaId:'player3_area'
 				});	
