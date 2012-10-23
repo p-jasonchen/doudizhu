@@ -140,24 +140,18 @@ var ChuSanZhang = {
 			danDuiArray = chaiPaiResult.danDuiArray || [],
 			
 			danZhangArrayLength = danZhangArray.length,
-			danDuiArrayLength = danDuiArray.length;
+			danDuiArrayLength = danDuiArray.length,
+			player = chuPaiJudger.player;
 		if(sanZhangArray.length != 0){
 			var curPai = sanZhangArray[0];				
-				chuPaiJudger.player.chuSanZhang(curPai);
+				player.chuSanZhang(curPai);
 				
 				startCardSeq = curPai.cardSeq;
 			if(danZhangArrayLength != 0){
-				curPai = danZhangArray[0];
-				curPai.array[0].mapImg.selected = true;						
-				curPai.array[0].dead = true;
+				player.chuDanZhangNumSpecified(danZhangArray,1);
 				paiType = 'sanDai1';
 			}else if(danDuiArrayLength != 0){
-				curPai = danDuiArray[0];
-				curPai.array[0].mapImg.selected = true;
-				curPai.array[1].mapImg.selected = true;				
-						
-				curPai.array[0].dead = true;
-				curPai.array[1].dead = true;
+				player.chuDanDuiNumSpecified(danDuiArray, 1);
 				paiType = 'sanDaiDui';
 			}else{
 				paiType = 'sanZhang';
@@ -180,20 +174,15 @@ var ChuLianZi = {
 			validLianZiInfo = this.selectNiceLianZiInfo(chaiPaiResult),
 			sameCount = validLianZiInfo.sameCount,
 			lianXuCount = validLianZiInfo.lianXuCount;
-			lianZi = validLianZiInfo.lianZi;
+			lianZi = validLianZiInfo.lianZi,
+			player = chuPaiJudger.player;
 		if(lianZi.length != 0){
-			var curPaiArray, curPaiArray;			
-			for(var i = 0; i < lianXuCount; i ++){
-				curPaiArray = lianZi[i].array;
-				for(var j = 0; j < sameCount; j++){
-					curPaiArray[j].dead = true;
-					curPaiArray[j].mapImg.selected  = true;
-				}			
-			}
 			switch(sameCount){
 				case 1:
+					player.chuDanZhangNumSpecified(lianZi, lianXuCount);
 					paiType = 'lianPai';break;
 				case 2:
+					player.chuDanDuiNumSpecified(lianZi, lianXuCount);
 					paiType = 'lianDui';break;
 			}
 			chuPaiJudger.chuPaiInfo = {
@@ -227,13 +216,11 @@ var ChuDanZhang = {
 			danZhangArray = chaiPaiResult.danZhangArray || [];
 			
 		if(danZhangArray.length != 0){
-			var card = danZhangArray[0].array[0];
-			card.dead = true;
-			card.mapImg.selected = true;
+			startCardSeq = chuPaiJudger.player.chuDanZhangNumSpecified(danZhangArray, 1);
 			paiType = 'danZhang';
 			chuPaiJudger.chuPaiInfo = {
 				paiType :paiType,
-				startCardSeq : card.cardSeq
+				startCardSeq : startCardSeq
 			}
 			// CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
@@ -248,18 +235,11 @@ var ChuDanDui = {
 		var chaiPaiResult = chuPaiJudger.chaiPaiResult,
 			danDuiArray = chaiPaiResult.danDuiArray || [];
 		if(danDuiArray.length != 0){
-			var card = danDuiArray[0].array[0];
-			card.dead = true;
-			card.mapImg.selected = true;
-			
-			card = danDuiArray[0].array[1];
-			card.dead = true;
-			card.mapImg.selected = true;
-			
+			startCardSeq = chuPaiJudger.player.chuDanDuiNumSpecified(danDuiArray, 1);	
 			paiType = 'danDui';
 			chuPaiJudger.chuPaiInfo = {
 				paiType :paiType,
-				startCardSeq : card.cardSeq				
+				startCardSeq : startCardSeq			
 			}
 			// CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
@@ -276,6 +256,7 @@ var ChuSiZhangDaiX = {
 			danDuiArray = chaiPaiResult.danDuiArray || [];
 			bombArray = chaiPaiResult.bombArray || [],
 		bombLength = bombArray.length,
+		player = chuPaiJudger.player;
 		paiType = -1;
 		if(bombLength != 0){
 			zhaDan = bombArray[bombLength -1];
@@ -283,37 +264,25 @@ var ChuSiZhangDaiX = {
 				chuPaiJudger.judger = ChuZhaDan;
 				chuPaiJudger.doChuPaiJudge();
 			}else{
-				card = zhaDan[0], card.dead = true,	card.mapImg.selected = true;
-				card = zhaDan[1], card.dead = true,	card.mapImg.selected = true;
-				card = zhaDan[2], card.dead = true,	card.mapImg.selected = true;
-				card = zhaDan[3], card.dead = true,	card.mapImg.selected = true;	
 				
-				var curPai1 = danZhangArray.pop(), curPai2 = danZhangArray.pop();
-				if(curPai1 && curPai2){
-					card = curPai1[0], card.dead = true,	card.mapImg.selected = true;
-					card = curPai2[0], card.dead = true,	card.mapImg.selected = true;
+				player.chuSiZhang(zhaDan);			
+				if(danZhangArray.length >= 2){
+					player.chuDanZhangNumSpecified(danZhangArray,2,selectedArray);
 					paiType = 'siDai2DanZhang';
-				}else{
-					curPai1 = danDuiArray.pop(), curPai2 = danDuiArray.pop();
-					if(curPai1 && curPai2){
-						card = curPai1[0], card.dead = true,	card.mapImg.selected = true;
-						card = curPai1[1], card.dead = true,	card.mapImg.selected = true;
-						
-						card = curPai2[0], card.dead = true,	card.mapImg.selected = true;
-						card = curPai2[1], card.dead = true,	card.mapImg.selected = true;
+				}else if(danDuiArray.length >= 1){					
+					if(danDuiArray.length >= 2){
+						player.chuDanDuiNumSpecified(danDuiArray, 2);
 						paiType = 'siDai2Dui';
-					}else if(curPai1){
-						card = curPai1[0], card.dead = true,	card.mapImg.selected = true;
-						card = curPai1[1], card.dead = true,	card.mapImg.selected = true;
+					}else {
+						player.chuDanDuiNumSpecified(danDuiArray, 1);
 						paiType = 'siDai1Dui';
-						
 					}					
 				}
 				if(paiType !== -1){
 					chuPaiJudger.chuPaiInfo = {
-						paiType :paiType				
+						paiType :paiType,
+						startCardSeq: zhaDan.startCardSeq				
 					}
-					// CommonUtil.print(PaiTypeConstants[paiType]);
 				}else{
 					chuPaiJudger.judger = ChuZhaDan;
 					chuPaiJudger.doChuPaiJudge();
@@ -327,27 +296,21 @@ var ChuZhaDan = {
 	doChuPaiJudge : function(chuPaiJudger){
 		var chaiPaiResult = chuPaiJudger.chaiPaiResult,			
 			bombArray = chaiPaiResult.bombArray  || [],
-			zhaDan = bombArray.pop(), card;
+			zhaDan = bombArray.pop(), card, player = chuPaiJudger.player;
 		if(zhaDan){
 			if(zhaDan.length == 2){
+				player.chuDanZhangNumSpecified(zhaDan, 2);
 				paiType = 'shuangWang';				
-				card = zhaDan[0].array[0], card.dead = true,	card.mapImg.selected = true;
-				card = zhaDan[1].array[0], card.dead = true,	card.mapImg.selected = true;
-				
 			}else{
+				player.chuSiZhang(zhaDan);
 				paiType = 'siZhang';				
-				card = zhaDan[0], card.dead = true,	card.mapImg.selected = true;
-				card = zhaDan[1], card.dead = true,	card.mapImg.selected = true;
-				card = zhaDan[2], card.dead = true,	card.mapImg.selected = true;
-				card = zhaDan[3], card.dead = true,	card.mapImg.selected = true;
-							
 			}
 			
 		}
 		chuPaiJudger.chuPaiInfo = {
-			paiType :paiType				
+			paiType :paiType,
+			startCardSeq: zhaDan.startCardSeq
 		}	
-		// CommonUtil.print(PaiTypeConstants[paiType]);
 	}
 }
 
@@ -679,30 +642,65 @@ var Player = function(opt){
 	this.chaiPaiStack = [];
 	this.chaiPaiResultStack = [];
 	this.areaId = opt.areaId;
+	this.selectedImgArray = [];
 }
 
 Player.prototype.chuDanZhangNumSpecified = function(danZhangArray, num){
 	danZhangArray = danZhangArray || [];
-	var size = danZhangArray.length, curPaiInfo;
+	selectedImgArray = this.selectedImgArray;
+	var size = danZhangArray.length, curPaiInfo, curImg;
 	if(size < num) return;	
 	for(var i = 0; i < num; i++){
 		curPaiInfo = danZhangArray[i];
-		curPaiInfo.array[0].mapImg.selected = true;						
+		curImg = curPaiInfo.array[0].mapImg,
+		selectedImgArray.push(curImg),
+		curImg.selected = true;						
 		curPaiInfo.array[0].dead = true;	
 	}
+	return danZhangArray[0].cardSeq;
 }
 
 Player.prototype.chuDanDuiNumSpecified = function(danDuiArray, num){
 	danDuiArray = danDuiArray || [];
-	var size = danDuiArray.length, curPaiInfo;
+	selectedImgArray = this.selectedImgArray;
+	var size = danDuiArray.length, curPaiInfo,curImg;
 	if(size < num) return;
 	for(var i = 0; i < num; i++){
 		curPaiInfo = danDuiArray[i];
-		curPaiInfo.array[0].mapImg.selected = true;						
-		curPaiInfo.array[0].dead = true;	
-		curPaiInfo.array[1].mapImg.selected = true;						
+		curImg = curPaiInfo.array[0].mapImg,
+		curImg.selected = true,
+		selectedImgArray.push(curImg);		
+		curPaiInfo.array[0].dead = true;
+
+		curImg = curPaiInfo.array[1].mapImg,
+		curImg.selected = true,
+	       	selectedImgArray.push(curImg);
 		curPaiInfo.array[1].dead = true;
 	}
+	return danDuiArray[0].cardSeq;
+}
+
+Player.prototype.chuSiZhang = function(siZhang){
+	var selectedImgArray = this.selectedImgArray,
+		paiInfoArray = siZhang.array, curImg;
+		curImg = paiInfoArray[0].mapImg,
+		curImg.selected = true,
+		selectedImgArray.push(curImg);
+		curImg = paiInfoArray[1].mapImg,
+		curImg.selected = true,
+		selectedImgArray.push(curImg);
+		curImg = paiInfoArray[2].mapImg,
+		curImg.selected = true,
+		selectedImgArray.push(curImg);
+		curImg = paiInfoArray[3].mapImg,
+		curImg.selected = true,
+		selectedImgArray.push(curImg);
+	
+						
+		paiInfoArray[0].dead = true;
+		paiInfoArray[1].dead = true;
+		paiInfoArray[2].dead = true;	
+		paiInfoArray[3].dead = true;
 }
 
 /*
@@ -718,14 +716,22 @@ Player.prototype.chuFeiJiNumSpecified  = function(feiJi, feiJiLength){
 	}
 }
 Player.prototype.chuSanZhang = function(sanZhang){
-	var paiInfoArray = sanZhang.array;
-		paiInfoArray[0].mapImg.selected = true;
-		paiInfoArray[1].mapImg.selected = true;
-		paiInfoArray[2].mapImg.selected = true;
+	var selectedImgArray = this.selectedImgArray,
+	    paiInfoArray = sanZhang.array, curImg;
+		curImg = paiInfoArray[0].mapImg,
+		curImg.selected = true,
+		selectedImgArray.push(curImg);
+		curImg = paiInfoArray[1].mapImg,
+		curImg.selected = true,
+		selectedImgArray.push(curImg);
+		curImg = paiInfoArray[2].mapImg,
+		curImg.selected = true,
+		selectedImgArray.push(curImg);
+	
 						
 		paiInfoArray[0].dead = true;
 		paiInfoArray[1].dead = true;
-		paiInfoArray[2].dead = true;	
+		paiInfoArray[2].dead = true;		 
 }
 
 Player.prototype.registeSelectCardAction = function(){
@@ -1053,9 +1059,10 @@ Player.prototype.findAlonePaiBaseOnCardArray = function(){
 被动出牌
 */
 Player.prototype.negativeChuPai = function(){
-	var chiBuQi = '吃不起', isChiBuQi = true;
-	var chuPaiInfo = ddz.chuPaiInfo;
-	var paiType = chuPaiInfo.paiType;
+	var chiBuQi = '吃不起', isChiBuQi = true,
+	    chuPaiInfo = ddz.chuPaiInfo,
+	    paiType = chuPaiInfo.paiType,
+	    selectedImgArray = this.selectedImgArray;
 	var chaiPaiResult = this.doSimpleChaiPai(),		
 		danZhangArray = chaiPaiResult.danZhangArray || [],
 		danDuiArray = chaiPaiResult.danDuiArray || [],		
