@@ -56,6 +56,7 @@
 		}else{
 			pre = '玩家3';
 		}
+		console.log(pre + ' : '+ text);
 		alert(pre + ' : '+ text);
 	}
 }
@@ -71,10 +72,11 @@
 		validLianZiInfo:validLianZiInfo
 	}
 */
-var PositiveChuPaiJudger = function(chaiPaiResult){
+var PositiveChuPaiJudger = function(chaiPaiResult, player){
 		this.chaiPaiResult = chaiPaiResult || {};
 		this.judger = ChuFeiJi;
 		this.chuPaiInfo  = null;
+		this.player =  player;
 }
 
 PositiveChuPaiJudger.prototype.doChuPaiJudge = function(){
@@ -87,74 +89,40 @@ var ChuFeiJi = {
 		var chaiPaiResult = chuPaiJudger.chaiPaiResult, paiType, feiJiLength,startCardSeq;		
 		var feiJiInfoArray = chaiPaiResult.feiJiInfoArray || [], 
 			danZhangArray = chaiPaiResult.danZhangArray,
-			danDuiArray = chaiPaiResult.danDuiArray;
+			danDuiArray = chaiPaiResult.danDuiArray,
+			player = chuPaiJudger.player;
 		
 		feiJiLength = feiJiInfoArray.length;
 		if(feiJiLength != 0){
-			var	lianZi = feiJiInfoArray[feiJiLength - 1],
-				lianXuCount = feiJiInfoArray.length, 
+			var	feiJi = feiJiInfoArray[feiJiLength - 1],
+				lianXuCount = feiJi.length, 
 				danZhangArrayLength = danZhangArray.length,
-				danDuiArrayLength = danDuiArray.length;
+				danDuiArrayLength = danDuiArray.length,
+				startCardSeq = feiJi.cardSeq;;
 			if(lianXuCount < danZhangArrayLength || lianXuCount < danDuiArrayLength){
 				feiJiLength = lianXuCount;
-				var curPai;
-				for(var i = 0; i < feiJiLength; i ++){
-					curPai = lianZi[i];
-					curPai.array[0].mapImg.selected = true;
-					curPai.array[1].mapImg.selected = true;
-					curPai.array[2].mapImg.selected = true;
-					
-					curPai.array[0].dead = true;
-					curPai.array[1].dead = true;
-					curPai.array[2].dead = true;
-				}
-				startCardSeq = lianZi[0].cardSeq;
+				player.chuFeiJiNumSpecified(feiJi,feiJiLength);
+				
 				if(feiJiLength < danZhangArrayLength){
-					for(var i = 0; i < feiJiLength; i ++){
-					curPai = danZhangArray[i];
-					curPai.array[0].mapImg.selected = true;						
-					curPai.array[0].dead = true;	
+					player.chuDanZhangNumSpecified(danZhangArray, feiJiLength);
 					paiType = 'feiJiDai1';
-				}
 				}else{
-					for(var i = 0; i < feiJiLength; i ++){
-						curPai = danDuiArray[i];
-						curPai.array[0].mapImg.selected = true;
-						curPai.array[1].mapImg.selected = true;				
-						
-						curPai.array[0].dead = true;
-						curPai.array[1].dead = true;	
-						paiType = 'feiJiDaiDui';
-					}
+					player.chuDanDuiNumSpecified(danDuiArray, feiJiLength);
+					paiType = 'feiJiDaiDui';					
 				}
 			}else {	
 				feiJiLength = danZhangArrayLength;
-				for(var i = 0; i < feiJiLength; i ++){
-					curPai = lianZi[i];
-					curPai.array[0].mapImg.selected = true;
-					curPai.array[1].mapImg.selected = true;
-					curPai.array[2].mapImg.selected = true;
-					
-					curPai.array[0].dead = true;
-					curPai.array[1].dead = true;
-					curPai.array[2].dead = true;
-				}
-				startCardSeq = lianZi[0].cardSeq;
-				for(var i = 0; i < feiJiLength; i ++){
-					curPai = danZhangArray[i];
-					curPai.array[0].mapImg.selected = true;						
-					curPai.array[0].dead = true;					
-				}
-				
+				player.chuFeiJiNumSpecified(feiJi,feiJiLength);				
+				player.chuDanZhangNumSpecified(danZhangArray, feiJiLength);				
 				paiType = 'feiJiDai1';
-				
-				chuPaiJudger.chuPaiInfo = {
-					length: feiJiLength,
-					startCardSeq:startCardSeq,
-					paiType:paiType
-				};
+			}	
+			chuPaiJudger.chuPaiInfo = {
+				length: feiJiLength,
+				startCardSeq:startCardSeq,
+				paiType:paiType				
+			};
 			
-			}
+			
 			// CommonUtil.print(PaiTypeConstants[paiType]);			
 		}else{
 			chuPaiJudger.judger = ChuSanZhang;
@@ -174,14 +142,10 @@ var ChuSanZhang = {
 			danZhangArrayLength = danZhangArray.length,
 			danDuiArrayLength = danDuiArray.length;
 		if(sanZhangArray.length != 0){
-			var curPai = sanZhangArray[0];
-				curPai.array[0].mapImg.selected = true;
-				curPai.array[1].mapImg.selected = true;
-				curPai.array[2].mapImg.selected = true;
-						
-				curPai.array[0].dead = true;
-				curPai.array[1].dead = true;
-				curPai.array[2].dead = true;
+			var curPai = sanZhangArray[0];				
+				chuPaiJudger.player.chuSanZhang(curPai);
+				
+				startCardSeq = curPai.cardSeq;
 			if(danZhangArrayLength != 0){
 				curPai = danZhangArray[0];
 				curPai.array[0].mapImg.selected = true;						
@@ -199,9 +163,9 @@ var ChuSanZhang = {
 				paiType = 'sanZhang';
 			}
 			chuPaiJudger.chuPaiInfo = {
-				paiType:paiType
-			};
-			// CommonUtil.print(PaiTypeConstants[paiType]);
+				paiType:paiType,
+				startCardSeq:startCardSeq
+			};			
 		}else{
 			chuPaiJudger.judger = ChuLianZi;
 			chuPaiJudger.doChuPaiJudge();
@@ -218,7 +182,7 @@ var ChuLianZi = {
 			lianXuCount = validLianZiInfo.lianXuCount;
 			lianZi = validLianZiInfo.lianZi;
 		if(lianZi.length != 0){
-			var curPaiArray, curPaiArray;
+			var curPaiArray, curPaiArray;			
 			for(var i = 0; i < lianXuCount; i ++){
 				curPaiArray = lianZi[i].array;
 				for(var j = 0; j < sameCount; j++){
@@ -234,7 +198,8 @@ var ChuLianZi = {
 			}
 			chuPaiJudger.chuPaiInfo = {
 				paiType :paiType,
-				length:lianXuCount
+				length:lianXuCount,
+				startCardSeq: validLianZiInfo.startCardSeq
 			}
 			// CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
@@ -267,7 +232,8 @@ var ChuDanZhang = {
 			card.mapImg.selected = true;
 			paiType = 'danZhang';
 			chuPaiJudger.chuPaiInfo = {
-				paiType :paiType				
+				paiType :paiType,
+				startCardSeq : card.cardSeq
 			}
 			// CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
@@ -292,7 +258,8 @@ var ChuDanDui = {
 			
 			paiType = 'danDui';
 			chuPaiJudger.chuPaiInfo = {
-				paiType :paiType				
+				paiType :paiType,
+				startCardSeq : card.cardSeq				
 			}
 			// CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
@@ -717,9 +684,9 @@ var Player = function(opt){
 Player.prototype.chuDanZhangNumSpecified = function(danZhangArray, num){
 	danZhangArray = danZhangArray || [];
 	var size = danZhangArray.length, curPaiInfo;
-	if(size < num) return;
-	for(; num > 0; num--){
-		curPaiInfo = danZhangArray[size-num];
+	if(size < num) return;	
+	for(var i = 0; i < num; i++){
+		curPaiInfo = danZhangArray[i];
 		curPaiInfo.array[0].mapImg.selected = true;						
 		curPaiInfo.array[0].dead = true;	
 	}
@@ -729,8 +696,8 @@ Player.prototype.chuDanDuiNumSpecified = function(danDuiArray, num){
 	danDuiArray = danDuiArray || [];
 	var size = danDuiArray.length, curPaiInfo;
 	if(size < num) return;
-	for(; num > 0; num--){
-		curPaiInfo = danDuiArray[size-num];
+	for(var i = 0; i < num; i++){
+		curPaiInfo = danDuiArray[i];
 		curPaiInfo.array[0].mapImg.selected = true;						
 		curPaiInfo.array[0].dead = true;	
 		curPaiInfo.array[1].mapImg.selected = true;						
@@ -745,8 +712,8 @@ Player.prototype.chuFeiJiNumSpecified  = function(feiJi, feiJiLength){
 	feiJi = feiJi || [];
 	var size = feiJi.length, curPaiInfo, num = feiJiLength;
 	if(size < num) return;
-	for(; num > 0; num--){
-		curPaiInfo = feiJi[size-num];
+	for(var i = 0; i < num; i++){
+		curPaiInfo = feiJi[i];
 		this.chuSanZhang(curPaiInfo);
 	}
 }
@@ -1107,24 +1074,27 @@ Player.prototype.negativeChuPai = function(){
 			feiJi = feiJiInfoArray.pop();
 			feiJiLength = chuPaiInfo.length;
 			if(feiJi && feiJi.length >= feiJiLength){
-				switch( paiType){
-					case 'feiJiDaiDui':	{
-						if(danDuiArray.length >= feiJiLength){
-							this.chuDanDuiNumSpecified(danDuiArray, feiJiLength);
-							isChiBuQi = false;
+				startCardSeq = feiJi.cardSeq;
+				if(startCardSeq > chuPaiInfo.startCardSeq){
+					switch( paiType){
+						case 'feiJiDaiDui':	{
+							if(danDuiArray.length >= feiJiLength){
+								this.chuDanDuiNumSpecified(danDuiArray, feiJiLength);
+								isChiBuQi = false;
+							}
+							break;
 						}
-						break;
-					}
-					case 'feiJiDai1':	{
-						if(danZhangArray.length >= feiJiLength){
-							this.chuDanZhangNumSpecified(danDuiArray, feiJiLength);
-							isChiBuQi = false;
+						case 'feiJiDai1':	{
+							if(danZhangArray.length >= feiJiLength){
+								this.chuDanZhangNumSpecified(danZhangArray, feiJiLength);
+								isChiBuQi = false;
+							}
+							break;
 						}
-						break;
 					}
-				}
-				if(!isChiBuQi){					
-					this.chuFeiJiNumSpecified(feiJi,feiJiLength);
+					if(!isChiBuQi){					
+						this.chuFeiJiNumSpecified(feiJi,feiJiLength);
+					}
 				}
 			}
 			break;
@@ -1134,22 +1104,27 @@ Player.prototype.negativeChuPai = function(){
 		case 'sanZhang':{
 			sanZhang = sanZhangArray.pop();
 			if(sanZhang){
-				switch(paiType){
-					case 'sanDaiDui':{
-						if(danDuiArray.length >= 1){
-							this.chuDanDuiNumSpecified(danDuiArray, 1);
-							isChiBuQi = false;
+				startCardSeq = sanZhang.cardSeq;
+				if(startCardSeq > chuPaiInfo.startCardSeq){
+					switch(paiType){
+						case 'sanDaiDui':{
+							if(danDuiArray.length >= 1){
+								this.chuDanDuiNumSpecified(danDuiArray, 1);
+								isChiBuQi = false;
+							}
+							break;
 						}
-						break;
+						case 'sanDai1':{
+							if(danZhangArray.length >= 1){
+								this.chuDanZhangNumSpecified(danZhangArray, 1);
+								isChiBuQi = false;
+							}
+							break;
+						}					
 					}
-					case 'sanDai1':{
-						if(danZhangArray.length >= 1){
-							this.chuDanZhangNumSpecified(danZhangArray, 1);
-							isChiBuQi = false;
-						}
-						break;
+					if(!isChiBuQi){
+						this.chuSanZhang(sanZhang);
 					}
-					this.chuSanZhang(sanZhang);
 				}
 			}
 			break;
@@ -1157,7 +1132,7 @@ Player.prototype.negativeChuPai = function(){
 		case 'lianDui':{
 			lianDui = duiLianInfoArray.pop();
 			lanDuiLength = chuPaiInfo.length;
-			if(lianDui && lianDui.lianXuCount >= lanDuiLength){
+			if(lianDui && lianDui.startCardSeq > chuPaiInfo.startCardSeq && lianDui.lianXuCount >= lanDuiLength){
 				this.chuDanDuiNumSpecified(lianDui.lianZi, lanDuiLength);
 				isChiBuQi = false;
 			}
@@ -1166,26 +1141,26 @@ Player.prototype.negativeChuPai = function(){
 		case 'lianPai':{
 			lianPai = danLianInfoArray.pop();
 			lianPaiLength = chuPaiInfo.length;
-			if(lianPai && lianPai.lianXuCount >= lianPaiLength){
+			if(lianPai && lianPai.startCardSeq > chuPaiInfo.startCardSeq && lianPai.lianXuCount >= lianPaiLength){
 				this.chuDanZhangNumSpecified(lianPai.lianZi, lianPaiLength);
 				isChiBuQi = false;
 			}
 			break;
 		}case 'danDui':{
-			if(danDuiArray.length >= 1){
+			if(danDuiArray.length >= 1 && danDuiArray[0].cardSeq > chuPaiInfo.startCardSeq){
 				this.chuDanDuiNumSpecified(danDuiArray, 1);
 				isChiBuQi = false;
 			}
 			break;
 		}		
 		case 'danZhang':{
-			if(danZhangArray.length >= 1){
+			if(danZhangArray.length >= 1 && danZhangArray[0].cardSeq > chuPaiInfo.startCardSeq){
 				this.chuDanZhangNumSpecified(danZhangArray, 1);
 				isChiBuQi = false;
 			}
 			break;
 		}
-		case 'siDai2Dui':{
+		case 'siDai2Dui':{		
 		}
 		case 'siDai1Dui':{
 		}
@@ -1217,7 +1192,7 @@ Player.prototype.negativeChuPai = function(){
 */
 Player.prototype.positiveChuPai = function(){
 	var chaiPaiResult = this.doSimpleChaiPai();
-	var  chaiPaiResult = new PositiveChuPaiJudger(chaiPaiResult);
+	var  chaiPaiResult = new PositiveChuPaiJudger(chaiPaiResult,this);
 	chaiPaiResult.doChuPaiJudge();
 	chuPaiInfo = chaiPaiResult.chuPaiInfo;
 	chuPaiInfo.curChuPaiPlayer=this;
