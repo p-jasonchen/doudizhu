@@ -57,7 +57,7 @@
 			pre = '玩家3';
 		}
 		console.log(pre + ' : '+ text);
-		alert(pre + ' : '+ text);
+		//alert(pre + ' : '+ text);
 	}
 };
 
@@ -1847,33 +1847,23 @@ ddz.initPlayers = function(){
 
 
 ddz.startGame = function(){
-	var diZhuIndex = this.diZhuIndex, 
-		playerArray = this.playerArray || [],
+	var diZhuIndex = ddz.diZhuIndex, 
+		playerArray = ddz.playerArray || [],
 		playerLength = playerArray.length,
-		curIndex = diZhuIndex;
-	playerArray[curIndex].doChuPai();
-	var notOver = !this.chuPaiInfo.isOver;
-	
-	while(notOver){
-		for(var i = 1 ; i <= playerLength && notOver; i ++){
-			curIndex = ( diZhuIndex + i ) % playerLength;
-			playerArray[curIndex].doChuPai();
-			
-			var vt = 5000;
-            var countDown = new NC.CountDown({overTime:vt, runCallBack:function (remainsS) {
-				that.usedtime=vt/1000-remainsS;
-                var rs = remainsS * 1000 * 100 / vt + "%";
-                $("#time-bar").css('width', rs);
-
-            }, overTimeCallback:function () {
-                failure();
-            }});
-			
-			notOver = !this.chuPaiInfo.isOver;
-		}		
+		curIndex = diZhuIndex;		
 		
-	}
+	sh = setInterval(function(){			
+		var notOver = !ddz.chuPaiInfo.isOver;
+		if(notOver){
+			curIndex = ( diZhuIndex++) % playerLength;
+			playerArray[curIndex].doChuPai();		
+		}else{
+			clearInterval(sh);
+		}		
+	}, 2000);	
 }
+
+
 /*
 54个随机数生成算法
 */
