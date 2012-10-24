@@ -674,6 +674,8 @@ var Player = function(opt){
 	this.areaObj = CommonUtil.$id(opt.areaId);
 	
 	this.chuPaiAreaObj = CommonUtil.$id(opt.chuPaiAreaId);
+	var playerAreaObj = CommonUtil.$id(opt.playerId);
+	this.buChuContainerObj = CommonUtil.$class(opt.buChuContainerClass, playerAreaObj)[0];
 	
 	this.chupaiId = opt.chupaiId;
 	this.selectPaiArray = [];
@@ -1220,12 +1222,12 @@ Player.prototype.negativeChuPai = function(){
 		}
 	}
 	
-	
+	this.placeCardSelected();
 	chuPaiInfo.curChuPaiPlayer = this;
 	if(!isChiBuQi){	
 		var chuPaiInfo = ddz.chuPaiInfo;
 			chuPaiInfo.startCardSeq = newStartCardSeq;
-		this.placeCardSelected();
+		
 		this.placeCards();
 		this.updateSortedPaiInfoArray();
 		CommonUtil.print(PaiTypeConstants[paiType]);
@@ -1668,7 +1670,8 @@ Player.prototype.placeCardSelected = function(){
 	var chuPaiAreaTop = this.top - 20;
 	var  xOffset = 20, yOffset = 100,  left = 0,
 		tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;top:{2}px;left:{3}px'></div>";
-			
+	
+	var buChuContainerObj = this.buChuContainerObj;	
 	if(  (size = selectedCardArray.length ) > 0){
 		for(var i = 0, j = selectedCardArray.length; i < j; i++){		
 				tStr = CommonUtil.format.call(template,selectedCardArray[i].className, i, chuPaiAreaTop, left);
@@ -1676,12 +1679,18 @@ Player.prototype.placeCardSelected = function(){
 				left+= xOffset;				
 		}
 		var cardsHtml = htmls.join('');	
-	}else{
-		var template = "<div class='buchu{0}' style='position:absolute;top:{1}px;left:{2}px'></div>";
-		cardsHtml = CommonUtil.format.call(template,this.index, chuPaiAreaTop, left);
+		this.chuPaiAreaObj.innerHTML = cardsHtml;			
+	}else{		
+		buChuContainerObj && (buChuContainerObj.style.display = 'block');
 	}
 	
-	this.chuPaiAreaObj.innerHTML = cardsHtml;	
+	
+}
+
+Player.prototype.clearUI = function(){
+	buChuContainerObj = this.buChuContainerObj;
+	this.chuPaiAreaObj.innerHTML = '';	
+	buChuContainerObj && (buChuContainerObj.style.display = 'none');
 }
 /*
 cardType 指明牌的类型
@@ -1824,6 +1833,8 @@ ddz.initPlayers = function(){
 					cardArray:ddz.player1_card,
 					areaId:'player1_area',
 					chuPaiAreaId:'player1_card_container',
+					playerId:'player1',
+					buChuContainerClass:'buchu_container',
 					index:1
 				});	
 	var player2 = new Player({	
@@ -1832,15 +1843,19 @@ ddz.initPlayers = function(){
 					cardArray:ddz.player2_card,
 					areaId:'player2_area',
 					chuPaiAreaId:'player2_card_container',
+					playerId:'player2',
+					buChuContainerClass:'buchu_container',
 					index:2					
 				});	
 	
 	var player3 = new Player({
 					isDiZhu : true,
 					chupaiId:'chupai',	
-					cardArray:ddz.player3_card,					
+					cardArray:ddz.player3_card,	
+					playerId:'player3',
 					areaId:'player3_area',
 					chuPaiAreaId:'player3_card_container',
+					buChuContainerClass:'buchu_container',
 					index:3
 				});	
 	
@@ -1871,8 +1886,8 @@ ddz.startGame = function(){
 			curIndex = ( diZhuIndex++) % playerLength;
 			nextIndex = (curIndex + 1) % playerLength;
 			playerArray[curIndex].doChuPai();
-			playerArray[nextIndex].placeCardSelected();
-			// ddz.chuPaiInfo.isOver = true;
+			playerArray[nextIndex].clearUI();
+			//ddz.chuPaiInfo.isOver = true;
 		}else{
 			clearInterval(sh);
 		}		

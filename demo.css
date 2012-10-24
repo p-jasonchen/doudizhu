@@ -10,6 +10,11 @@
 	background-image:url('img/bg.jpg');
 }
 
+#absolute_game_area{
+position:absolute;
+width: 960px;
+height: 576px;
+}
 #player1{
 	width:50%;
 	height:50%;
@@ -53,6 +58,47 @@ float: left;
 	background:url('img/ani_role_parts.png') -4px -273px;
 }
 
+.buchu_container{
+position:absolute;
+display:none;
+top : 50px;
+left:120px;
+}
+
+#player3 .buchu_container{
+top:338px;
+}
+
+#player1 .buchu_container{
+left:686px;
+}
+
+.buchu_paopao{
+position: absolute;
+}
+.buchu_text{
+	position: absolute;
+	top: 30px;
+	left: 20px;
+	width: 96px;
+	height: 51px;
+	background: url('img/interface_a.png') -370px -383px;
+}
+#player1 .buchu_paopao{
+	width: 156px;
+	height: 120px;
+	background: url('img/interface_a.png') 0 -371px;
+	
+}
+
+#player2 .buchu_paopao, #player3 .buchu_paopao{
+	width: 156px;
+	height: 120px;
+	background: url('img/interface_a.png') 0 -251px;
+}
+
+
+
 #player2 .role_avatar, #player2 .role_body,#player3 .role_avatar, #player3 .role_body
 {
 	 -webkit-transform:scaleX(-1);
@@ -60,32 +106,19 @@ float: left;
 
 #player1_area, #player2_area {
 position: absolute;
-//display:none;
+display:none;
 }
 #player3_area{
 position: absolute;
+//display:none;
 }
 
 #player1_card_container, #player2_card_container,#player3_card_container{
 position: absolute;
+//display:none;
 top: 163px;
 }
 
-.buchu1, .buchu2, .buchu3{
-	width: 156px;
-	height:120px;
-	background-image:url('img/interface_a.png');
-    background-repeat:no-repeat;
-	
-}
-
-.buchu1{
-	background-position:0 -374px;	
-}
-
-.buchu2, .buchu3{		
-	background-position:0 -252px;
-}
 
 .card_img{
 width:100px;
