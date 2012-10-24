@@ -52,10 +52,10 @@ float: left;
 	background:url('img/ani_role_parts.png') -117px -381px
 }
 .role_body{
-	width:90px;
-	height:72px;
-	margin-top: -25px;
-	background:url('img/ani_role_parts.png') -4px -273px;
+	width:100px;
+	height:90px;
+	margin-top: -33px;
+	background:url('img/ani_role_parts.png') -8px -264px;
 }
 
 .buchu_container{
@@ -123,6 +123,7 @@ top: 163px;
 .card_img{
 width:100px;
 height:120px;
+-webkit-transform:scale(0.8);
 }
 
 .heitao3{
@@ -293,4 +294,14 @@ background:url(img/poker.png)  -1078px -366px;
 }
 .fangkuai2{
 background:url(img/poker.png)  -1176px -366px;
+}
+
+#result{
+width:688px;
+height:480px;
+background:url(img/interface_d_12082415.png) 0 484px;
+display:none;
+z-index: 100;
+position: absolute;
+margin:48px  136px;
 }
