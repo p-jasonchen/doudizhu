@@ -664,8 +664,9 @@ var ValidLianPaiInfo = function(lianZi, sameCount){
 }
 
 var Player = function(opt){
-	this.isDiZhu = opt.isDiZhu || false;
 	opt = opt || {};
+	this.isDiZhu = opt.isDiZhu || false;	
+	this.index = opt.index;
 	this.cardArray = opt.cardArray;	
 	this.sortedPaiInfoArray = null;
 	this.initSortedPaiInfoArray();
@@ -1636,7 +1637,7 @@ Player.prototype.chupaiCmpFunction = function(pai1, pai2){
 	}
 }
 
-Player.prototype.placeCards = function(){
+Player.prototype.placeCards = function(){	
 	var top = (this.top || ddz.top);
 	var  xOffset = 20, yOffset = 100,  left = 0,
 		tStr, htmls = [],template = "<img class='card_img' index={3} src='{0}'style='position:absolute;top:{1}px;left:{2}px'>";
@@ -1669,14 +1670,20 @@ Player.prototype.placeCardSelected = function(){
 	var selectedCardArray = this.selectedCardArray || [];
 	var chuPaiAreaTop = this.top - 20;
 	var  xOffset = 20, yOffset = 100,  left = 0,
-		tStr, htmls = [],template = "<img class='card_img' index={3} src='{0}'style='position:absolute;top:{1}px;left:{2}px'>";		
-
-	for(var i = 0, j = selectedCardArray.length; i < j; i++){		
-			tStr = CommonUtil.format.call(template,selectedCardArray[i].cardSrc, chuPaiAreaTop, left, i);
-			htmls.push(tStr);
-			left+= xOffset;				
+		tStr, htmls = [],template = "<img class='card_img' index={3} src='{0}'style='position:absolute;top:{1}px;left:{2}px'>";	
+			
+	if(  (size = selectedCardArray.length ) > 0){
+		for(var i = 0, j = selectedCardArray.length; i < j; i++){		
+				tStr = CommonUtil.format.call(template,selectedCardArray[i].cardSrc, chuPaiAreaTop, left, i);
+				htmls.push(tStr);
+				left+= xOffset;				
+		}
+		var cardsHtml = htmls.join('');	
+	}else{
+		var template = "<div class='buchu{0}' style='position:absolute;top:{1}px;left:{2}px'></div>";
+		cardsHtml = CommonUtil.format.call(template,this.index, chuPaiAreaTop, left);
 	}
-	var cardsHtml = htmls.join('');	
+	
 	this.chuPaiAreaObj.innerHTML = cardsHtml;	
 }
 /*
@@ -1813,14 +1820,16 @@ ddz.initPlayers = function(){
 					// chupaiId:'chupai',	
 					cardArray:ddz.player1_card,
 					areaId:'player1_area',
-					chuPaiAreaId:'player1_card_container'
+					chuPaiAreaId:'player1_card_container',
+					index:1
 				});	
 	var player2 = new Player({	
 					// isDiZhu : true,
 					// chupaiId:'chupai',		
 					cardArray:ddz.player2_card,
 					areaId:'player2_area',
-					chuPaiAreaId:'player2_card_container'					
+					chuPaiAreaId:'player2_card_container',
+					index:2					
 				});	
 	
 	var player3 = new Player({
@@ -1828,7 +1837,8 @@ ddz.initPlayers = function(){
 					chupaiId:'chupai',	
 					cardArray:ddz.player3_card,					
 					areaId:'player3_area',
-					chuPaiAreaId:'player3_card_container'
+					chuPaiAreaId:'player3_card_container',
+					index:3
 				});	
 	
 	ddz.diZhu = player3;
@@ -1853,10 +1863,13 @@ ddz.startGame = function(){
 		curIndex = diZhuIndex;		
 		
 	sh = setInterval(function(){			
-		var notOver = !ddz.chuPaiInfo.isOver;
+		var notOver = !ddz.chuPaiInfo.isOver;		
 		if(notOver){
 			curIndex = ( diZhuIndex++) % playerLength;
-			playerArray[curIndex].doChuPai();		
+			nextIndex = (curIndex + 1) % playerLength;
+			playerArray[curIndex].doChuPai();
+			playerArray[nextIndex].placeCardSelected();
+			ddz.chuPaiInfo.isOver = true;
 		}else{
 			clearInterval(sh);
 		}		

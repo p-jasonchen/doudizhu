@@ -1,3 +1,88 @@
 ﻿body {
-margin-left:10px;
+	margin-left:10px;	
+	background-image:url('img/bg_cell.jpg'); 
 }
+
+#game_area{
+	margin: 60px auto;
+	width:960px;
+	height:576px;
+	background-image:url('img/bg.jpg');
+}
+
+#player1{
+	width:50%;
+	height:50%;
+	float:right;
+}
+
+#player2{
+	width:50%;
+	height:50%;
+	float:right;
+}
+
+#player3{
+	width:100%;
+	height:50%;
+	float:right;
+}
+
+.role{
+margin: 30px 20px;
+}
+#player1 .role{
+	float: right;
+}
+#player2 .role{
+float: left;
+}
+#player3 .role{
+float: left;
+}
+
+ .role_avatar{
+	width:108px;
+	height:116px;
+	background:url('img/ani_role_parts.png') -117px -381px
+}
+.role_body{
+	width:90px;
+	height:72px;
+	margin-top: -25px;
+	background:url('img/ani_role_parts.png') -4px -273px;
+}
+
+#player2 .role_avatar, #player2 .role_body,#player3 .role_avatar, #player3 .role_body
+{
+	 -webkit-transform:scaleX(-1);
+}
+
+#player1_area, #player2_area {
+display:none;
+}
+#player3_area{
+position: absolute;
+}
+
+#player1_card_container, #player2_card_container,#player3_card_container{
+position: absolute;
+top: 163px;
+}
+
+.buchu1, .buchu2, .buchu3{
+	width: 156px;
+	height:120px;
+	background-image:url('img/interface_a.png');
+    background-repeat:no-repeat;
+	
+}
+
+.buchu1{
+	background-position:0 -374px;	
+}
+
+.buchu2, .buchu3{		
+	background-position:0 -252px;
+}
+
