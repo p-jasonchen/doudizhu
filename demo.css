@@ -59,7 +59,8 @@ float: left;
 }
 
 #player1_area, #player2_area {
-display:none;
+position: absolute;
+//display:none;
 }
 #player3_area{
 position: absolute;
@@ -86,3 +87,177 @@ top: 163px;
 	background-position:0 -252px;
 }
 
+.card_img{
+width:100px;
+height:120px;
+}
+
+.heitao3{
+background:url(img/poker.png) 0 0px;
+}
+.heitao4{
+background:url(img/poker.png) -98px 0;
+}
+.heitao5{
+background:url(img/poker.png)  -196px 0;
+}
+.heitao6{
+background:url(img/poker.png)  -294px 0;
+}
+.heitao7{
+background:url(img/poker.png)  -392px 0;
+}
+.heitao8{
+background:url(img/poker.png)  -490px 0;
+}
+.heitao9{
+background:url(img/poker.png)  -588px 0;
+}
+.heitao10{
+background:url(img/poker.png)  -686px 0;
+}
+.heitaoJ{
+background:url(img/poker.png)  -784px 0;
+}
+.heitaoQ{
+background:url(img/poker.png)  -882px 0;
+}
+.heitaoK{
+background:url(img/poker.png)  -982px 0;
+}
+.heitaoA{
+background:url(img/poker.png)  -1078px 0;
+}
+.heitao2{
+background:url(img/poker.png)  -1176px 0;
+}
+
+.xiaowang{
+background:url(img/poker.png)  -1274px 0;
+}
+.hongxin3{
+background:url(img/poker.png) 0 -122px;
+}
+.hongxin4{
+background:url(img/poker.png) -98px -122px;
+}
+.hongxin5{
+background:url(img/poker.png)  -196px -122px;
+}
+.hongxin6{
+background:url(img/poker.png)  -294px -122px;
+}
+.hongxin7{
+background:url(img/poker.png)  -392px -122px;
+}
+.hongxin8{
+background:url(img/poker.png)  -490px -122px;
+}
+.hongxin9{
+background:url(img/poker.png)  -588px -122px;
+}
+.hongxin10{
+background:url(img/poker.png)  -686px -122px;
+}
+.hongxinJ{
+background:url(img/poker.png)  -784px -122px;
+}
+.hongxinQ{
+background:url(img/poker.png)  -882px -122px;
+}
+.hongxinK{
+background:url(img/poker.png)  -982px -122px;
+}
+.hongxinA{
+background:url(img/poker.png)  -1078px -122px;
+}
+.hongxin2{
+background:url(img/poker.png)  -1176px -122px;
+}
+.dawang{
+background:url(img/poker.png)  -1274px -122px;
+}
+
+
+.meihua3{
+background:url(img/poker.png) 0 -244px;
+}
+.meihua4{
+background:url(img/poker.png) -98px -244px;
+}
+.meihua5{
+background:url(img/poker.png)  -196px -244px;
+}
+.meihua6{
+background:url(img/poker.png)  -294px -244px;
+}
+.meihua7{
+background:url(img/poker.png)  -392px -244px;
+}
+.meihua8{
+background:url(img/poker.png)  -490px -244px;
+}
+.meihua9{
+background:url(img/poker.png)  -588px -244px;
+}
+.meihua10{
+background:url(img/poker.png)  -686px -244px;
+}
+.meihuaJ{
+background:url(img/poker.png)  -784px -244px;
+}
+.meihuaQ{
+background:url(img/poker.png)  -882px -244px;
+}
+.meihuaK{
+background:url(img/poker.png)  -982px -244px;
+}
+.meihuaA{
+background:url(img/poker.png)  -1078px -244px;
+}
+.meihua2{
+background:url(img/poker.png)  -1176px -244px;
+}
+
+.dipai{
+background:url(img/poker.png)  -1274px -244px;
+}
+.fangkuai3{
+background:url(img/poker.png) 0 -366px;
+}
+.fangkuai4{
+background:url(img/poker.png) -98px -366px;
+}
+.fangkuai5{
+background:url(img/poker.png)  -196px -366px;
+}
+.fangkuai6{
+background:url(img/poker.png)  -294px -366px;
+}
+.fangkuai7{
+background:url(img/poker.png)  -392px -366px;
+}
+.fangkuai8{
+background:url(img/poker.png)  -490px -366px;
+}
+.fangkuai9{
+background:url(img/poker.png)  -588px -366px;
+}
+.fangkuai10{
+background:url(img/poker.png)  -686px -366px;
+}
+.fangkuaiJ{
+background:url(img/poker.png)  -784px -366px;
+}
+.fangkuaiQ{
+background:url(img/poker.png)  -882px -366px;
+}
+.fangkuaiK{
+background:url(img/poker.png)  -982px -366px;
+}
+.fangkuaiA{
+background:url(img/poker.png)  -1078px -366px;
+}
+.fangkuai2{
+background:url(img/poker.png)  -1176px -366px;
+}

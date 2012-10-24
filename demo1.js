@@ -1640,13 +1640,13 @@ Player.prototype.chupaiCmpFunction = function(pai1, pai2){
 Player.prototype.placeCards = function(){	
 	var top = (this.top || ddz.top);
 	var  xOffset = 20, yOffset = 100,  left = 0,
-		tStr, htmls = [],template = "<img class='card_img' index={3} src='{0}'style='position:absolute;top:{1}px;left:{2}px'>";
+		tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;top:{2}px;left:{3}px'></div>";
 		
 	var curPlayer = this.cardArray;	
 		
 	for(var i = 0, j = curPlayer.length; i < j; i++){
 		if(!curPlayer[i].dead){
-			tStr = CommonUtil.format.call(template,curPlayer[i].cardSrc, top, left, i);
+			tStr = CommonUtil.format.call(template,curPlayer[i].className, i, top, left);
 			htmls.push(tStr);
 			left+= xOffset;	
 		}		
@@ -1654,10 +1654,7 @@ Player.prototype.placeCards = function(){
 	var cardsHtml = htmls.join('');
 	ddz.top += 100;
 	if(this.isDiZhu){
-		left = left - xOffset + 60;
-		var btnTemplate = "<button id='chupai' style='position:absolute;top:{0}px;left:{1}px'>出牌</button>";
-		tStr = CommonUtil.format.call(btnTemplate, top, left);
-		cardsHtml += tStr;
+		
 	}
 	this.areaObj.innerHTML = cardsHtml;
 	this.top = top;
@@ -1670,11 +1667,11 @@ Player.prototype.placeCardSelected = function(){
 	var selectedCardArray = this.selectedCardArray || [];
 	var chuPaiAreaTop = this.top - 20;
 	var  xOffset = 20, yOffset = 100,  left = 0,
-		tStr, htmls = [],template = "<img class='card_img' index={3} src='{0}'style='position:absolute;top:{1}px;left:{2}px'>";	
+		tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;top:{2}px;left:{3}px'></div>";
 			
 	if(  (size = selectedCardArray.length ) > 0){
 		for(var i = 0, j = selectedCardArray.length; i < j; i++){		
-				tStr = CommonUtil.format.call(template,selectedCardArray[i].cardSrc, chuPaiAreaTop, left, i);
+				tStr = CommonUtil.format.call(template,selectedCardArray[i].className, i, chuPaiAreaTop, left);
 				htmls.push(tStr);
 				left+= xOffset;				
 		}
@@ -1717,9 +1714,9 @@ var Card = function(index){
 	if(divide === 4){
 		switch(remain){
 		case 0:
-			this.cardSrc = 'xiaowang.png';break;
+			cardChar = 'xiaowang';break;			
 		case 1:
-			this.cardSrc = 'dawang.png'; break;
+			cardChar = 'dawang';break;			
 		default:
 			throw '非法序号的牌';
 		}
@@ -1728,20 +1725,26 @@ var Card = function(index){
 	}else{
 		switch(remain){
 			case 10: 
-				cardChar = 'J.png';break;
+				cardChar = 'J';break;
 			case 11: 
-				cardChar = 'Q.png';break;
+				cardChar = 'Q';break;
 			case 12: 
-				cardChar = 'K.png';break;
+				cardChar = 'K';break;
 			case 0: 
-				cardChar = 'A.png';remain = 13; break;
+				cardChar = 'A';remain = 13; break;
 			default:
-				cardChar = remain + 1 + '.png';
+				cardChar = remain + 1;
 		}	
-		this.cardSrc = type + '/' + cardChar;
+		
 	}
 	this.cardSeq = remain;
-	
+	if(type == 'wang'){
+		this.cardSrc = cardChar + '.png';
+		this.className = cardChar;	
+	}else{
+		this.cardSrc = type + '/' + cardChar + '.png';
+		this.className = type + cardChar;	
+	}	
 }
 
 
@@ -1869,7 +1872,7 @@ ddz.startGame = function(){
 			nextIndex = (curIndex + 1) % playerLength;
 			playerArray[curIndex].doChuPai();
 			playerArray[nextIndex].placeCardSelected();
-			ddz.chuPaiInfo.isOver = true;
+			// ddz.chuPaiInfo.isOver = true;
 		}else{
 			clearInterval(sh);
 		}		
