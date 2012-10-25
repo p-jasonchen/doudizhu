@@ -677,6 +677,9 @@ var Player = function(opt){
 	var playerAreaObj = CommonUtil.$id(opt.playerId);
 	this.buChuContainerObj = CommonUtil.$class(opt.buChuContainerClass, playerAreaObj)[0];
 	
+	
+	
+	
 	this.chupaiId = opt.chupaiId;
 	this.selectPaiArray = [];
 	this.chaiPaiStack = [];
@@ -687,6 +690,7 @@ var Player = function(opt){
 	this.top = opt.top || 0;
 	this.left = opt.left || 0;
 	
+	
 	if(this.isDiZhu){
 		avatarObj =  CommonUtil.$class('role_avatar', playerAreaObj)[0];
 		bodyObj =  CommonUtil.$class('role_body', playerAreaObj)[0];
@@ -695,6 +699,12 @@ var Player = function(opt){
 		bodyObj.style.backgroundPositionX = '-8px';
 		bodyObj.style.backgroundPositionY = '-176px';
 	}
+	this.shouPaiCount = this.cardArray.length;
+	if(opt.shouPaiNumClass){
+		this.shouPaiNumArea = CommonUtil.$class(opt.shouPaiNumClass, playerAreaObj)[0];
+		this.shouPaiNumArea.innerText = this.shouPaiCount;
+	}
+	
 }
 
 Player.prototype.chuDanZhangNumSpecified = function(danZhangArray, num){
@@ -709,6 +719,7 @@ Player.prototype.chuDanZhangNumSpecified = function(danZhangArray, num){
 		curCard.mapImg.selected = true;						
 		curCard.dead = true;	
 	}
+	this.shouPaiCount  -= num;
 	return danZhangArray[0].cardSeq;
 }
 
@@ -729,6 +740,7 @@ Player.prototype.chuDanDuiNumSpecified = function(danDuiArray, num){
 	    selectedCardArray.push(curCard);
 		curCard.dead = true;
 	}
+	this.shouPaiCount  = this.shouPaiCount - 2*num;
 	return danDuiArray[0].cardSeq;
 }
 
@@ -755,6 +767,8 @@ Player.prototype.chuSiZhang = function(siZhang){
 		curCard.mapImg.selected = true,
 		curCard.dead = true,
 		selectedCardArray.push(curCard);	
+		
+		this.shouPaiCount  -= 4;		
 }
 
 /*
@@ -787,6 +801,7 @@ Player.prototype.chuSanZhang = function(sanZhang){
 		curCard.mapImg.selected = true,
 		curCard.dead = true,
 		selectedCardArray.push(curCard);
+		this.shouPaiCount  -= 3;
 		return curCard.cardSeq;
 }
 
@@ -1690,7 +1705,9 @@ Player.prototype.placeCardSelected = function(){
 				left+= xOffset;				
 		}
 		var cardsHtml = htmls.join('');	
-		this.chuPaiAreaObj.innerHTML = cardsHtml;			
+		this.chuPaiAreaObj.innerHTML = cardsHtml;
+		var shouPaiNumArea = this.shouPaiNumArea;
+		shouPaiNumArea && (shouPaiNumArea.innerText = this.shouPaiCount);
 	}else{		
 		buChuContainerObj && (buChuContainerObj.style.display = 'block');
 	}
@@ -1698,7 +1715,7 @@ Player.prototype.placeCardSelected = function(){
 	
 }
 
-Player.prototype.clearUI = function(){
+Player.prototype.clearChuPaiArea = function(){
 	buChuContainerObj = this.buChuContainerObj;
 	this.chuPaiAreaObj.innerHTML = '';	
 	buChuContainerObj && (buChuContainerObj.style.display = 'none');
@@ -1846,6 +1863,7 @@ ddz.initPlayers = function(){
 					chuPaiAreaId:'player1_card_container',
 					playerId:'player1',
 					buChuContainerClass:'buchu_container',
+					shouPaiNumClass:'role_shouPaiNum',
 					index:1,
 					top : 10,  
 					left: 120
@@ -1858,6 +1876,7 @@ ddz.initPlayers = function(){
 					chuPaiAreaId:'player2_card_container',
 					playerId:'player2',
 					buChuContainerClass:'buchu_container',
+					shouPaiNumClass:'role_shouPaiNum',
 					index:2	,
 					top : 10,  
 					left: 120					
@@ -1870,7 +1889,7 @@ ddz.initPlayers = function(){
 					playerId:'player3',
 					areaId:'player3_area',
 					chuPaiAreaId:'player3_card_container',
-					buChuContainerClass:'buchu_container',
+					buChuContainerClass:'buchu_container',					
 					index:3,
 					top : 180,  
 					left: 120
@@ -1904,7 +1923,7 @@ ddz.startGame = function(){
 			curIndex = ( diZhuIndex++) % playerLength;
 			nextIndex = (curIndex + 1) % playerLength;
 			playerArray[curIndex].doChuPai();
-			playerArray[nextIndex].clearUI();			
+			playerArray[nextIndex].clearChuPaiArea();			
 			//ddz.chuPaiInfo.isOver = true;
 		}else{
 			var player = ddz.chuPaiInfo.curChuPaiPlayer,

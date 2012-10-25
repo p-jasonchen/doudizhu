@@ -1,13 +1,15 @@
 ﻿body {
 	margin-left:10px;	
 	background-image:url('img/bg_cell.jpg'); 
+	//-webkit-transform:scale(0.6);
 }
 
 #game_area{
-	margin: 60px auto;
+	margin: 0px auto;
 	width:960px;
 	height:576px;
 	background-image:url('img/bg.jpg');
+	
 }
 
 #absolute_game_area{
@@ -58,6 +60,29 @@ float: left;
 	background:url('img/ani_role_parts.png') -8px -264px;
 }
 
+.role_shouPaiBg{
+background-image: url(img/interface_a.png);
+width: 62px;
+height: 58px;
+-webkit-transform: scale(1, 1.5) rotate(30deg);
+background-position: -358px -311px;
+margin-left: 15px;
+}
+
+.role_shouPaiNum{
+font-size:20px;
+font-weight:bold;
+position:absolute;
+top: 220px;
+left: 48px;
+z-index: 100;
+width: 34px;
+text-align: center;
+}
+
+#player1 .role_shouPaiNum{
+left: 860px;
+}
 .buchu_container{
 position:absolute;
 display:none;
