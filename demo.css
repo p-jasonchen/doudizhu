@@ -1,7 +1,7 @@
 ﻿body {
 	margin-left:10px;	
 	background-image:url('img/bg_cell.jpg'); 
-	//-webkit-transform:scale(0.6);
+	-webkit-transform:scale(0.6);
 }
 
 #game_area{

@@ -907,15 +907,15 @@ Player.prototype.findAlonePaiBasedOnSortedPaiInfoArray = function(sortedPaiInfoA
 			aloneArray.push(curPaiInfo);
 	}else {
 		//大王
-		if(pai0Seq == 15){
+		if(pai0Seq == 17){
 			i++;
-			if(array[1].cardSeq == 14){
+			if(array[1].cardSeq == 16){
 				i++;
 				aloneBomb.push([ array[0], array[1] ]);
 			}else{
 				aloneArray.push(curPaiInfo);			
 			}
-		}else if(pai0Seq == 14){
+		}else if(pai0Seq == 16){
 			i++;
 			aloneArray.push(curPaiInfo);
 		}	
@@ -1758,7 +1758,7 @@ var Card = function(index){
 			throw '非法序号的牌';
 		}
 		//为了便于把王牌在最大
-		remain += 14;
+		remain += 16;
 	}else{
 		switch(remain){
 			case 10: 
@@ -1769,6 +1769,8 @@ var Card = function(index){
 				cardChar = 'K';break;
 			case 0: 
 				cardChar = 'A';remain = 13; break;
+			case 1://2的牌
+				cardChar = '2';remain = 15; break; 
 			default:
 				cardChar = remain + 1;
 		}	
@@ -1940,31 +1942,3 @@ ddz.startGame = function(){
 	
 	
 }
-
-
-/*
-54个随机数生成算法
-*/
-var ddz1 = {};
-
-/*
-用链表，从0到53依次插入链表中的随机位置
-*/
-ddz1.createRandomCard = function(){
-	var card = [], rPos;
-	for(var i = 0; i < 53; i++){
-		rPos = Math.floor(Math.random() * 54);
-		list.push();
-	}
-}
-
-
-var ddz2 = {};
-/*
-1.如果需要将已有的vector数组重新排序，直接从原数组中随机抽签，顺序添加到新数组，并删除原数组中被抽到的元素
-
-2..或者直接从原vector数组顺序抽取元素，放置到新动态数组中的随机位置
-*/
-ddz2.createRandomCard = function(){
-}
-
