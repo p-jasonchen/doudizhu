@@ -689,6 +689,7 @@ var Player = function(opt){
 	
 	this.chuPaiAreaObj = CommonUtil.$id(opt.chuPaiAreaId);
 	var playerAreaObj = CommonUtil.$id(opt.playerId);
+	this.playerAreaObj = playerAreaObj;
 	this.buChuContainerObj = CommonUtil.$class(opt.buChuContainerClass, playerAreaObj)[0];
 	
 	
@@ -704,7 +705,13 @@ var Player = function(opt){
 	this.top = opt.top || 0;
 	this.left = opt.left || 0;
 	
+	this.shouPaiNumClass = opt.shouPaiNumClass;
 	
+	
+}
+
+Player.prototype.showMyFigure = function(){
+	var playerAreaObj = this.playerAreaObj;
 	if(this.isDiZhu){
 		avatarObj =  CommonUtil.$class('role_avatar', playerAreaObj)[0];
 		bodyObj =  CommonUtil.$class('role_body', playerAreaObj)[0];
@@ -714,11 +721,17 @@ var Player = function(opt){
 		bodyObj.style.backgroundPositionY = '-176px';
 	}
 	this.shouPaiCount = this.cardArray.length;
-	if(opt.shouPaiNumClass){
-		this.shouPaiNumArea = CommonUtil.$class(opt.shouPaiNumClass, playerAreaObj)[0];
+	if(this.shouPaiNumClass){
+		this.shouPaiNumArea = CommonUtil.$class(this.shouPaiNumClass, playerAreaObj)[0];
 		this.shouPaiNumArea.innerText = this.shouPaiCount;
 	}
 	
+}
+
+Player.prototype.assignDiPai = function(){
+	var diPai = ddz.dipai;
+	this.cardArray = this.cardArray.concat(diPai);
+	this.initSortedPaiInfoArray();
 }
 
 Player.prototype.chuDanZhangNumSpecified = function(danZhangArray, num){
@@ -1847,15 +1860,14 @@ ddz.assignCards = function(){
 		}
 	}
 	
-	// dipai.push(new Card(cards[51])), 
-	// dipai.push(new Card(cards[52])), 
-	// dipai.push(new Card(cards[53]));
-	
-	player3_card.push(new Card(cards[51])), 
-	player3_card.push(new Card(cards[52])), 
-	player3_card.push(new Card(cards[53]));
+	dipai.push(new Card(cards[51])), 
+	dipai.push(new Card(cards[52])), 
+	dipai.push(new Card(cards[53]));	
 	
 	
+	// player3_card.push(new Card(cards[51])), 
+	// player3_card.push(new Card(cards[52])), 
+	// player3_card.push(new Card(cards[53]));
 	
 	this.player1_card = player1_card, 
 	this.player2_card = player2_card, 
@@ -1871,8 +1883,7 @@ ddz.assignCards = function(){
 }
 
 ddz.initPlayers = function(){
-	var player1 = new Player({	
-					isDiZhu : true,
+	var player1 = new Player({					
 					chupaiId:'chupai',	
 					cardArray:ddz.player1_card,
 					areaId:'player1_area',
@@ -1884,8 +1895,7 @@ ddz.initPlayers = function(){
 					top : 10,  
 					left: 120
 				});	
-	var player2 = new Player({	
-					// isDiZhu : true,
+	var player2 = new Player({						
 					// chupaiId:'chupai',		
 					cardArray:ddz.player2_card,
 					areaId:'player2_area',
@@ -1898,8 +1908,7 @@ ddz.initPlayers = function(){
 					left: 120					
 				});	
 	
-	var player3 = new Player({
-					// isDiZhu : true,
+	var player3 = new Player({					
 					// chupaiId:'chupai',	
 					cardArray:ddz.player3_card,	
 					playerId:'player3',
@@ -1912,17 +1921,26 @@ ddz.initPlayers = function(){
 					
 				});	
 	
-	ddz.diZhu = player1;
-	ddz.diZhuIndex = 0;
-	ddz.chuPaiInfo.strongPlayer = ddz.diZhu;
-	player1.placeCards();
-	player2.placeCards();
-	player3.placeCards();
-	
 	this.player1 = player1, this.player2 = player2, this.player3 = player3;
 	this.playerArray.push(player1);
 	this.playerArray.push(player2);
 	this.playerArray.push(player3);
+	
+	//随机分配地主
+	ranIndex = Math.floor(Math.random() * 3);	
+	//alert(ranIndex);
+	ddz.diZhu = this.playerArray[ranIndex];
+	ddz.diZhuIndex = ranIndex;	
+	ddz.chuPaiInfo.strongPlayer = ddz.diZhu;
+	ddz.diZhu.isDiZhu = true;
+	ddz.diZhu.assignDiPai();
+	player1.placeCards();
+	player2.placeCards();
+	player3.placeCards();	
+	player1.showMyFigure();
+	player2.showMyFigure();
+	player3.showMyFigure();	
+	
 	player1 = null, player2 = null, player3 = null;	
 }
 
