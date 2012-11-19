@@ -58,6 +58,20 @@
 		}
 		//console.log(pre + ' : '+ text);
 		//alert(pre + ' : '+ text);
+	},
+	adjustSize: function(){
+		var bodyWidth = document.body.clientWidth,
+			bodyHeight = document.body.clientHeight,
+			realWidth = 960, realHeight = 576;
+		//alert('bodyWidth' + bodyWidth + ' and bodyHeight:' + bodyHeight);
+		var xRadio = (bodyWidth / realWidth),
+			yRadio = (bodyHeight / realHeight );
+		
+		var scale =  (xRadio < yRadio) ? xRadio : yRadio;
+		var area = document.getElementById('game_area');
+		area.style.zoom  = scale;
+		//alert('scale:' + scale);
+		return  area;
 	}
 };
 
