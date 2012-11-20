@@ -86,7 +86,7 @@
         this.start(opt.runCallBack,opt.overTimeCallback);      
     }
     ns.CountDown.prototype.start=function(){    		
-        this.start()
+        this.start();
     }
     ns.CountDown.prototype.start=function(runCallBack,overTimeCallback){
         this.runCallBack=runCallBack;
@@ -120,6 +120,8 @@
     	}
 		
 })(CommonUtil);
+
+
 
 /*
 @param:	chaiPaiResult 
@@ -386,7 +388,7 @@ var PaiTypeJudger = function(sortedPaiArray){
 	this.paiType = -1;
 }
 PaiTypeJudger.prototype.doJudge = function(){
-	this.judger.doJudge(this);
+	return this.judger.doJudge(this);
 }
 
 
@@ -408,11 +410,13 @@ var ShuangWang = {
 
 var FourBomb = {
 	doJudge: function(paiTypeJudger){
-		var paiArray = paiTypeJudger.sortedPaiArray, length = paiArray.length, paiType;
+		var paiArray = paiTypeJudger.sortedPaiArray, 
+			length = paiArray.length, paiType,startCardSeq;
 		if(length == 1 && paiArray[0].length == 4){
 			paiType = 'siZhang';
 			CommonUtil.print(PaiTypeConstants[paiType]);
 			paiTypeJudger.paiType = paiType;
+			startCardSeq = paiArray[0][0].cardSeq;
 		}else{
 			paiTypeJudger.judger = Four11;
 			paiTypeJudger.doJudge();
@@ -425,7 +429,10 @@ var Four11 = {
 		var paiArray = paiTypeJudger.sortedPaiArray, length = paiArray.length, paiType;
 		if(length == 3 && paiArray[0].length == 4 && paiArray[1].length == 1 && paiArray[2].length == 1){
 			paiType = 'siDai2DanZhang';
+			startCardSeq = paiArray[0][0].cardSeq;
+			
 			paiTypeJudger.paiType = paiType;
+			paiTypeJudger.startCardSeq = startCardSeq;			
 			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = Four2;
@@ -440,6 +447,9 @@ var Four2 = {
 		if(length == 2 && paiArray[0].length == 4 && paiArray[1].length == 2){
 			paiType = 'siDai1Dui';
 			paiTypeJudger.paiType = paiType;
+			
+			startCardSeq = paiArray[0][0].cardSeq;
+			paiTypeJudger.startCardSeq = startCardSeq;		
 			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = Four22;
@@ -454,6 +464,10 @@ var Four22 = {
 		if(length == 3 && paiArray[0].length == 4 && paiArray[1].length == 2 && paiArray[2].length == 2){
 			paiType = 'siDai2Dui';
 			paiTypeJudger.paiType = paiType;
+			
+			startCardSeq = paiArray[0][0].cardSeq;
+			paiTypeJudger.startCardSeq = startCardSeq;		
+			
 			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = SinglePai;
@@ -470,6 +484,8 @@ var SinglePai = {
 		if(length == 1 && start.length == 1){
 			paiType = 'danZhang';
 			paiTypeJudger.paiType = paiType;
+			startCardSeq = paiArray[0][0].cardSeq;
+			paiTypeJudger.startCardSeq = startCardSeq;		
 			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = SingleDui;
@@ -486,6 +502,8 @@ var SingleDui = {
 		if(length == 1 && start.length == 2){
 			paiType = 'danDui';
 			paiTypeJudger.paiType = paiType;
+			startCardSeq = paiArray[0][0].cardSeq;
+			paiTypeJudger.startCardSeq = startCardSeq;		
 			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = LianPai;
@@ -501,7 +519,9 @@ var LianPai = {
 			start = paiArray[0],  endIndex = length -1 ;
 		if(length >= 5 && (start.length == 1) && (endIndex != (start.cardSeq - paiArray[endIndex].cardSeq ) ) ){
 			paiType = 'lianPai';
-			paiTypeJudger.paiType = paiType;
+			paiTypeJudger.paiType = paiType;			
+			paiTypeJudger.startCardSeq = start.cardSeq;		
+			paiTypeJudger.length = length;
 			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = LianDui;
@@ -517,6 +537,8 @@ var LianDui = {
 		if(length >= 3 && (start.length == 2) && (endIndex == (start[0].cardSeq - paiArray[endIndex][0].cardSeq ) ) ){
 			paiType = 'lianDui';
 			paiTypeJudger.paiType = paiType;
+			paiTypeJudger.startCardSeq = start.cardSeq;		
+			paiTypeJudger.length = length;
 			CommonUtil.print(PaiTypeConstants[paiType]);
 		}else{
 			paiTypeJudger.judger = ThreeeX;
@@ -553,6 +575,7 @@ var ThreeeX = {
 			}else{
 				CommonUtil.print(PaiTypeConstants[paiType]);
 				paiTypeJudger.paiType = paiType;
+				paiTypeJudger.startCardSeq = start[0].cardSeq;				
 			}			
 		}
 }
@@ -591,6 +614,9 @@ var FeiJi = {
 					paiType = 'feiJiDaiDui';				
 				}
 			}
+			
+			paiTypeJudger.startCardSeq = start[0].cardSeq;
+			paiTypeJudger.length = threeCount;
 		}else if(start.length == 4){
 			var fourCount = 1,preCardSeq = start[0].cardSeq, curCardSeq;
 			for(var i = 1; i < length; i++){
@@ -613,6 +639,8 @@ var FeiJi = {
 			}	
 			if(fourCount != 1){
 				paiType = 'feiJiDai1';
+				paiTypeJudger.startCardSeq = start[0].cardSeq;
+				paiTypeJudger.length = fourCount;
 			}
 		}else{
 			paiType = -1;			
@@ -631,7 +659,7 @@ var FeiJi = {
 			}
 		}else{
 			CommonUtil.print(PaiTypeConstants[paiType]);
-			paiTypeJudger.paiType = paiType;
+			paiTypeJudger.paiType = paiType;			
 		}		
 	}	
 }
@@ -679,7 +707,7 @@ var ValidLianPaiInfo = function(lianZi, sameCount){
 
 var Player = function(opt){
 	opt = opt || {};
-	this.isDiZhu = opt.isDiZhu || false;	
+	this.AIPlayer = ( typeof opt.AIPlayer  == 'undefined' ? true : opt.AIPlayer);	
 	this.index = opt.index;
 	this.cardArray = opt.cardArray;	
 	this.sortedPaiInfoArray = null;
@@ -687,15 +715,19 @@ var Player = function(opt){
 	this.areaId = opt.areaId;
 	this.areaObj = CommonUtil.$id(opt.areaId);
 	
-	this.chuPaiAreaObj = CommonUtil.$id(opt.chuPaiAreaId);
+	this.chuPaiAreaObj = CommonUtil.$id(opt.chuPaiAreaId);	
 	var playerAreaObj = CommonUtil.$id(opt.playerId);
 	this.playerAreaObj = playerAreaObj;
 	this.buChuContainerObj = CommonUtil.$class(opt.buChuContainerClass, playerAreaObj)[0];
-	
+	this.clockAreaObj = CommonUtil.$class('clock',playerAreaObj)[0];
+	this.actionContianerObj = CommonUtil.$class('action_container',playerAreaObj)[0];
 	
 	
 	
 	this.chupaiId = opt.chupaiId;
+	this.buchuId = opt.buchuId;
+	this.chongxuanId = opt.chongxuanId;
+	this.tishiId = opt.tishiId;
 	this.selectPaiArray = [];
 	this.chaiPaiStack = [];
 	this.chaiPaiResultStack = [];
@@ -706,6 +738,8 @@ var Player = function(opt){
 	this.left = opt.left || 0;
 	
 	this.shouPaiNumClass = opt.shouPaiNumClass;
+	
+	this.timeRemain = CommonUtil.$class(opt.timeRemainClass,playerAreaObj)[0];
 	
 	
 }
@@ -840,7 +874,7 @@ Player.prototype.registeSelectCardAction = function(){
 		curCard.mapCard = this.cardArray[parseInt(curCard.getAttribute('index'))];
 		curCard.mapCard.mapImg = curCard;		
 		
-		this.isDiZhu && curCard.addEventListener('click', function(){
+		!this.AIPlayer && curCard.addEventListener('click', function(){
 			var s = this.style, selectOffset = 10, top;
 			if(this.selected){
 				this.mapCard.dead = false;
@@ -862,13 +896,43 @@ Player.prototype.registeChupaiAction = function(){
 	var that = this,  chupaiBtn = CommonUtil.$id(this.chupaiId);	
 	chupaiBtn && chupaiBtn.addEventListener('click', function(){		
 		// that.judgeChupaiType();		
-		 // ddz.placeCards();	
+		 // ddz.placeCards();			
 		
-		that.positiveChuPai();		
-		that.placeCards();
-		//console.log(p.findAlonePai());
+		that.nonAIChuPai();
+		//that.actionContianerObj && (that.actionContianerObj.style.display = 'none');
 		
 	});
+	
+	buchuBtn = CommonUtil.$id(this.buchuId);
+	buchuBtn && buchuBtn.addEventListener('click', function(){		
+		// that.judgeChupaiType();		
+		 // ddz.placeCards();			
+		
+		that.buChuPai();
+		//that.actionContianerObj && (that.actionContianerObj.style.display = 'none');
+		
+	});
+}
+
+Player.prototype.isNonAISelectedPaiOk = function(judger){
+return false;
+}
+Player.prototype.nonAIChuPai = function(){
+	var judger = this.judgeChupaiType() || {}, 
+		that = this,
+		chuPaiInfo = ddz.chuPaiInfo;
+	var strongPlayer = chuPaiInfo.strongPlayer;
+	if(this.isNonAISelectedPaiOk(judger) ){	
+		chuPaiInfo.paiType = judger.paiType;
+		chuPaiInfo.startCardSeq = judger.startCardSeq;
+		chuPaiInfo.length = judger.length;
+		chuPaiInfo.curChuPaiPlayer=this;	
+		chuPaiInfo.strongPlayer	 = this;	
+		this.doNonAIChuPai();
+		
+	}else{
+		// this.buChuPai();
+	}
 }
 
 Player.prototype.getSelectedCards = function(){
@@ -914,11 +978,13 @@ Player.prototype.getSortedPaiInfo = function(cardArray, cmpFunction){
 }
 Player.prototype.judgeChupaiType = function(){
 	var selectCards = this.getSelectedCards() || [];
+		this.selectedCardArray = selectCards;
 	if(selectCards.length == 0) return;
 	var sortedInfo = this.getSortedPaiInfo(selectCards, this.chupaiCmpFunction), 
 		sortedArray = sortedInfo.sortedArray;
 	var judger = new PaiTypeJudger(sortedArray);
-	return judger.doJudge();
+	judger.doJudge();
+	return judger;
 }
 
 
@@ -1318,7 +1384,7 @@ Player.prototype.positiveChuPai = function(){
 	
 }
 
-Player.prototype.doChuPai = function(){	
+Player.prototype.doChuPai = function(){
 	var chuPaiInfo = ddz.chuPaiInfo,
 		strongPlayer = chuPaiInfo.strongPlayer;	
 	
@@ -1328,6 +1394,93 @@ Player.prototype.doChuPai = function(){
 		this.negativeChuPai();
 	}
 	this.selectedCardArray.length = 0;
+	/*
+	var clockArea = this.clockAreaObj, that = this;
+	clockArea && (clockArea.style.display = 'none');
+	*/
+	
+	this.countDown && this.countDown.stop();	
+	setTimeout( function(){ddz.gameControl()}, 0);
+}
+
+Player.prototype.doNonAIChuPai = function(){
+	var that  = this;
+	that.countDown && that.countDown.stop();
+	this.placeCardSelected();
+	that.placeCards();	
+	this.updateSortedPaiInfoArray();
+	if(this.sortedPaiInfoArray.length == 0){
+			ddz.chuPaiInfo.isOver = true;
+			CommonUtil.print('一方牌数为0，游戏结束');
+	}	
+	//ddz.nextPlayer.clearChuPaiArea();
+	setTimeout( function(){ddz.gameControl()}, 0);
+}
+
+Player.prototype.buChuPai = function(){
+	var chuPaiInfo = ddz.chuPaiInfo;
+	if(!chuPaiInfo.paiType){
+		this.forceChuPaiWhenTimeout();
+	}else{
+		this.selectedCardArray.length = 0;
+		this.countDown && this.countDown.stop();		
+		this.placeCardSelected();	
+		setTimeout( function(){ddz.gameControl()}, 0);
+	}
+}
+
+Player.prototype.forceChuPaiWhenTimeout = function(){
+	var chuPaiInfo = ddz.chuPaiInfo;
+	if(chuPaiInfo.strongPlayer == this){
+		this.positiveChuPai();
+	}else{
+		this.negativeChuPai()
+	}
+	var sortedPaiInfoArray = this.sortedPaiInfoArray ;
+	var array = sortedPaiInfoArray[sortedPaiInfoArray.length -  1].array;
+	array.forEach(function(card){
+		card.mapImg.selected = true;
+		card.dead = true;
+	});
+	this.nonAIChuPai();
+	
+}
+
+Player.prototype.showBeforeChuPaiUI = function(){
+	
+		var actionContianerObj = this.actionContianerObj;
+		actionContianerObj && (actionContianerObj.style.display = 'block');
+		
+		
+	
+	var buChuContainerObj = this.buChuContainerObj;	
+	buChuContainerObj && (buChuContainerObj.style.display = 'none');
+	
+	buChuContainerObj = this.buChuContainerObj;
+	this.chuPaiAreaObj.innerHTML = '';	
+}
+Player.prototype.startTimer = function(){
+	var vt = 1000 * 10, that = this;
+	/*
+	var clockArea = this.clockAreaObj;
+	clockArea && (clockArea.style.display = 'block');
+	*/
+    var countDown = new CommonUtil.CountDown({overTime:vt, runCallBack:function (remainSec) {
+			that.timeRemain.innerText = remainSec;
+        }, overTimeCallback:function () {
+               // that.forceChuPaiWhenTimeout();				
+			   that.doChuPai();
+    }});
+	this.countDown = countDown;
+	this.showBeforeChuPaiUI();
+	if(this.AIPlayer){
+		setTimeout(function(){that.doChuPai()}, 3000);		
+	}else{
+	}
+	
+	// playerArray[curIndex].doChuPai();
+	// playerArray[nextIndex].clearChuPaiArea();
+	
 	
 }
 
@@ -1714,8 +1867,7 @@ Player.prototype.placeCards = function(){
 	this.areaObj.innerHTML = cardsHtml;
 	this.top = top;
 	
-	this.registeSelectCardAction();
-	this.registeChupaiAction();
+	this.registeSelectCardAction();	
 }
 
 Player.prototype.placeCardSelected = function(){
@@ -1739,13 +1891,18 @@ Player.prototype.placeCardSelected = function(){
 		buChuContainerObj && (buChuContainerObj.style.display = 'block');
 	}
 	
+	var actionContianerObj = this.actionContianerObj;
+	actionContianerObj && (actionContianerObj.style.display = 'none');
+	
+	
+	this.selectedCardArray.length = 0;
 	
 }
 
 Player.prototype.clearChuPaiArea = function(){
-	buChuContainerObj = this.buChuContainerObj;
-	this.chuPaiAreaObj.innerHTML = '';	
-	buChuContainerObj && (buChuContainerObj.style.display = 'none');
+	// buChuContainerObj = this.buChuContainerObj;
+	// this.chuPaiAreaObj.innerHTML = '';	
+	// buChuContainerObj && (buChuContainerObj.style.display = 'none');
 }
 /*
 cardType 指明牌的类型
@@ -1884,13 +2041,14 @@ ddz.assignCards = function(){
 
 ddz.initPlayers = function(){
 	var player1 = new Player({					
-					chupaiId:'chupai',	
+					//chupaiId:'chupai',	
 					cardArray:ddz.player1_card,
 					areaId:'player1_area',
 					chuPaiAreaId:'player1_card_container',
 					playerId:'player1',
 					buChuContainerClass:'buchu_container',
 					shouPaiNumClass:'role_shouPaiNum',
+					timeRemainClass:'time_remain',
 					index:1,
 					top : 10,  
 					left: 120
@@ -1903,18 +2061,24 @@ ddz.initPlayers = function(){
 					playerId:'player2',
 					buChuContainerClass:'buchu_container',
 					shouPaiNumClass:'role_shouPaiNum',
+					timeRemainClass:'time_remain',
 					index:2	,
 					top : 10,  
 					left: 120					
 				});	
 	
 	var player3 = new Player({					
-					// chupaiId:'chupai',	
+					chupaiId:'chupai_btn',
+					buchuId:'buchu_btn',
+					chongxuanId:'chongxuanId',
+					tishiId:'tishiId',
+					AIPlayer:false,
 					cardArray:ddz.player3_card,	
 					playerId:'player3',
 					areaId:'player3_area',
 					chuPaiAreaId:'player3_card_container',
-					buChuContainerClass:'buchu_container',					
+					buChuContainerClass:'buchu_container',	
+					timeRemainClass:'time_remain',
 					index:3,
 					top : 180,  
 					left: 120
@@ -1930,13 +2094,16 @@ ddz.initPlayers = function(){
 	ranIndex = Math.floor(Math.random() * 3);	
 	//alert(ranIndex);
 	ddz.diZhu = this.playerArray[ranIndex];
-	ddz.diZhuIndex = ranIndex;	
+	ddz.diZhuIndex = ranIndex;		
 	ddz.chuPaiInfo.strongPlayer = ddz.diZhu;
 	ddz.diZhu.isDiZhu = true;
 	ddz.diZhu.assignDiPai();
 	player1.placeCards();
 	player2.placeCards();
-	player3.placeCards();	
+	player3.placeCards();
+
+	player3.registeChupaiAction();	
+	
 	player1.showMyFigure();
 	player2.showMyFigure();
 	player3.showMyFigure();	
@@ -1945,32 +2112,33 @@ ddz.initPlayers = function(){
 }
 
 
-ddz.startGame = function(){
-	var diZhuIndex = ddz.diZhuIndex, 
-		playerArray = ddz.playerArray || [],
-		playerLength = playerArray.length,
-		curIndex = diZhuIndex;		
+
 		
-	sh = setInterval(function(){			
-		var notOver = !ddz.chuPaiInfo.isOver;		
+
+ddz.startGame = function(){
+	this.curIndex = this.diZhuIndex;
+	this.gameControl();	
+}
+
+ddz.gameControl = function(){
+	var notOver = !this.chuPaiInfo.isOver;	
+		playerArray = this.playerArray || [],
+		playerLength = playerArray.length;	
 		if(notOver){
-			curIndex = ( diZhuIndex++) % playerLength;
-			nextIndex = (curIndex + 1) % playerLength;
-			playerArray[curIndex].doChuPai();
-			playerArray[nextIndex].clearChuPaiArea();			
+			this.curIndex = ( this.diZhuIndex++) % playerLength;
+			nextIndex = (this.curIndex + 1) % playerLength;
+			ddz.nextPlayer = playerArray[nextIndex];
+			// playerArray[curIndex].doChuPai();					
+			playerArray[this.curIndex].startTimer();
+			
 			//ddz.chuPaiInfo.isOver = true;
 		}else{
-			var player = ddz.chuPaiInfo.curChuPaiPlayer,
+			var player = this.chuPaiInfo.curChuPaiPlayer,
 				resultObj = CommonUtil.$id('result');
 				style = resultObj.style;				
 			if(player.isDiZhu){		
 				style.backgroundPositionY = '0px';
 			}
-			style.display = 'block';
-			clearInterval(sh);
-			
+			style.display = 'block';		
 		}		
-	}, 1000);	
-	
-	
 }

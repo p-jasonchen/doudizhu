@@ -23,7 +23,26 @@
 <div id='setScreen'></div>
 <section id='game_area'>
 	<div id='absolute_game_area'>
-	<section id='player1' class='dizhu'>
+	<section id='player1'>
+		<div class='role'>
+			<div class='role_avatar'></div>
+			<div class='role_body'></div>
+			<div class='role_shouPaiBg'></div><div class='role_shouPaiNum'>12</div>
+			<div class='buchu_container'>
+				<div class='buchu_paopao'></div>
+				<div class='buchu_text'></div>
+			</div>			
+		</div>
+		<div class='action_container'>
+		<div class='clock'>
+			<div class='time_remain'></div>
+		</div>	
+		</div>		
+		<section id='player1_area'></section>
+		<section id='player1_card_container'></section>
+	</section>
+	
+	<section id='player2'>
 		<div class='role'>
 			<div class='role_avatar'></div>
 			<div class='role_body'></div>
@@ -32,33 +51,33 @@
 				<div class='buchu_paopao'></div>
 				<div class='buchu_text'></div>
 			</div>
-		</div>
-		<section id='player1_area'></section>
-		<section id='player1_card_container'></section>
-	</section>
-	
-	<section id='player2' class='nongmin'>
-		<div class='role'>
-			<div class='role_avatar'></div>
-			<div class='role_body'></div>
-			<div class='role_shouPaiBg'></div><div class='role_shouPaiNum'>12</div>
-			<div class='buchu_container'>
-				<div class='buchu_paopao'></div>
-				<div class='buchu_text'></div>
+			<div class='action_container'>
+			<div class='clock'>
+				<div class='time_remain'></div>
+			</div>
 			</div>
 		</div>
 		<section id='player2_area'></section>
 		<section id='player2_card_container'></section>
 	</section>
 	
-	<section id='player3' class='nongmin'>
+	<section id='player3'>
 		<div class='role'>
 			<div class='role_avatar'></div>
 			<div class='role_body'></div>			
 			<div class='buchu_container'>
 				<div class='buchu_paopao'></div>
 				<div class='buchu_text'></div>
+			</div>			
+		</div>
+		<div class='action_container'>
+			<div id='buchu_btn' class='green_btn'><div></div></div>		
+			<div class='clock'>
+				<div class='time_remain'></div>
 			</div>
+			<div id='chongxuan_btn' class='gray_btn'><div></div></div>
+			<div id='tishi_btn' class='red_btn'><div></div></div>
+			<div id='chupai_btn' class='gray_btn'><div></div></div>
 		</div>
 		<section id='player3_area'></section>	
 		<section id='player3_card_container'></section>
@@ -141,7 +160,7 @@
 <script type='text/javascript'>
 	CommonUtil.adjustSize();
 			 ddz.assignCards();	
-			// ddz.startGame();
+			 ddz.startGame();
 </script>
 </body>
 </html>
