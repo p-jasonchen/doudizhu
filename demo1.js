@@ -646,6 +646,7 @@ var FeiJi = {
 			paiType = -1;			
 		}
 		if(paiType == -1){
+		/*
 			CommonUtil.print('非法牌型');
 			var  mapCard;
 			for(var i = 0; i < length; i++){
@@ -657,6 +658,7 @@ var FeiJi = {
 				}
 				
 			}
+			*/
 		}else{
 			CommonUtil.print(PaiTypeConstants[paiType]);
 			paiTypeJudger.paiType = paiType;			
@@ -743,6 +745,7 @@ var Player = function(opt){
 	
 	
 }
+
 
 Player.prototype.showMyFigure = function(){
 	var playerAreaObj = this.playerAreaObj;
@@ -915,7 +918,17 @@ Player.prototype.registeChupaiAction = function(){
 }
 
 Player.prototype.isNonAISelectedPaiOk = function(judger){
-return false;
+	var chuPaiInfo = ddz.chuPaiInfo,
+		strongPlayer = chuPaiInfo.strongPlayer,	
+		ok = (judger.paiType != -1);		
+	if(ok){
+		ok = (strongPlayer === this);
+		if(!ok){
+		ok = ( (judger.paiType == chuPaiInfo.paiType) &&
+				(judger.startCardSeq > chuPaiInfo.startCardSeq) );
+		}
+	}
+	return ok;
 }
 Player.prototype.nonAIChuPai = function(){
 	var judger = this.judgeChupaiType() || {}, 
@@ -932,6 +945,7 @@ Player.prototype.nonAIChuPai = function(){
 		
 	}else{
 		// this.buChuPai();
+		//this.this.selectedCardArray.length = 0;
 	}
 }
 
@@ -947,6 +961,14 @@ Player.prototype.getSelectedCards = function(){
 	return selectCards;
 }
 
+Player.prototype.clearSelectedCards = function(){
+	var cardImgs = CommonUtil.$class('card_img', this.areaObj), curCard;
+	for(var i = 0, j = cardImgs.length; i < j; i++){
+		curCard = cardImgs[i].mapCard;
+		curCard.dead = false;		
+	}
+	this.selectedCardArray.length = 0;
+}
 
 Player.prototype.getSortedPaiInfo = function(cardArray, cmpFunction){
 	var cards = cardArray || [];
@@ -1393,7 +1415,7 @@ Player.prototype.doChuPai = function(){
 	}else{
 		this.negativeChuPai();
 	}
-	this.selectedCardArray.length = 0;
+	// this.selectedCardArray.length = 0;
 	/*
 	var clockArea = this.clockAreaObj, that = this;
 	clockArea && (clockArea.style.display = 'none');
@@ -1419,7 +1441,7 @@ Player.prototype.doNonAIChuPai = function(){
 
 Player.prototype.buChuPai = function(){
 	var chuPaiInfo = ddz.chuPaiInfo;
-	if(!chuPaiInfo.paiType){
+	if(!chuPaiInfo.paiType || chuPaiInfo.strongPlayer === this){
 		this.forceChuPaiWhenTimeout();
 	}else{
 		this.selectedCardArray.length = 0;
@@ -1430,19 +1452,8 @@ Player.prototype.buChuPai = function(){
 }
 
 Player.prototype.forceChuPaiWhenTimeout = function(){
-	var chuPaiInfo = ddz.chuPaiInfo;
-	if(chuPaiInfo.strongPlayer == this){
-		this.positiveChuPai();
-	}else{
-		this.negativeChuPai()
-	}
-	var sortedPaiInfoArray = this.sortedPaiInfoArray ;
-	var array = sortedPaiInfoArray[sortedPaiInfoArray.length -  1].array;
-	array.forEach(function(card){
-		card.mapImg.selected = true;
-		card.dead = true;
-	});
-	this.nonAIChuPai();
+	this.clearSelectedCards();
+	this.doChuPai();
 	
 }
 
@@ -1460,7 +1471,7 @@ Player.prototype.showBeforeChuPaiUI = function(){
 	this.chuPaiAreaObj.innerHTML = '';	
 }
 Player.prototype.startTimer = function(){
-	var vt = 1000 * 10, that = this;
+	var vt = 1000 * 14, that = this;
 	/*
 	var clockArea = this.clockAreaObj;
 	clockArea && (clockArea.style.display = 'block');
@@ -1468,10 +1479,11 @@ Player.prototype.startTimer = function(){
     var countDown = new CommonUtil.CountDown({overTime:vt, runCallBack:function (remainSec) {
 			that.timeRemain.innerText = remainSec;
         }, overTimeCallback:function () {
-               // that.forceChuPaiWhenTimeout();				
-			   that.doChuPai();
+               // that.forceChuPaiWhenTimeout();
+				that.clearSelectedCards();
+				that.doChuPai();
     }});
-	this.countDown = countDown;
+	this.countDown = countDown;	
 	this.showBeforeChuPaiUI();
 	if(this.AIPlayer){
 		setTimeout(function(){that.doChuPai()}, 3000);		
