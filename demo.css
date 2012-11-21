@@ -78,7 +78,6 @@ position: absolute;
 
 #player1 .action_container{
 top: 100px;
-left: 528px;
 width: 400px;
 height: 90px;
 }
@@ -105,6 +104,36 @@ z-index:100;
 	left: 150px;
 }
 
+.qiangdizhu_area{
+position:absolute;
+}
+#player1 .qiangdizhu_area .clock{
+
+top:100px;
+}
+
+#player2 .qiangdizhu_area .clock{
+top: 100px;
+left: 128px;
+}
+
+#player3 .qiangdizhu_area .clock{
+left:0px;
+top:0px;
+}
+
+.qiangdizhu_container{
+position:absolute;
+top:50px;
+}
+
+#player1 .qiangdizhu_container{
+left:210px;
+}
+
+#player2 .qiangdizhu_container, #player3 .qiangdizhu_container{
+left:120px;
+}
 
 .time_remain{
 	text-align: center;
@@ -188,19 +217,17 @@ margin-left: 15px;
 }
 
 .role_shouPaiNum{
-font-size:20px;
-font-weight:bold;
-position:absolute;
-top: 220px;
-left: 48px;
+font-size: 20px;
+font-weight: bold;
+position: relative;
+top: -40px;
+left: 28px;
 z-index: 100;
 width: 34px;
 text-align: center;
 }
 
-#player1 .role_shouPaiNum{
-left: 860px;
-}
+
 .buchu_container{
 width:156px;
 height:120px;
@@ -215,15 +242,13 @@ top:0x;
 }
 
 #player1 .buchu_container{
-left:686px;
+left:210px;
 }
 
 .qiang_dizhu_area{
 display:none;
 }
-.buchu_paopao{
-position: absolute;
-}
+
 .buchu_text{
 	position: absolute;
 	top: 30px;
@@ -271,19 +296,20 @@ width: 350px;
 height: 120px;
 position: absolute;
 -webkit-transform:scale(0.8);
+background:red;
+//display: none;
 }
 
 #player1_card_container{
 top: 150px;
-left: 470px;
 }
  #player2_card_container{
-top: 12px;
+top: 150px;
 left: 120px;
  }
  #player3_card_container{
  width: 700px;
-top: 300px;
+top: 30px;
 left: 180px;
 }
 

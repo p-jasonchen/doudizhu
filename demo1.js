@@ -17,6 +17,11 @@
 		return e.getElementsByClassName(_class);
 	},
 	
+	$query: function(selector, e){
+		e = e || document;
+		return e.querySelector(selector);
+	},
+	
 	bubbleSort: function(dataArray, cmpFunc){
 		var length = dataArray.length, temp, data1 ,data2, ret=0;
 		for(var i = 0; i < length - 1; i++){
@@ -741,7 +746,7 @@ var Player = function(opt){
 	
 	this.shouPaiNumClass = opt.shouPaiNumClass;
 	
-	this.timeRemain = CommonUtil.$class(opt.timeRemainClass,playerAreaObj)[0];
+	this.timeRemain = CommonUtil.$query('.action_container .time_remain',playerAreaObj);
 	
 	
 }
@@ -2053,7 +2058,6 @@ ddz.initPlayers = function(){
 					playerId:'player1',
 					buChuContainerClass:'buchu_container',
 					shouPaiNumClass:'role_shouPaiNum',
-					timeRemainClass:'time_remain',
 					index:1,
 					top : 10,  
 					left: 120
@@ -2065,8 +2069,7 @@ ddz.initPlayers = function(){
 					cardContainerId:'player2_card_container',
 					playerId:'player2',
 					buChuContainerClass:'buchu_container',
-					shouPaiNumClass:'role_shouPaiNum',
-					timeRemainClass:'time_remain',
+					shouPaiNumClass:'role_shouPaiNum',					
 					index:2	,
 					top : 10,  
 					left: 120					
@@ -2082,8 +2085,7 @@ ddz.initPlayers = function(){
 					playerId:'player3',
 					shouPaiAreaId:'player3_shoupai_area',
 					cardContainerId:'player3_card_container',
-					buChuContainerClass:'buchu_container',	
-					timeRemainClass:'time_remain',
+					buChuContainerClass:'buchu_container',					
 					index:3,
 					top : 180,  
 					left: 120
