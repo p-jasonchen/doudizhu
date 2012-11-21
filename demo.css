@@ -67,21 +67,42 @@ float: left;
 	height:90px;
 	background:url('img/interface_a.png') -539px -288px;
 	position: absolute;
-	top: 100px;
-	left: 120px;	
 }
 
 .action_container{
 display:none;
+position: absolute;
+}
+
+#player1 .action_container{
+top: 100px;
+left: 528px;
+width: 400px;
+height: 90px;
+}
+
+#player2 .action_container{
+top: 100px;
+left: 128px;
+width: 400px;
+height: 90px;
+}
+
+#player3 .action_container{
+top: 360px;
+left: 128px;
+width: 800px;
+height: 90px;
+z-index:100;
 }
 
 #player1 .clock{
-	left:726px;
+	left: 200px;
 }
-#player3 .clock{
-	top: 378px;
-	left: 290px;
+#player3 .clock{	
+	left: 150px;
 }
+
 
 .time_remain{
 	text-align: center;
@@ -113,8 +134,8 @@ display:none;
 }
 
 #buchu_btn{	
-	top: 382px;
-	left: 140px;
+	
+	//left: 140px;
 }
 
 #buchu_btn div{
@@ -125,8 +146,8 @@ background:url('img/btn.png') 0 -573px;
 }
 
 #chongxuan_btn{	
-	top: 382px;
-	left: 400px;
+
+	left: 260px;
 }
 
 #chongxuan_btn div{
@@ -136,8 +157,8 @@ margin: 18px auto;
 background:url('img/btn.png') -337px -528px;
 }
 #tishi_btn{	
-	top: 382px;
-	left:580px;
+
+	left:440px;
 }
 #tishi_btn div{
 width:74px;
@@ -146,8 +167,8 @@ margin: 18px auto;
 background:url('img/btn.png') -0px -623px;
 }
 #chupai_btn{	
-	top: 382px;
-	left: 750px;
+
+	left: 610px;
 }
 #chupai_btn div{
 width:74px;
@@ -226,26 +247,46 @@ position: absolute;
 
 
 
-#player1_area, #player2_area {
+#player1_shoupai_area, #player2_shoupai_area {
 position: absolute;
 display:none;
 }
-#player3_area{
+#player3_shoupai_area{
 position: absolute;
-//display:none;
+width: 800px;
+height: 120px;
+top: 450px;
+left: 128px;
 }
 
-#player1_card_container, #player2_card_container,#player3_card_container{
+.card_played_area{
+width: 350px;
+height: 120px;
 position: absolute;
-//display:none;
-top: 163px;
+-webkit-transform:scale(0.8);
 }
+
+#player1_card_container{
+top: 150px;
+left: 470px;
+}
+ #player2_card_container{
+top: 150px;
+left: 120px;
+ }
+ #player3_card_container{
+ width: 700px;
+top: 300px;
+left: 180px;
+}
+
+
 
 
 .card_img{
 width:100px;
 height:120px;
--webkit-transform:scale(0.8);
+//-webkit-transform:scale(0.8);
 }
 
 .heitao3{

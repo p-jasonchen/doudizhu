@@ -714,10 +714,10 @@ var Player = function(opt){
 	this.cardArray = opt.cardArray;	
 	this.sortedPaiInfoArray = null;
 	this.initSortedPaiInfoArray();
-	this.areaId = opt.areaId;
-	this.areaObj = CommonUtil.$id(opt.areaId);
+	this.shouPaiAreaId = opt.shouPaiAreaId;
+	this.shouPaiAreaObj = CommonUtil.$id(opt.shouPaiAreaId);
 	
-	this.chuPaiAreaObj = CommonUtil.$id(opt.chuPaiAreaId);	
+	this.cardContainerObj = CommonUtil.$id(opt.cardContainerId);	
 	var playerAreaObj = CommonUtil.$id(opt.playerId);
 	this.playerAreaObj = playerAreaObj;
 	this.buChuContainerObj = CommonUtil.$class(opt.buChuContainerClass, playerAreaObj)[0];
@@ -870,7 +870,7 @@ Player.prototype.chuSanZhang = function(sanZhang){
 }
 
 Player.prototype.registeSelectCardAction = function(){
-	var cardImgs = CommonUtil.$class('card_img', this.areaObj), curCard;	
+	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;	
 	for(var i = 0, j = cardImgs.length; i < j; i++){
 		curCard = this.cardArray[i];		
 		curCard = cardImgs[i];		
@@ -881,12 +881,12 @@ Player.prototype.registeSelectCardAction = function(){
 			var s = this.style, selectOffset = 10, top;
 			if(this.selected){
 				this.mapCard.dead = false;
-				top = parseFloat(s.top) + selectOffset + 'px';
+				top = parseFloat(s.top || 0) + selectOffset + 'px';
 				this.selected = false;
 			}else{
 				this.mapCard.dead = true;
 				this.selected = true;
-				top = parseFloat(s.top) - selectOffset + 'px';
+				top = parseFloat(s.top || 0) - selectOffset + 'px';
 			}
 			s.top = top;
 		});
@@ -951,7 +951,7 @@ Player.prototype.nonAIChuPai = function(){
 
 Player.prototype.getSelectedCards = function(){
 	var selectCards = [];
-	var cardImgs = CommonUtil.$class('card_img', this.areaObj), curCard;
+	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;
 	for(var i = 0, j = cardImgs.length; i < j; i++){
 		curCard = cardImgs[i];
 		if(curCard.selected){
@@ -962,7 +962,7 @@ Player.prototype.getSelectedCards = function(){
 }
 
 Player.prototype.clearSelectedCards = function(){
-	var cardImgs = CommonUtil.$class('card_img', this.areaObj), curCard;
+	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;
 	for(var i = 0, j = cardImgs.length; i < j; i++){
 		curCard = cardImgs[i].mapCard;
 		curCard.dead = false;		
@@ -1426,6 +1426,7 @@ Player.prototype.doChuPai = function(){
 }
 
 Player.prototype.doNonAIChuPai = function(){
+	this.shouPaiCount -= this.selectedCardArray.length;
 	var that  = this;
 	that.countDown && that.countDown.stop();
 	this.placeCardSelected();
@@ -1434,8 +1435,7 @@ Player.prototype.doNonAIChuPai = function(){
 	if(this.sortedPaiInfoArray.length == 0){
 			ddz.chuPaiInfo.isOver = true;
 			CommonUtil.print('一方牌数为0，游戏结束');
-	}	
-	//ddz.nextPlayer.clearChuPaiArea();
+	}		
 	setTimeout( function(){ddz.gameControl()}, 0);
 }
 
@@ -1468,18 +1468,17 @@ Player.prototype.showBeforeChuPaiUI = function(){
 	buChuContainerObj && (buChuContainerObj.style.display = 'none');
 	
 	buChuContainerObj = this.buChuContainerObj;
-	this.chuPaiAreaObj.innerHTML = '';	
+	this.cardContainerObj.innerHTML = '';	
 }
 Player.prototype.startTimer = function(){
-	var vt = 1000 * 14, that = this;
+	var vt = 1000 * 15, that = this;
 	/*
 	var clockArea = this.clockAreaObj;
 	clockArea && (clockArea.style.display = 'block');
 	*/
     var countDown = new CommonUtil.CountDown({overTime:vt, runCallBack:function (remainSec) {
 			that.timeRemain.innerText = remainSec;
-        }, overTimeCallback:function () {
-               // that.forceChuPaiWhenTimeout();
+        }, overTimeCallback:function () {               
 				that.clearSelectedCards();
 				that.doChuPai();
     }});
@@ -1488,11 +1487,7 @@ Player.prototype.startTimer = function(){
 	if(this.AIPlayer){
 		setTimeout(function(){that.doChuPai()}, 3000);		
 	}else{
-	}
-	
-	// playerArray[curIndex].doChuPai();
-	// playerArray[nextIndex].clearChuPaiArea();
-	
+	}	
 	
 }
 
@@ -1858,10 +1853,11 @@ Player.prototype.chupaiCmpFunction = function(pai1, pai2){
 	}
 }
 
-Player.prototype.placeCards = function(){	
-	var top = this.top || 0,  left = this.left || 0,
-	    xOffset = 20, yOffset = -50;
-	var	tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;top:{2}px;left:{3}px'></div>";
+Player.prototype.placeCards = function(){
+	var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth,left = 0,
+		xOffset = (shouPaiAreaWidth-100)/(this.shouPaiCount -1); //减100是因为每张卡片宽度为100	
+	xOffset = (xOffset > 50 ? 50 : xOffset);
+	var	tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;left:{3}px'></div>";
 		
 	var curPlayer = this.cardArray;	
 		
@@ -1876,27 +1872,28 @@ Player.prototype.placeCards = function(){
 	if(this.isDiZhu){
 		
 	}
-	this.areaObj.innerHTML = cardsHtml;
-	this.top = top;
+	this.shouPaiAreaObj.innerHTML = cardsHtml;
+	
 	
 	this.registeSelectCardAction();	
 }
 
 Player.prototype.placeCardSelected = function(){
-	var selectedCardArray = this.selectedCardArray || [];
-	var chuPaiAreaTop = this.top ;
-	var  xOffset = 20, yOffset = 100,  left = 200,
-		tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;top:{2}px;left:{3}px'></div>";
-	
+	var selectedCardArray = this.selectedCardArray || [];	
 	var buChuContainerObj = this.buChuContainerObj;	
 	if(  (size = selectedCardArray.length ) > 0){
+		var tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;left:{2}px'></div>";
+		var  cardContainerWidth = this.cardContainerObj.clientWidth,left = 0,
+		xOffset = (cardContainerWidth-100)/(size -1); //减100是因为每张卡片宽度为100	
+		xOffset = (xOffset > 50 ? 50 : xOffset);
+		
 		for(var i = 0, j = selectedCardArray.length; i < j; i++){		
-				tStr = CommonUtil.format.call(template,selectedCardArray[i].className, i, chuPaiAreaTop, left);
+				tStr = CommonUtil.format.call(template,selectedCardArray[i].className, i, left);
 				htmls.push(tStr);
 				left+= xOffset;				
 		}
 		var cardsHtml = htmls.join('');	
-		this.chuPaiAreaObj.innerHTML = cardsHtml;
+		this.cardContainerObj.innerHTML = cardsHtml;
 		var shouPaiNumArea = this.shouPaiNumArea;
 		shouPaiNumArea && (shouPaiNumArea.innerText = this.shouPaiCount);
 	}else{		
@@ -1911,11 +1908,7 @@ Player.prototype.placeCardSelected = function(){
 	
 }
 
-Player.prototype.clearChuPaiArea = function(){
-	// buChuContainerObj = this.buChuContainerObj;
-	// this.chuPaiAreaObj.innerHTML = '';	
-	// buChuContainerObj && (buChuContainerObj.style.display = 'none');
-}
+
 /*
 cardType 指明牌的类型
 cardSeq 指明某种牌型内的序号
@@ -2055,8 +2048,8 @@ ddz.initPlayers = function(){
 	var player1 = new Player({					
 					//chupaiId:'chupai',	
 					cardArray:ddz.player1_card,
-					areaId:'player1_area',
-					chuPaiAreaId:'player1_card_container',
+					shouPaiAreaId:'player1_shoupai_area',
+					cardContainerId:'player1_card_container',
 					playerId:'player1',
 					buChuContainerClass:'buchu_container',
 					shouPaiNumClass:'role_shouPaiNum',
@@ -2068,8 +2061,8 @@ ddz.initPlayers = function(){
 	var player2 = new Player({						
 					// chupaiId:'chupai',		
 					cardArray:ddz.player2_card,
-					areaId:'player2_area',
-					chuPaiAreaId:'player2_card_container',
+					shouPaiAreaId:'player1_shoupai_area',
+					cardContainerId:'player2_card_container',
 					playerId:'player2',
 					buChuContainerClass:'buchu_container',
 					shouPaiNumClass:'role_shouPaiNum',
@@ -2087,8 +2080,8 @@ ddz.initPlayers = function(){
 					AIPlayer:false,
 					cardArray:ddz.player3_card,	
 					playerId:'player3',
-					areaId:'player3_area',
-					chuPaiAreaId:'player3_card_container',
+					shouPaiAreaId:'player3_shoupai_area',
+					cardContainerId:'player3_card_container',
 					buChuContainerClass:'buchu_container',	
 					timeRemainClass:'time_remain',
 					index:3,
@@ -2110,15 +2103,19 @@ ddz.initPlayers = function(){
 	ddz.chuPaiInfo.strongPlayer = ddz.diZhu;
 	ddz.diZhu.isDiZhu = true;
 	ddz.diZhu.assignDiPai();
+	
+	
+	player1.showMyFigure();
+	player2.showMyFigure();
+	player3.showMyFigure();	
+	
 	player1.placeCards();
 	player2.placeCards();
 	player3.placeCards();
 
 	player3.registeChupaiAction();	
 	
-	player1.showMyFigure();
-	player2.showMyFigure();
-	player3.showMyFigure();	
+	
 	
 	player1 = null, player2 = null, player3 = null;	
 }
