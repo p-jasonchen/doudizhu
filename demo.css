@@ -69,10 +69,11 @@ float: left;
 	height:90px;
 	background:url('img/interface_a.png') -539px -288px;
 	position: absolute;
+	//display: none;
 }
 
 .action_container{
-display:none;
+//display:none;
 position: absolute;
 }
 
@@ -106,32 +107,41 @@ z-index:100;
 
 .qiangdizhu_area{
 position:absolute;
+display:none;
 }
-#player1 .qiangdizhu_area .clock{
+#player1  .clock{
 
 top:100px;
 }
 
-#player2 .qiangdizhu_area .clock{
+#player2  .clock{
 top: 100px;
 left: 128px;
 }
+
+
 
 #player3 .qiangdizhu_area .clock{
 left:0px;
 top:0px;
 }
 
-.qiangdizhu_container{
+.wrapper{
 position:absolute;
-top:50px;
+//display:none;
 }
 
-#player1 .qiangdizhu_container{
+.paopao_container{
+position:absolute;
+top:50px;
+display: none;
+}
+
+#player1 .paopao_container{
 left:210px;
 }
 
-#player2 .qiangdizhu_container, #player3 .qiangdizhu_container{
+#player2 .paopao_container, #player3 .paopao_container{
 left:120px;
 }
 
@@ -296,7 +306,7 @@ width: 350px;
 height: 120px;
 position: absolute;
 -webkit-transform:scale(0.8);
-background:red;
+//background:red;
 //display: none;
 }
 

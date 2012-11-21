@@ -725,9 +725,11 @@ var Player = function(opt){
 	this.cardContainerObj = CommonUtil.$id(opt.cardContainerId);	
 	var playerAreaObj = CommonUtil.$id(opt.playerId);
 	this.playerAreaObj = playerAreaObj;
-	this.buChuContainerObj = CommonUtil.$class(opt.buChuContainerClass, playerAreaObj)[0];
-	this.clockAreaObj = CommonUtil.$class('clock',playerAreaObj)[0];
-	this.actionContianerObj = CommonUtil.$class('action_container',playerAreaObj)[0];
+	this.buChuContainerObj = CommonUtil.$query('.wrapper .paopao_container', playerAreaObj);
+	
+	var selector = (this.AIPlayer ? '.wrapper .clock' : '.wrapper .action_container' );
+	this.clockAreaObj = CommonUtil.$query(selector,playerAreaObj);
+	this.clockAreaObj.style.display = 'none';
 	
 	
 	
@@ -739,14 +741,11 @@ var Player = function(opt){
 	this.chaiPaiStack = [];
 	this.chaiPaiResultStack = [];
 	
-	this.selectedCardArray = [];
-	
-	this.top = opt.top || 0;
-	this.left = opt.left || 0;
+	this.selectedCardArray = [];	
 	
 	this.shouPaiNumClass = opt.shouPaiNumClass;
 	
-	this.timeRemain = CommonUtil.$query('.action_container .time_remain',playerAreaObj);
+	this.timeRemain = CommonUtil.$query('.wrapper  .time_remain',playerAreaObj);
 	
 	
 }
@@ -907,7 +906,7 @@ Player.prototype.registeChupaiAction = function(){
 		 // ddz.placeCards();			
 		
 		that.nonAIChuPai();
-		//that.actionContianerObj && (that.actionContianerObj.style.display = 'none');
+		//that.clockAreaObj && (that.clockAreaObj.style.display = 'none');
 		
 	});
 	
@@ -917,7 +916,7 @@ Player.prototype.registeChupaiAction = function(){
 		 // ddz.placeCards();			
 		
 		that.buChuPai();
-		//that.actionContianerObj && (that.actionContianerObj.style.display = 'none');
+		//that.clockAreaObj && (that.clockAreaObj.style.display = 'none');
 		
 	});
 }
@@ -1464,8 +1463,8 @@ Player.prototype.forceChuPaiWhenTimeout = function(){
 
 Player.prototype.showBeforeChuPaiUI = function(){
 	
-		var actionContianerObj = this.actionContianerObj;
-		actionContianerObj && (actionContianerObj.style.display = 'block');
+		var clockAreaObj = this.clockAreaObj;
+		clockAreaObj && (clockAreaObj.style.display = 'block');
 		
 		
 	
@@ -1905,8 +1904,8 @@ Player.prototype.placeCardSelected = function(){
 		buChuContainerObj && (buChuContainerObj.style.display = 'block');
 	}
 	
-	var actionContianerObj = this.actionContianerObj;
-	actionContianerObj && (actionContianerObj.style.display = 'none');
+	var clockAreaObj = this.clockAreaObj;
+	clockAreaObj && (clockAreaObj.style.display = 'none');
 	
 	
 	this.selectedCardArray.length = 0;
