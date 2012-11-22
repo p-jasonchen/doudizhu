@@ -34,8 +34,7 @@
 				<div class='time_remain'></div>
 			</div>
 			<div class='paopao_container'>
-				<div class='buchu_paopao'></div>
-				<div class='buchu_text'></div>
+				<div class='paopao'><div class='text bujiao'></div></div>				
 			</div>	
 		
 		</div>
@@ -44,8 +43,7 @@
 			<div class='time_remain'></div>
 		</div>	
 		<div class='paopao_container'>
-				<div class='buchu_paopao'></div>
-				<div class='buchu_text'></div>
+				<div class='paopao'><div class='text buchu'></div></div>
 		</div>	
 		</div>		
 		<section id='player1_shoupai_area'></section>
@@ -64,8 +62,7 @@
 				<div class='time_remain'></div>
 			</div>
 			<div class='paopao_container'>
-				<div class='buchu_paopao'></div>
-				<div class='buchu_text'></div>
+				<div class='paopao'><div class='text bujiao'></div></div>
 			</div>	
 		
 		</div>
@@ -75,8 +72,7 @@
 				<div class='time_remain'></div>
 			</div>
 			<div class='paopao_container'>
-				<div class='buchu_paopao'></div>
-				<div class='buchu_text'></div>
+				<div class='paopao'><div class='text buchu'></div></div>
 			</div>
 		</div>
 		
@@ -92,14 +88,11 @@
 		
 		<div class='qiangdizhu_area'>
 			<div class='paopao_container'>
-				<div class='buchu_paopao'></div>
-				<div class='buchu_text'></div>
+				<div class='paopao'><div class='text bujiao'></div></div>
 			</div>	
-			<div class='action_container'>	
-				<div id='buchu_btn1' class='green_btn'><div></div></div>				
-				<div id='chongxuan_btn1' class='gray_btn'><div></div></div>
-				<div id='tishi_btn1' class='red_btn'><div></div></div>
-				<div id='chupai_btn1' class='gray_btn'><div></div></div>		
+			<div class='action_container'>			
+				<div id='negative_btn' class='action_btn red_btn'><div class='text_2char bujiao'></div></div>
+				<div id='positive_btn' class='action_btn gray_btn'><div class='text_3char jiao_dizhu'></div></div>		
 				<div class='clock'>
 					<div class='time_remain'></div>
 				</div>			
@@ -110,14 +103,13 @@
 		<div class='wrapper'>			
 			
 			<div class='paopao_container'>
-				<div class='buchu_paopao'></div>
-				<div class='buchu_text'></div>
+				<div class='paopao'><div class='text buchu'></div></div>
 			</div>	
 			<div class='action_container'>
-				<div id='buchu_btn' class='green_btn'><div></div></div>				
-				<div id='chongxuan_btn' class='gray_btn'><div></div></div>
-				<div id='tishi_btn' class='red_btn'><div></div></div>
-				<div id='chupai_btn' class='gray_btn'><div></div></div>		
+				<div id='buchu_btn' class='action_btn green_btn '><div class='text_2char buchu'></div></div>				
+				<div id='chongxuan_btn' class='action_btn gray_btn '><div class='text_2char chongxuan'></div></div>
+				<div id='tishi_btn' class='action_btn red_btn '><div class='text_2char tishi'></div></div>
+				<div id='chupai_btn' class='action_btn gray_btn '><div class='text_2char chupai'></div></div>		
 				<div class='clock'>
 					<div class='time_remain'></div>
 				</div>			
@@ -204,7 +196,8 @@
 <script type='text/javascript'>
 	CommonUtil.adjustSize();
 			 ddz.assignCards();	
-			ddz.startGame();
+			//ddz.startGame();
+			ddz.qiangDiZhuControl();
 </script>
 </body>
 </html>

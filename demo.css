@@ -120,15 +120,9 @@ left: 128px;
 }
 
 
-
-#player3 .qiangdizhu_area .clock{
-left:0px;
-top:0px;
-}
-
 .wrapper{
 position:absolute;
-//display:none;
+display:none;
 }
 
 .paopao_container{
@@ -152,70 +146,59 @@ left:120px;
 	margin-left: 8px;
 }
 
-
-.green_btn{
+.action_container .action_btn{
 	width:136px;
 	height:78px;
-	background:url('img/btn.png') 0px -85px;
+	background-image:url('img/btn.png');
 	position: absolute;
+}
+
+.green_btn{
+	background-position: 0px -85px;	
 }
 
 .red_btn{
-	width:136px;
-	height:78px;
-	background:url('img/btn.png') 0px 0px;
-	position: absolute;
+	background-position: 0px 0px;	
 }
 
 .gray_btn{
-	width:136px;
-	height:78px;
-	background:url('img/btn.png') -288px 0px;
-	position: absolute;
+	background-position: -288px 0px;	
 }
 
-#buchu_btn{	
-	
+#negative_btn{
+left: 204px;
+}
+
+#player3 .qiangdizhu_area .clock{
+left:351px;
+}
+#positive_btn{
+left: 460px;
+
+}
+
+#buchu_btn{		
 	//left: 140px;
 }
-
-#buchu_btn div{
-width:74px;
-height:42px;
-margin: 18px auto;
-background:url('img/btn.png') 0 -573px;
-}
-
 #chongxuan_btn{	
-
 	left: 260px;
 }
 
-#chongxuan_btn div{
-width:74px;
-height:42px;
-margin: 18px auto;
-background:url('img/btn.png') -337px -528px;
+.chongxuan{
+background-position: -337px -528px;
 }
 #tishi_btn{	
 
 	left:440px;
 }
-#tishi_btn div{
-width:74px;
-height:42px;
-margin: 18px auto;
-background:url('img/btn.png') -0px -623px;
+.tishi{
+background-position: -0px -623px;
 }
-#chupai_btn{	
-
+#chupai_btn{
 	left: 610px;
 }
-#chupai_btn div{
-width:74px;
-height:42px;
-margin: 18px auto;
-background:url('img/btn.png') -252px -528px;
+.chupai{
+background-position: -238px -481px;
 }
 .role_shouPaiBg{
 background-image: url(img/interface_a.png);
@@ -259,22 +242,74 @@ left:210px;
 display:none;
 }
 
-.buchu_text{
+
+.action_btn .text_3char{
+top: 20px;
+left: 18px;
 	position: absolute;
+	width: 100px;
+	height: 36px;
+	background-image: url('img/btn.png');
+}
+.action_btn .text_2char{
+	top: 20px;
+	left: 31px;
+	position: absolute;
+	width: 75px;
+	height: 36px;
+	background-image: url('img/btn.png');
+}
+
+
+.paopao_container .text{
+	position: absolute;
+	width: 116px;
+	height: 50px;
+	background-image: url('img/interface_a.png');
 	top: 30px;
 	left: 20px;
-	width: 96px;
-	height: 51px;
-	background: url('img/interface_a.png') -370px -383px;
 }
-#player1 .buchu_paopao{
+
+
+.bujiao{
+background-position:-148px -384px;
+}
+.jiao_dizhu{
+background-position:-209px -395px;
+}
+.buqiang{
+background-position:-255px -384px;
+}
+.qiang_dizhu{
+background-position:-291px -439px;
+}
+
+.buchu{
+background-position:-361px -384px;
+}
+
+.action_btn .buchu{
+background-position:0  -576px;
+}
+
+.action_btn .bujiao{
+background-position:0  -481px;
+}
+
+.action_btn .buqiang{
+background-position:0  -528px;
+}
+
+}
+
+#player1 .paopao{
 	width: 156px;
 	height: 120px;
 	background: url('img/interface_a.png') 0 -371px;
 	
 }
 
-#player2 .buchu_paopao, #player3 .buchu_paopao{
+#player1 .paopao , #player2 .paopao, #player3 .paopao{
 	width: 156px;
 	height: 120px;
 	background: url('img/interface_a.png') 0 -251px;
