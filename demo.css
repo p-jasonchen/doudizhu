@@ -277,23 +277,37 @@ display:none;
 	left: 20px;
 }
 
-
-.bujiao{
+.paopao_container .bujiao{
 background-position:-148px -384px;
 }
-.jiao_dizhu{
-background-position:-0px -396px;
-}
-.buqiang{
-background-position:-0px -526px;
-}
-.qiang_dizhu{
-background-position:-0px -436px;
+
+.paopao_container .buchu{
+background-position:-360px -384px;
 }
 
-.buchu{
-background-position:-361px -384px;
+.paopao_container .buqiang{
+background-position:-256px -384px;
 }
+
+.paopao_container .jiao_dizhu{
+background-position:-163px -441px;
+}
+
+.paopao_container .qiang_dizhu{
+background-position:-292px -441px;
+}
+
+
+.action_container .jiao_dizhu{
+background-position:-0px -390px;
+}
+.action_container .buqiang{
+background-position:-0px -526px;
+}
+.action_container .qiang_dizhu{
+background-position:-293px -440px;
+}
+
 
 .action_btn .buchu{
 background-position:0  -576px;

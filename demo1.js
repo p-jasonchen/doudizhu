@@ -90,9 +90,7 @@
         this.timer=null;
         this.start(opt.runCallBack,opt.overTimeCallback);      
     }
-    ns.CountDown.prototype.start=function(){    		
-        this.start();
-    }
+   
     ns.CountDown.prototype.start=function(runCallBack,overTimeCallback){
         this.runCallBack=runCallBack;
         this.overTimeCallback=overTimeCallback;
@@ -764,6 +762,8 @@ Player.prototype.initQiangDiZhuObj = function(){
 	htmlObj.paopaoArea = paopaoArea;
 	htmlObj.textArea = textArea;
 	
+	htmlObj.status = JIAO_DIZHU;	
+	
 	this.qiangDiZhuObj = htmlObj;
 	
 }
@@ -963,6 +963,11 @@ Player.prototype.registeChupaiAction = function(){
 		//that.clockAreaObj && (that.clockAreaObj.style.display = 'none');
 		
 	});
+	
+	chongXuanBtn = CommonUtil.$id(this.chongxuanId);	
+	chongXuanBtn && chongXuanBtn.addEventListener('click', function(e){	
+		that.doChongXuan();
+	});	
 }
 
 Player.prototype.registeQiangDiZhuAction = function(){
@@ -971,6 +976,16 @@ Player.prototype.registeQiangDiZhuAction = function(){
 	negativeBtn && negativeBtn.addEventListener('click', function(){		
 		// that.judgeChupaiType();		
 		 // ddz.placeCards();			
+		
+		
+		var className = 'text bujiao';
+		if(ddz.qiangDiZhuStatus == JIAO_DIZHU){
+				className = 'text bujiao';				
+		}else{
+			className = 'text buqiang';			
+		}
+		that.qiangDiZhuObj.textArea.className = className;	
+		
 		
 		that.buQiangDiZhu();
 		//that.clockAreaObj && (that.clockAreaObj.style.display = 'none');
@@ -982,7 +997,20 @@ Player.prototype.registeQiangDiZhuAction = function(){
 		// that.judgeChupaiType();		
 		 // ddz.placeCards();			
 		
-		that.qiangDiZhuSuccess();
+		
+		var className = 'text jiao_dizhu';
+		if(ddz.qiangDiZhuStatus == JIAO_DIZHU){
+				className = 'text jiao_dizhu';
+				ddz.qiangDiZhuStatus = QIANG_DIZHU;
+		}else{
+			className = 'text qiang_dizhu';
+			ddz.qiangDiZhuCount++;
+		}
+		that.qiangDiZhuObj.textArea.className = className;
+		
+		ddz.negativeActionNum = 0;
+		
+		//that.qiangDiZhuSuccess();
 		//that.clockAreaObj && (that.clockAreaObj.style.display = 'none');
 		
 	});
@@ -1000,6 +1028,16 @@ Player.prototype.isNonAISelectedPaiOk = function(judger){
 		}
 	}
 	return ok;
+}
+
+Player.prototype.doTiShi = function(){
+	var chuPaiInfo = ddz.chuPaiInfo;
+	var strongPlayer = chuPaiInfo.strongPlayer;
+	if(strongPlayer == this){
+		
+	}else{
+		var curPaiType = chuPaiInfo.paiType;
+	}
 }
 Player.prototype.nonAIChuPai = function(){
 	var selectCards = this.getSelectedCards() || [];
@@ -1072,7 +1110,7 @@ Player.prototype.getSortedPaiInfo = function(cardArray, cmpFunction){
 	};
 	
 }
-Player.prototype.judgeChupaiType = function(){	
+Player.prototype.judgeChupaiType = function(){
 	var selectCards = this.selectedCardArray;
 	var sortedInfo = this.getSortedPaiInfo(selectCards, this.chupaiCmpFunction), 
 		sortedArray = sortedInfo.sortedArray;
@@ -1478,40 +1516,79 @@ Player.prototype.positiveChuPai = function(){
 	
 }
 
+Player.prototype.positiveTiShi = function(){
+	
+}
+
+Player.prototype.doChongXuan = function(){
+	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;
+	for(var i = 0, j = cardImgs.length; i < j; i++){
+		curImg = cardImgs[i];
+		if(curImg.selected){
+			CommonUtil.fire(curImg,'click');
+		}
+	}
+	this.selectedCardArray.length = 0;
+
+}
+
 Player.prototype.doQiangDiZhu = function(){
 	var timer = this.qiangDiZhuObj.timer;
 	timer && timer.stop();
-	if(ddz.negativeActionNum == 2){	
-		ddz.diZhuIndex = this.index;
-		ddz.diZhu = this;
-		ddz.startGame();
-	}else{
-		ddz.negativeActionNum++;
+	{
+		rand = Math.floor(Math.random() * 3);
+		var className = 'text bujiao', status = 0;
+		if(ddz.qiangDiZhuStatus == JIAO_DIZHU){
+			if(rand == 1){				
+				className = 'text jiao_dizhu';
+				status = 1;
+				ddz.qiangDiZhuStatus = QIANG_DIZHU;				
+			}else{
+				className = 'text bujiao';
+				this.qiangDiZhuObj.status = GIVE_UP;
+				ddz.negativeActionNum++;
+			}
+		}else{
+			if(rand == 2){
+				className = 'text qiang_dizhu';
+				status = 1;
+				ddz.qiangDiZhuCount++;				
+			}else{
+				className = 'text buqiang';
+				this.qiangDiZhuObj.status = GIVE_UP;
+				ddz.negativeActionNum++;
+			}
+		}		
+		this.qiangDiZhuObj.textArea.className = className;	
+		
+		
+		this.showAfterQiangDiZhuUI();
+		ddz.qiangDiZhuControl();
 	}
-	this.showAfterQiangDiZhuUI();
-	ddz.qiangDiZhuControl();
+	
 }
 
 Player.prototype.buQiangDiZhu = function(){
-	ddz.negativeActionNum++;
-	var timer = this.qiangDiZhuObj.timer;
+var timer = this.qiangDiZhuObj.timer;
 	timer && timer.stop();
+	this.qiangDiZhuObj.status = GIVE_UP;
+	ddz.negativeActionNum++;
+	
 	this.showAfterQiangDiZhuUI();
 	ddz.qiangDiZhuControl();
 	
 }
 
-Player.prototype.qiangDiZhuSuccess = function(){
-	var timer = this.qiangDiZhuObj.timer;
-	timer && timer.stop();
+Player.prototype.qiangDiZhuSuccess = function(){	
 	ddz.diZhu = this;
 	ddz.diZhu.isDiZhu = true;
 	ddz.diZhuIndex = this.index;
 	ddz.chuPaiInfo.strongPlayer = ddz.diZhu;
 	if(!this.AIPlayer){
 		
-	}
-	ddz.startGame();
+	}	
+	setTimeout(function(){ddz.startGame();},1000)
+	
 }
 
 Player.prototype.doChuPai = function(){
@@ -1589,24 +1666,28 @@ Player.prototype.showBeforeQiangDiZhuUI = function(){
 	//this.cardContainerObj.innerHTML = '';	
 }
 
-Player.prototype.showAfterQiangDiZhuUI = function(type){
-	type = (type || 1), className = 'bujiao'
-	switch(type){
-		case 2:className = 'jiao_dizhu';break;
-		case 3:className = 'buqiang';break;
-		case 4:className = 'qiang_dizhu';break;
-	}
+Player.prototype.showAfterQiangDiZhuUI = function(){	
 	var htmlObj = this.qiangDiZhuObj;
 	var clockArea = htmlObj.clockArea;
 	clockArea && (clockArea.style.display = 'none');		
 	
 	var paopaoArea = htmlObj.paopaoArea;	
-	paopaoArea && (paopaoArea.style.display = 'block');	
-	htmlObj.textArea.className = ('text ' + className);
+	paopaoArea && (paopaoArea.style.display = 'block');		
 	//this.cardContainerObj.innerHTML = '';	
 }
 
 Player.prototype.startQiangDiZhuTimer = function(){
+	if(this.qiangDiZhuObj.status == GIVE_UP){
+		this.qiangDiZhuObj.paopaoArea.style.display = 'none';
+		this.qiangDiZhuObj.clockArea.style.display = 'none';
+		ddz.qiangDiZhuControl();
+		return;
+	}
+	if(ddz.negativeActionNum == 2){
+		this.qiangDiZhuSuccess();
+		return;
+	}
+	
 	var vt = 1000 * 15, that = this;
 	/*
 	var clockArea = this.clockAreaObj;
@@ -2131,10 +2212,14 @@ var Card = function(index){
 }
 
 
+var JIAO_DIZHU = 0, QIANG_DIZHU = 1, GIVE_UP = -1;
+
 var ddz = {	
 	playerArray:[],
 	diZhuIndex: -1,
 	qiangDiZhuIndex: -1,
+	qiangDiZhuStatus:JIAO_DIZHU,
+	qiangDiZhuCount:0,
 	negativeActionNum:0,
 	chuPaiInfo : {
 		isOver : false
@@ -2234,7 +2319,7 @@ ddz.initPlayers = function(){
 	var player3 = new Player({					
 					chupaiId:'chupai_btn',
 					buchuId:'buchu_btn',
-					chongxuanId:'chongxuanId',
+					chongxuanId:'chongxuan_btn',
 					tishiId:'tishiId',
 					AIPlayer:false,
 					cardArray:ddz.player3_card,	
@@ -2296,7 +2381,7 @@ ddz.prepareUIBeforeStartGame = function(){
 		
 
 ddz.startGame = function(){
-	//this.curIndex = this.diZhuIndex;
+	//this.curIndex = this.diZhuIndex;	
 	this.prepareUIBeforeStartGame();
 	this.gameControl();	
 }
@@ -2305,11 +2390,11 @@ ddz.qiangDiZhuControl = function(){
 	var diZhuIndex = this.diZhuIndex || -1,
 		playerArray = this.playerArray || [],
 		playerLength = playerArray.length, curIndex;	
-	if(diZhuIndex == -1){
 		curIndex = (this.qiangDiZhuIndex++) % playerLength;
+	if(ddz.diZhuIndex == -1){		
 		playerArray[curIndex].startQiangDiZhuTimer();
 	}else{
-		var player = playerArray[diZhuIndex].qiangDiZhuSuccess();
+		//ddz.diZhu.qiangDiZhuSuccess();
 	}
 }
 
