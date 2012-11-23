@@ -305,9 +305,42 @@ background-position:-0px -390px;
 background-position:-0px -526px;
 }
 .action_container .qiang_dizhu{
-background-position:-293px -440px;
+background-position:-0px -436px;
 }
 
+#mul_eff_div{
+background-image:url('img/mul_eff.png');
+width:242px;
+height:148px;
+background-position-x:0;
+margin: 167px 359px;
+position: absolute;
+opacity:0;
+-webkit-animation-name: fadeOut;
+-webkit-animation-duration: 1s;
+-webkit-animation-delay: .0s;
+-webkit-animation-timing-function: ease;
+-webkit-animation-fill-mode: both;
+}
+
+.mul_eff_2{
+background-position-y:0;
+
+}
+
+.cancel_animate{
+-webkit-animation-name: none;
+}
+
+.mul_eff_3{
+background-position-y:-152px;
+-webkit-animation-name: '';
+}
+
+.mul_eff_5{
+background-position-y:-305px;
+-webkit-animation-name: '';
+}
 
 .action_btn .buchu{
 background-position:0  -576px;

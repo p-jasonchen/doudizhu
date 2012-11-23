@@ -754,6 +754,8 @@ Player.prototype.initQiangDiZhuObj = function(){
 	var textArea = CommonUtil.$query('.text', paopaoArea);
 	var selector = (this.AIPlayer ? '.clock' : '.action_container' );
 	var clockArea = CommonUtil.$query(selector,area);
+	var positiveActionTextArea = CommonUtil.$query('#positive_btn .text_3char',clockArea);
+	var negativeactionTextArea = CommonUtil.$query('#negative_btn .text_2char',clockArea);
 	clockArea.style.display = 'none';
 	
 	htmlObj.area = area;
@@ -761,6 +763,8 @@ Player.prototype.initQiangDiZhuObj = function(){
 	htmlObj.clockArea = clockArea;
 	htmlObj.paopaoArea = paopaoArea;
 	htmlObj.textArea = textArea;
+	htmlObj.positiveActionTextArea = positiveActionTextArea;
+	htmlObj.negativeactionTextArea = negativeactionTextArea;
 	
 	htmlObj.status = JIAO_DIZHU;	
 	
@@ -998,17 +1002,7 @@ Player.prototype.registeQiangDiZhuAction = function(){
 		 // ddz.placeCards();			
 		
 		
-		var className = 'text jiao_dizhu';
-		if(ddz.qiangDiZhuStatus == JIAO_DIZHU){
-				className = 'text jiao_dizhu';
-				ddz.qiangDiZhuStatus = QIANG_DIZHU;
-		}else{
-			className = 'text qiang_dizhu';
-			ddz.qiangDiZhuCount++;
-		}
-		that.qiangDiZhuObj.textArea.className = className;
-		
-		ddz.negativeActionNum = 0;
+		that.doAIQiangDiZhu();
 		
 		//that.qiangDiZhuSuccess();
 		//that.clockAreaObj && (that.clockAreaObj.style.display = 'none');
@@ -1532,16 +1526,15 @@ Player.prototype.doChongXuan = function(){
 
 }
 
-Player.prototype.doQiangDiZhu = function(){
+Player.prototype.doQiangDiZhu = function(){	
 	var timer = this.qiangDiZhuObj.timer;
 	timer && timer.stop();
 	{
 		rand = Math.floor(Math.random() * 3);
-		var className = 'text bujiao', status = 0;
+		var className = 'text bujiao';
 		if(ddz.qiangDiZhuStatus == JIAO_DIZHU){
 			if(rand == 1){				
-				className = 'text jiao_dizhu';
-				status = 1;
+				className = 'text jiao_dizhu';				
 				ddz.qiangDiZhuStatus = QIANG_DIZHU;				
 			}else{
 				className = 'text bujiao';
@@ -1549,9 +1542,9 @@ Player.prototype.doQiangDiZhu = function(){
 				ddz.negativeActionNum++;
 			}
 		}else{
-			if(rand == 2){
+			if(rand != 2){
 				className = 'text qiang_dizhu';
-				status = 1;
+				this.qiangDiZhuObj.status = QIANG_DIZHU;
 				ddz.qiangDiZhuCount++;				
 			}else{
 				className = 'text buqiang';
@@ -1566,6 +1559,24 @@ Player.prototype.doQiangDiZhu = function(){
 		ddz.qiangDiZhuControl();
 	}
 	
+}
+
+Player.prototype.doAIQiangDiZhu = function(){
+	var timer = this.qiangDiZhuObj.timer;
+	timer && timer.stop();
+	var className = 'text jiao_dizhu';
+		if(ddz.qiangDiZhuStatus == JIAO_DIZHU){
+				className = 'text jiao_dizhu';
+				ddz.qiangDiZhuStatus = QIANG_DIZHU;
+		}else{
+			className = 'text qiang_dizhu';
+			this.qiangDiZhuObj.status = QIANG_DIZHU;
+			ddz.qiangDiZhuCount++;
+		}
+		this.qiangDiZhuObj.textArea.className = className;
+		this.showAfterQiangDiZhuUI();
+		ddz.qiangDiZhuControl();
+		
 }
 
 Player.prototype.buQiangDiZhu = function(){
@@ -1657,22 +1668,42 @@ Player.prototype.showBeforeChuPaiUI = function(){
 }
 
 Player.prototype.showBeforeQiangDiZhuUI = function(){
+	if(!this.AIPlayer && ddz.qiangDiZhuStatus == QIANG_DIZHU){
+		this.qiangDiZhuObj.positiveActionTextArea.className = 'text_3char qiang_dizhu';
+		
+		this.qiangDiZhuObj.negativeactionTextArea.className = 'text_2char buqiang';
+	}
+	
+	//ddz.ElemObj.mulEff.style.display = 'none';
 	var htmlObj = this.qiangDiZhuObj;
 	var clockArea = htmlObj.clockArea;
-	clockArea && (clockArea.style.display = 'block');		
+	clockArea && (clockArea.style.display = 'block');
 	
 	var paopaoArea = htmlObj.paopaoArea;	
 	paopaoArea && (paopaoArea.style.display = 'none');	
+	
 	//this.cardContainerObj.innerHTML = '';	
 }
 
-Player.prototype.showAfterQiangDiZhuUI = function(){	
+Player.prototype.showAfterQiangDiZhuUI = function(){
+	//ddz.ElemObj.mulEff.className = 'mul_eff_2 fadeOut';
+
+	if(this.qiangDiZhuObj.status == QIANG_DIZHU ){
+		var mulEff = ddz.ElemObj.mulEff;				
+		mulEff.className = 'mul_eff_2';	
+		setTimeout(function(){
+			var mulEff = ddz.ElemObj.mulEff;				
+			mulEff.className = 'mul_eff_2 cancel_animate';	
+		},500);
+	}	
+	
 	var htmlObj = this.qiangDiZhuObj;
 	var clockArea = htmlObj.clockArea;
 	clockArea && (clockArea.style.display = 'none');		
 	
 	var paopaoArea = htmlObj.paopaoArea;	
 	paopaoArea && (paopaoArea.style.display = 'block');		
+	
 	//this.cardContainerObj.innerHTML = '';	
 }
 
@@ -2221,6 +2252,9 @@ var ddz = {
 	qiangDiZhuStatus:JIAO_DIZHU,
 	qiangDiZhuCount:0,
 	negativeActionNum:0,
+	ElemObj:{
+		mulEff:null
+	},
 	chuPaiInfo : {
 		isOver : false
 	}
@@ -2288,6 +2322,7 @@ ddz.assignCards = function(){
 
 ddz.initQiangDiZhuIndex = function(){
 	this.qiangDiZhuIndex = Math.floor(Math.random() * 3);
+	this.ElemObj.mulEff = CommonUtil.$id('mul_eff_div');
 }
 
 ddz.initPlayers = function(){
