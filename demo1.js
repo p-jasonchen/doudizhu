@@ -810,8 +810,10 @@ Player.prototype.showMyFigure = function(){
 
 Player.prototype.assignDiPai = function(){
 	var diPai = ddz.dipai;
+	CommonUtil.bubbleSort(diPai, this.cardCmpFunction);
 	this.cardArray = this.cardArray.concat(diPai);
 	this.initSortedPaiInfoArray();
+	this.shouPaiCount  = this.cardArray.length;
 }
 
 Player.prototype.chuDanZhangNumSpecified = function(danZhangArray, num){
@@ -1687,14 +1689,20 @@ Player.prototype.showBeforeQiangDiZhuUI = function(){
 
 Player.prototype.showAfterQiangDiZhuUI = function(){
 	//ddz.ElemObj.mulEff.className = 'mul_eff_2 fadeOut';
-
+	
+	
 	if(this.qiangDiZhuObj.status == QIANG_DIZHU ){
+	
+		ddz.showTotalMulValue();
+		
 		var mulEff = ddz.ElemObj.mulEff;				
 		mulEff.className = 'mul_eff_2';	
 		setTimeout(function(){
 			var mulEff = ddz.ElemObj.mulEff;				
 			mulEff.className = 'mul_eff_2 cancel_animate';	
 		},500);
+		
+		
 	}	
 	
 	var htmlObj = this.qiangDiZhuObj;
@@ -2299,7 +2307,7 @@ ddz.assignCards = function(){
 	
 	dipai.push(new Card(cards[51])), 
 	dipai.push(new Card(cards[52])), 
-	dipai.push(new Card(cards[53]));	
+	dipai.push(new Card(cards[53]));
 	
 	
 	// player3_card.push(new Card(cards[51])), 
@@ -2323,6 +2331,9 @@ ddz.assignCards = function(){
 ddz.initQiangDiZhuIndex = function(){
 	this.qiangDiZhuIndex = Math.floor(Math.random() * 3);
 	this.ElemObj.mulEff = CommonUtil.$id('mul_eff_div');
+	this.ElemObj.totalMulEffArea = CommonUtil.$id('total_mul_value_container');
+	this.ElemObj.visibleDiPaiArea = CommonUtil.$id('visible_dipai_area');
+	this.ElemObj.invisibleDiPaiArea = CommonUtil.$id('invisible_dipai_area');
 }
 
 ddz.initPlayers = function(){
@@ -2402,22 +2413,58 @@ ddz.initPlayers = function(){
 
 
 ddz.prepareUIBeforeStartGame = function(){
+	this.ElemObj.invisibleDiPaiArea.style.display = 'none';
+	this.showDiPai();
 	var playerArray = this.playerArray || [];
 	playerArray.forEach( function(player){
 		player.qiangDiZhuObj.area.style.display ='none';
 		player.chuPaiObj.area.style.display ='block';
-		if(player === this.diZhu){
-			player.chuPaiObj.clock.style.display ='block';
+		if(player === ddz.diZhu){
+			player.chuPaiObj.clockArea.style.display ='block';
+			player.placeCards();
 		}
 		player.showMyFigure();
 	})
 }
 
-		
+ddz.showDiPai = function(){
+	var dipai = this.dipai, html = '';
+	dipai.forEach(function(card){
+		t = "<div class='card_img " + card.className + "'></div>";
+		html += t;
+	});
+	
+	this.ElemObj.visibleDiPaiArea.innerHTML = html;
+	
+	
+}	
+
+ddz.showTotalMulValue = function(){
+	var qiangDiZhuCount = this.qiangDiZhuCount,
+		totalMulValue = 15, array =[];;
+	
+	while(qiangDiZhuCount--)
+		totalMulValue += totalMulValue;
+	
+	while(totalMulValue > 0){
+		remain = totalMulValue % 10;
+		totalMulValue = Math.floor(totalMulValue / 10);
+		array.push(remain);
+	}
+	var html = '';
+	array.reverse().forEach(function(digit){
+		t = "<div class='digital_img digital_" + digit + "'></div>";
+		html += t;
+	});
+	
+	this.ElemObj.totalMulEffArea.innerHTML = html;
+	
+}	
 
 ddz.startGame = function(){
 	//this.curIndex = this.diZhuIndex;	
-	this.prepareUIBeforeStartGame();
+	this.diZhu.assignDiPai();
+	this.prepareUIBeforeStartGame();	
 	this.gameControl();	
 }
 

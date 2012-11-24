@@ -321,12 +321,76 @@ opacity:0;
 -webkit-animation-delay: .0s;
 -webkit-animation-timing-function: ease;
 -webkit-animation-fill-mode: both;
+z-index: 1;
 }
 
 .mul_eff_2{
 background-position-y:0;
 
 }
+
+#invisible_dipai_area{
+position:absolute;
+width:400px;
+height:120px;
+top:200px;
+left:280px;
+text-align: center;
+}
+
+
+
+#visible_dipai_area{
+position: absolute;
+width: 400px;
+height: 120px;
+top: 10px;
+left: 280px;
+-webkit-transform: scale(0.66);
+text-align: center;
+}
+#visible_dipai_area .card_img{
+display:inline-block;
+}
+
+
+.difen_chars{
+background-image:url('img/interface_b.jpg');
+width:58px;
+height:23px;
+background-position:-689px -119px;
+position:absolute;
+top:516px;
+left:4px;
+}
+
+#difen_value_container {
+position:absolute;
+top:516px;
+left:62px;
+}
+
+.total_mul_chars{
+background-image:url('img/interface_b.jpg');
+width:63px;
+height:30px;
+background-position:-689px -154px;
+position:absolute;
+top:546px;
+left:4px;
+}
+
+#total_mul_value_container{
+position:absolute;
+top: 550px;
+left:67px;
+}
+
+#difen_value_container  .digital_img, #total_mul_value_container .digital_img{
+display:inline-block;
+margin-right: -5px;
+}
+
 
 .cancel_animate{
 -webkit-animation-name: none;
@@ -550,8 +614,9 @@ background-position:  -1078px -246px;
 background-position:  -1176px -246px;
 }
 
-.dipai{
+.invisible_dipai{
 background-position:  -1274px -246px;
+display: inline-block;
 }
 .fangkuai3{
 background-position: 0 -369px;
@@ -601,4 +666,42 @@ display:none;
 z-index: 100;
 position: absolute;
 margin:48px  136px;
+}
+
+.digital_img{
+background-image:url('img/interface_a.png');
+width:20px;
+height:24px;
+background-position-y:-256px;
+}
+
+.digital_0{
+background-position-x:-161px;
+}
+.digital_1{
+background-position-x:-184px;
+}
+.digital_2{
+background-position-x:-214px;
+}
+.digital_3{
+background-position-x:-239px;
+}
+.digital_4{
+background-position-x:-265px;
+}
+.digital_5{
+background-position-x:-290px;
+}
+.digital_6{
+background-position-x:-316px;
+}
+.digital_7{
+background-position-x:-342px;
+}
+.digital_8{
+background-position-x:-369px;
+}
+.digital_9{
+background-position-x:-395px;
 }
