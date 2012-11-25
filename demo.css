@@ -328,15 +328,13 @@ z-index: 1;
 background-position-y:0;
 }
 
-#invisible_dipai_area{
-position:absolute;
--webkit-animation-duration: 1s;
--webkit-animation-delay: .0s;
--webkit-animation-timing-function: ease;
--webkit-animation-fill-mode: both;
+.invisible_dipai_left_animate{
+-webkit-transform:translateX(-100px);
 }
 
-
+.invisible_dipai_right_animate{
+-webkit-transform:translateX(100px);
+}
 
 #visible_dipai_area{
 position: absolute;
@@ -458,6 +456,10 @@ width: 800px;
 height: 120px;
 top: 168px;
 left: 128px;
+}
+
+#player3_shoupai_area .card_img{
+-webkit-transition:-webkit-transform 1s ease;
 }
 
 .card_played_area{
@@ -624,6 +626,7 @@ background-position:  -1274px -246px;
 top:200px;
 left:431px;
 position: absolute;
+-webkit-transition: -webkit-transform 1s ease;
 }
 .fangkuai3{
 background-position: 0 -369px;

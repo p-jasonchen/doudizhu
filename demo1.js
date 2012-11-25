@@ -22,6 +22,11 @@
 		return e.querySelector(selector);
 	},
 	
+	$queryAll:function(selector, e){
+		e = e || document;
+		return e.querySelectorAll(selector);
+	},
+	
 	bubbleSort: function(dataArray, cmpFunc){
 		var length = dataArray.length, temp, data1 ,data2, ret=0;
 		for(var i = 0; i < length - 1; i++){
@@ -744,6 +749,13 @@ var Player = function(opt){
 	
 	this.qiangDiZhuObj.area.style.display = 'block';
 	
+	var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth;
+	this.faPaiXOffset = (shouPaiAreaWidth-100)/(17 -1); 
+	this.curFaPaiLeft  = 0;
+	
+	this.cardDomElemArray = [];
+	
+	
 }
 
 Player.prototype.initQiangDiZhuObj = function(){
@@ -790,7 +802,51 @@ Player.prototype.initChuPaiObj = function(){
 	this.chuPaiObj = htmlObj;
 }
 
+Player.prototype.pushOneCard = function(card){
+	this.cardArray.push(card);
+	this.shouPaiCount++;
+	if(!this.AIPlayer){
+		ele = this.creatDomEleFromCard(card);
+		this.cardDomElemArray.push(ele);
+		this.shouPaiAreaObj.appendChild(ele);
+		var that = this;
+		
+		setTimeout(function(){
+			var cardDomElemArray = that.cardDomElemArray;
+			dom = cardDomElemArray[cardDomElemArray.length-1];
+			dom && (dom.style.webkitTransform = dom.webkitTransform);
+		},10);
+		
+	}
+	
+	setTimeout(function(){ddz.assignCardsControl()}, 80);
+}
 
+
+
+Player.prototype.creatDomEleFromCard  = function(card){
+	var ele = document.createElement('div'), transXBase = 303, transYBase = -256;
+	ele.className = 'card_img ' + card.className;
+	transX = -transXBase + this.curFaPaiLeft;
+	transY = -transYBase;
+	style = ele.style;
+	style.position = 'absolute';
+	style.left = transXBase + 'px';
+	style.top = transYBase + 'px';
+	
+	
+	//style.webkitTransition='-webkit-transform 1s ease';
+	
+	webkitTransform = 'translate(' + transX + 'px, ' + transY+ 'px)';
+	
+	this.curFaPaiLeft += this.faPaiXOffset;	
+	
+	ele.webkitTransform = webkitTransform;
+	
+	//ele.style.webkitTransform = webkitTransform;
+	
+	return ele;
+}
 Player.prototype.showMyFigure = function(){
 	var playerAreaObj = this.playerAreaObj;
 	if(this.isDiZhu){
@@ -2259,8 +2315,10 @@ var JIAO_DIZHU = 0, QIANG_DIZHU = 1, GIVE_UP = -1, FA_PAI = 0, CHU_PAI = 1;
 
 var ddz = {	
 	playerArray:[],
+	dipai:[],
 	diZhuIndex: -1,
 	qiangDiZhuIndex: -1,
+	fapaiIndex:0,
 	qiangDiZhuStatus:JIAO_DIZHU,
 	qiangDiZhuCount:0,
 	negativeActionNum:0,
@@ -2287,49 +2345,37 @@ ddz.createRandomCards = function(){
 		d[i] = d[ranPos];
 		d[ranPos] = t;
 	}
+	this.cards = d;
 	return d;	
 }
 
-ddz.assignCards = function(){
-	var cards = this.createRandomCards(), t = 0;
-	var player1_card = [], player2_card = [], player3_card = [], dipai = [];
-	for(var i = 0; i < 51; i++){
-		t = i % 3;
-		switch(t){
-			case 0 :
-				player1_card.push(new Card(cards[i]) )
-				// player3_card.push(new Card(cards[i]));
-				break;
-			case 1 :
-				player2_card.push(new Card(cards[i]));
-				// player3_card.push(new Card(cards[i]));
-				break;
-			case 2 :
-				player3_card.push(new Card(cards[i]));break;			
-		}
-	}
+ddz.assignCardsControl = function(){
+	var cards = this.cards, fapaiIndex = this.fapaiIndex++,
+		playerSelected = null;
 	
+	if(fapaiIndex < 51){
+		curCard =  new Card(cards[fapaiIndex]);
+		switch(fapaiIndex % 3){
+			case 0:playerSelected = this.player1;break;
+			case 1:playerSelected = this.player2;break;
+			case 2:playerSelected = this.player3;break;
+		}
+		playerSelected.pushOneCard(curCard);
+	}else{
+	dipai = this.dipai;
 	dipai.push(new Card(cards[51])), 
 	dipai.push(new Card(cards[52])), 
 	dipai.push(new Card(cards[53]));
+	var dipaiDomArray = CommonUtil.$queryAll('#invisible_dipai_area .invisible_dipai');
+	
+	dipaiDomArray[0].className += ' invisible_dipai_left_animate';
+	dipaiDomArray[2].className += ' invisible_dipai_right_animate';
+	
+	this.qiangDiZhuControl();
+	
+	}	
 	
 	
-	// player3_card.push(new Card(cards[51])), 
-	// player3_card.push(new Card(cards[52])), 
-	// player3_card.push(new Card(cards[53]));
-	
-	this.player1_card = player1_card, 
-	this.player2_card = player2_card, 
-	this.player3_card = player3_card, 
-	this.dipai = dipai;
-	
-	player1_card = null,
-	player2_card = null,
-	player3_card = null, 
-	dipai = null;	
-	
-	this.initQiangDiZhuIndex();
-	this.initPlayers();
 }
 
 ddz.initQiangDiZhuIndex = function(){
@@ -2343,27 +2389,23 @@ ddz.initQiangDiZhuIndex = function(){
 ddz.initPlayers = function(){
 	var player1 = new Player({					
 					//chupaiId:'chupai',	
-					cardArray:ddz.player1_card,
+					cardArray:[],
 					shouPaiAreaId:'player1_shoupai_area',
 					cardContainerId:'player1_card_container',
 					playerId:'player1',
 					buChuContainerClass:'buchu_container',
 					shouPaiNumClass:'role_shouPaiNum',
-					index:0,
-					top : 10,  
-					left: 120
+					index:0
 				});	
 	var player2 = new Player({						
 					// chupaiId:'chupai',		
-					cardArray:ddz.player2_card,
+					cardArray:[],
 					shouPaiAreaId:'player1_shoupai_area',
 					cardContainerId:'player2_card_container',
 					playerId:'player2',
 					buChuContainerClass:'buchu_container',
 					shouPaiNumClass:'role_shouPaiNum',					
-					index:1	,
-					top : 10,  
-					left: 120					
+					index:1					
 				});	
 	
 	var player3 = new Player({					
@@ -2372,15 +2414,12 @@ ddz.initPlayers = function(){
 					chongxuanId:'chongxuan_btn',
 					tishiId:'tishiId',
 					AIPlayer:false,
-					cardArray:ddz.player3_card,	
+					cardArray:[],	
 					playerId:'player3',
 					shouPaiAreaId:'player3_shoupai_area',
 					cardContainerId:'player3_card_container',
 					buChuContainerClass:'buchu_container',					
-					index:2,
-					top : 180,  
-					left: 120
-					
+					index:2				
 				});	
 	
 	this.player1 = player1, this.player2 = player2, this.player3 = player3;
@@ -2402,7 +2441,7 @@ ddz.initPlayers = function(){
 	// player1.showMyFigure();
 	// player2.showMyFigure();
 	// player3.showMyFigure();	
-	
+	/*
 	player1.placeCards();
 	player2.placeCards();
 	player3.placeCards();
@@ -2413,6 +2452,7 @@ ddz.initPlayers = function(){
 	
 	
 	player1 = null, player2 = null, player3 = null;	
+	*/
 }
 
 
@@ -2471,6 +2511,13 @@ ddz.startGame = function(){
 	this.diZhu.assignDiPai();
 	this.prepareUIBeforeStartGame();	
 	this.gameControl();	
+}
+
+ddz.initEnv = function(){
+	this.initPlayers();
+	this.initQiangDiZhuIndex();	
+	this.createRandomCards();
+	this.assignCardsControl();
 }
 
 ddz.qiangDiZhuControl = function(){
