@@ -326,16 +326,14 @@ z-index: 1;
 
 .mul_eff_2{
 background-position-y:0;
-
 }
 
 #invisible_dipai_area{
 position:absolute;
-width:400px;
-height:120px;
-top:200px;
-left:280px;
-text-align: center;
+-webkit-animation-duration: 1s;
+-webkit-animation-delay: .0s;
+-webkit-animation-timing-function: ease;
+-webkit-animation-fill-mode: both;
 }
 
 
@@ -346,8 +344,15 @@ width: 400px;
 height: 120px;
 top: 10px;
 left: 280px;
--webkit-transform: scale(0.66);
 text-align: center;
+-webkit-animation-duration: 2s;
+-webkit-animation-delay: .0s;
+-webkit-animation-timing-function: ease;
+-webkit-animation-fill-mode: both;
+}
+
+.fadeInUpBigWithScale{
+-webkit-animation-name:fadeInUpBigWithScale;
 }
 #visible_dipai_area .card_img{
 display:inline-block;
@@ -392,7 +397,7 @@ margin-right: -5px;
 }
 
 
-.cancel_animate{
+.cancel_mulEff_animate{
 -webkit-animation-name: none;
 }
 
@@ -616,7 +621,9 @@ background-position:  -1176px -246px;
 
 .invisible_dipai{
 background-position:  -1274px -246px;
-display: inline-block;
+top:200px;
+left:431px;
+position: absolute;
 }
 .fangkuai3{
 background-position: 0 -369px;

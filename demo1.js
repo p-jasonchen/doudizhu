@@ -1544,7 +1544,7 @@ Player.prototype.doQiangDiZhu = function(){
 				ddz.negativeActionNum++;
 			}
 		}else{
-			if(rand != 2){
+			if(rand == 2){
 				className = 'text qiang_dizhu';
 				this.qiangDiZhuObj.status = QIANG_DIZHU;
 				ddz.qiangDiZhuCount++;				
@@ -1699,7 +1699,7 @@ Player.prototype.showAfterQiangDiZhuUI = function(){
 		mulEff.className = 'mul_eff_2';	
 		setTimeout(function(){
 			var mulEff = ddz.ElemObj.mulEff;				
-			mulEff.className = 'mul_eff_2 cancel_animate';	
+			mulEff.className = 'mul_eff_2 cancel_mulEff_animate';	
 		},500);
 		
 		
@@ -2128,7 +2128,7 @@ Player.prototype.chupaiCmpFunction = function(pai1, pai2){
 	}
 }
 
-Player.prototype.placeCards = function(){
+Player.prototype.placeCards = function(type){
 	var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth,left = 0,
 		xOffset = (shouPaiAreaWidth-100)/(this.shouPaiCount -1); //减100是因为每张卡片宽度为100	
 	xOffset = (xOffset > 50 ? 50 : xOffset);
@@ -2151,6 +2151,10 @@ Player.prototype.placeCards = function(){
 	
 	
 	this.registeSelectCardAction();	
+}
+
+Player.prototype.displayShouPaiAfterFaPai = function(){
+	
 }
 
 Player.prototype.placeCardSelected = function(){
@@ -2251,7 +2255,7 @@ var Card = function(index){
 }
 
 
-var JIAO_DIZHU = 0, QIANG_DIZHU = 1, GIVE_UP = -1;
+var JIAO_DIZHU = 0, QIANG_DIZHU = 1, GIVE_UP = -1, FA_PAI = 0, CHU_PAI = 1;
 
 var ddz = {	
 	playerArray:[],
@@ -2413,7 +2417,7 @@ ddz.initPlayers = function(){
 
 
 ddz.prepareUIBeforeStartGame = function(){
-	this.ElemObj.invisibleDiPaiArea.style.display = 'none';
+	this.ElemObj.invisibleDiPaiArea.className ='fadeOut';
 	this.showDiPai();
 	var playerArray = this.playerArray || [];
 	playerArray.forEach( function(player){
@@ -2436,6 +2440,7 @@ ddz.showDiPai = function(){
 	
 	this.ElemObj.visibleDiPaiArea.innerHTML = html;
 	
+	this.ElemObj.visibleDiPaiArea.className = 'fadeInUpBigWithScale';
 	
 }	
 
