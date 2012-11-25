@@ -2369,8 +2369,11 @@ ddz.assignCardsControl = function(){
 	var dipaiDomArray = CommonUtil.$queryAll('#invisible_dipai_area .invisible_dipai');
 	
 	dipaiDomArray[0].className += ' invisible_dipai_left_animate';
-	dipaiDomArray[2].className += ' invisible_dipai_right_animate';
+	dipaiDomArray[2].className += ' invisible_dipai_right_animate';	
 	
+	
+		
+	this.initQiangDiZhuEnv();
 	this.qiangDiZhuControl();
 	
 	}	
@@ -2378,12 +2381,26 @@ ddz.assignCardsControl = function(){
 	
 }
 
-ddz.initQiangDiZhuIndex = function(){
+ddz.initQiangDiZhuEnv = function(){
+
+	
+	
 	this.qiangDiZhuIndex = Math.floor(Math.random() * 3);
 	this.ElemObj.mulEff = CommonUtil.$id('mul_eff_div');
 	this.ElemObj.totalMulEffArea = CommonUtil.$id('total_mul_value_container');
 	this.ElemObj.visibleDiPaiArea = CommonUtil.$id('visible_dipai_area');
 	this.ElemObj.invisibleDiPaiArea = CommonUtil.$id('invisible_dipai_area');
+	
+	this.player1.initSortedPaiInfoArray();
+	this.player2.initSortedPaiInfoArray();
+	this.player3.initSortedPaiInfoArray();
+	
+	this.player1.placeCards();
+	this.player2.placeCards();
+	this.player3.placeCards();
+	
+	this.player3.registeChupaiAction();	
+	this.player3.registeQiangDiZhuAction();
 }
 
 ddz.initPlayers = function(){
@@ -2514,8 +2531,7 @@ ddz.startGame = function(){
 }
 
 ddz.initEnv = function(){
-	this.initPlayers();
-	this.initQiangDiZhuIndex();	
+	this.initPlayers();	
 	this.createRandomCards();
 	this.assignCardsControl();
 }
