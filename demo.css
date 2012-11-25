@@ -328,6 +328,16 @@ z-index: 1;
 background-position-y:0;
 }
 
+
+#invisible_dipai_area {
+position: absolute;
+-webkit-animation-duration: 1s;
+-webkit-animation-delay: .0s;
+-webkit-animation-timing-function: ease;
+-webkit-animation-fill-mode: both;
+}
+
+
 .invisible_dipai_left_animate{
 -webkit-transform:translateX(-100px);
 }
