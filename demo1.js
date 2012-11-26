@@ -2566,7 +2566,11 @@ ddz.showSiZhangEffect = function(positionXArray){
 	}
 }
 ddz.showShuangWangEffect = function(){
-	this.ElemObj.shuangWangEffectArea.className = 'pai_effect_area';
+this.ElemObj.shuangWangEffectArea.className = 'pai_effect_area';
+	ddz.ElemObj.siZhangEffectArea.style.display='block';
+	ddz.showSiZhangEffect(ddz.bombEffectPositionXArray.concat());
+	
+	
 	setTimeout(function(){
 		ddz.ElemObj.shuangWangEffectArea.className = 'pai_effect_area cancel_animate';
 	}, 2000);

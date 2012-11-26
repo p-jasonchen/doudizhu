@@ -227,11 +227,10 @@ background-position: -237px -480px;
 
 
 .role_shouPaiBg{
-background-image: url(img/interface_a.png);
-width: 62px;
-height: 58px;
--webkit-transform: scale(1, 1.5) rotate(30deg);
-background-position: -358px -311px;
+background-image: url(img/interface_b.jpg);
+width: 36px;
+height: 36px;
+background-position: -594px -119px;
 margin-left: 15px;
 }
 
@@ -239,8 +238,8 @@ margin-left: 15px;
 font-size: 20px;
 font-weight: bold;
 position: relative;
-top: -40px;
-left: 28px;
+top: -30px;
+left: 15px;
 z-index: 100;
 width: 34px;
 text-align: center;
@@ -748,14 +747,15 @@ background-position-x:-395px;
 }
 
 .lianPai, .lianDui{
-width:190px;
-height:92px;
-position:absolute;
-background-image:url('img/p_j.png');
+	width:190px;
+	height:92px;
+	position:absolute;
+	background-image:url('img/p_j.png');
+	-webkit-animation-name:fadeOut;
+	-webkit-animation-duration: 1s;
 	-webkit-animation-delay: .0s;
-	-webkit-animation-timing-function: ease;
+	-webkit-animation-timing-function: linear;
 	-webkit-animation-fill-mode: both;
-		-webkit-animation-name:fadeOut;
 }
 
 .lianPai{
@@ -768,8 +768,7 @@ background-position:-184px -245px;
 
 .pai_effect_area{
 	background-image:url('img/p_j.png');
-	position:absolute;
-	
+	position:absolute;	
 	-webkit-animation-delay: .0s;
 	-webkit-animation-timing-function: ease;
 	-webkit-animation-fill-mode: both;
