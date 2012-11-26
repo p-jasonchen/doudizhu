@@ -405,7 +405,7 @@ PaiTypeJudger.prototype.doJudge = function(){
 var ShuangWang = {
 	doJudge: function(paiTypeJudger){		
 		var paiArray = paiTypeJudger.sortedPaiArray, length = paiArray.length, paiType;
-		if(length == 2 && (paiArray[0][0].cardSeq + paiArray[1][0].cardSeq == 29)){
+		if(length == 2 && (paiArray[0][0].cardSeq + paiArray[1][0].cardSeq == 33)){
 			paiType = 'shuangWang';
 			CommonUtil.print(PaiTypeConstants[paiType]);
 			paiTypeJudger.paiType = paiType;
@@ -424,7 +424,8 @@ var FourBomb = {
 			paiType = 'siZhang';
 			CommonUtil.print(PaiTypeConstants[paiType]);
 			paiTypeJudger.paiType = paiType;
-			startCardSeq = paiArray[0][0].cardSeq;
+			paiTypeJudger.startCardSeq = paiArray[0][0].cardSeq;
+			
 		}else{
 			paiTypeJudger.judger = Four11;
 			paiTypeJudger.doJudge();
@@ -751,6 +752,7 @@ var Player = function(opt){
 	
 	var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth;
 	this.cardWidth = 94; //参看demo.css .card_img;
+	this.cardHeight = 116;
 	this.faPaiXOffset = (shouPaiAreaWidth-this.cardWidth)/(17 -1); 
 	this.curFaPaiLeft  = 0;
 	
@@ -1084,8 +1086,22 @@ Player.prototype.isNonAISelectedPaiOk = function(judger){
 	if(ok){
 		ok = (strongPlayer === this);
 		if(!ok){
-		ok = ( (judger.paiType == chuPaiInfo.paiType) &&
-				(judger.startCardSeq > chuPaiInfo.startCardSeq) );
+			var judgerPaiType = judger.paiType, chuPaiType = chuPaiInfo.paiType;
+			if(judgerPaiType == 'shuangWang'){
+				ok = true;
+			}else if(chuPaiType != 'shuangWang'){
+				if(judgerPaiType == 'siZhang'){
+					if(chuPaiType == 'siZhang'){
+						ok = judger.startCardSeq > chuPaiInfo.startCardSeq ;						
+					}else{
+						ok = true;
+					}
+				}else{
+					ok = ( (judger.paiType == chuPaiInfo.paiType) &&
+							(judger.startCardSeq > chuPaiInfo.startCardSeq) );
+		
+				}
+			}
 		}
 	}
 	return ok;
@@ -1745,9 +1761,7 @@ Player.prototype.showBeforeChuPaiUI = function(){
 	paopaoArea && (paopaoArea.style.display = 'none');	
 	this.cardContainerObj.innerHTML = '';	
 	if(!this.AIPlayer){
-		var className = 'action_btn gray_btn';
-		this.chuPaiObj.chuPaiBtn.className = className;	
-		this.chuPaiObj.chongXuanBtn.className = className;	
+		this.updateChuPaiActionUI();
 	}
 }
 
@@ -1781,7 +1795,7 @@ Player.prototype.showAfterQiangDiZhuUI = function(){
 		mulEff.className = 'mul_eff_2';	
 		setTimeout(function(){
 			var mulEff = ddz.ElemObj.mulEff;				
-			mulEff.className = 'mul_eff_2 cancel_mulEff_animate';	
+			mulEff.className = 'mul_eff_2 cancel_animate';	
 		},500);
 		
 		
@@ -1796,6 +1810,7 @@ Player.prototype.showAfterQiangDiZhuUI = function(){
 	
 	//this.cardContainerObj.innerHTML = '';	
 }
+
 
 Player.prototype.startQiangDiZhuTimer = function(){
 	if(this.qiangDiZhuObj.status == GIVE_UP){
@@ -2254,12 +2269,39 @@ Player.prototype.placeCardSelected = function(){
 				left+= xOffset;				
 		}
 		var cardsHtml = htmls.join('');	
+		
+		var paiType = ddz.chuPaiInfo.paiType;
+		switch(paiType){			
+			case 'siZhang':{
+				ddz.ElemObj.siZhangEffectArea.style.display='block';
+				ddz.showSiZhangEffect(ddz.bombEffectPositionXArray.concat());break;
+			}
+			case 'shuangWang':break;{
+				ddz.showSiZhangEffect();break;
+			}
+			case 'feiJi':{
+			ddz.showFeiJiEffect();break;
+			}
+			case 'lianPai':
+			case 'lianDui':{
+					paiWidth = left - xOffset + this.cardWidth;
+					paiHeight = this.cardHeight;
+					left = (paiWidth- 190)/2;//190文字顺子的宽度,参看.lianpai css.
+					xtop = (paiHeight-92)/2;
+					template = "<div class='{0}' style='left:{1}px;top:{2}px'></div>";
+					tStr = CommonUtil.format.call(template,paiType, left,xtop);
+					cardsHtml += tStr;
+					break;
+				}
+		}
+	
 		this.cardContainerObj.innerHTML = cardsHtml;
 		var shouPaiNumArea = this.shouPaiNumArea;
 		shouPaiNumArea && (shouPaiNumArea.innerText = this.shouPaiCount);
 	}else{		
 		paopaoArea && (paopaoArea.style.display = 'block');
 	}
+	
 	
 	var clockArea = this.chuPaiObj.clockArea;
 	clockArea && (clockArea.style.display = 'none');
@@ -2348,6 +2390,7 @@ var ddz = {
 	qiangDiZhuStatus:JIAO_DIZHU,
 	qiangDiZhuCount:0,
 	negativeActionNum:0,
+	bombEffectPositionXArray:['-40px','-592px','-1180px','-1744px','-2366px'],
 	ElemObj:{
 		mulEff:null
 	},
@@ -2399,12 +2442,14 @@ ddz.assignCardsControl = function(){
 	
 	
 		
-	this.initQiangDiZhuEnv();
-	this.qiangDiZhuControl();
 	
-	}	
+		setTimeout(function(){
+			ddz.initQiangDiZhuEnv();
+			ddz.qiangDiZhuControl()
+		}, 1000);	
+		
 	
-	
+	}
 }
 
 ddz.initQiangDiZhuEnv = function(){
@@ -2416,6 +2461,10 @@ ddz.initQiangDiZhuEnv = function(){
 	this.ElemObj.totalMulEffArea = CommonUtil.$id('total_mul_value_container');
 	this.ElemObj.visibleDiPaiArea = CommonUtil.$id('visible_dipai_area');
 	this.ElemObj.invisibleDiPaiArea = CommonUtil.$id('invisible_dipai_area');
+	
+	this.ElemObj.siZhangEffectArea = CommonUtil.$id('sizhang_effect_area');
+	this.ElemObj.shuangWangEffectArea = CommonUtil.$id('shuangwang_effect_area');
+	this.ElemObj.feijiEffectArea = CommonUtil.$id('feiji_effect_area');
 	
 	this.player1.initSortedPaiInfoArray();
 	this.player2.initSortedPaiInfoArray();
@@ -2469,33 +2518,6 @@ ddz.initPlayers = function(){
 	this.playerArray.push(player1);
 	this.playerArray.push(player2);
 	this.playerArray.push(player3);
-	
-	/*
-	//随机分配地主
-	ranIndex = Math.floor(Math.random() * 3);	
-	//alert(ranIndex);
-	ddz.diZhu = this.playerArray[ranIndex];
-	ddz.diZhuIndex = ranIndex;		
-	ddz.chuPaiInfo.strongPlayer = ddz.diZhu;
-	ddz.diZhu.isDiZhu = true;
-	ddz.diZhu.assignDiPai();
-	*/
-	
-	// player1.showMyFigure();
-	// player2.showMyFigure();
-	// player3.showMyFigure();	
-	/*
-	player1.placeCards();
-	player2.placeCards();
-	player3.placeCards();
-
-	player3.registeChupaiAction();	
-	player3.registeQiangDiZhuAction();
-	
-	
-	
-	player1 = null, player2 = null, player3 = null;	
-	*/
 }
 
 
@@ -2527,6 +2549,31 @@ ddz.showDiPai = function(){
 	
 }	
 
+ddz.showSiZhangEffect = function(positionXArray){	
+	var curPositionX = positionXArray.shift();
+	var style = this.ElemObj.siZhangEffectArea.style;
+	if(curPositionX){		
+		style.backgroundPositionX = curPositionX;
+		setTimeout(function(){
+			ddz.showSiZhangEffect(positionXArray);
+		}, 500)
+	}else{
+		style.display = 'none';
+	}
+}
+ddz.showShuangWangEffect = function(){
+	this.ElemObj.shuangWangEffectArea.className = 'pai_effect_area';
+	setTimeout(function(){
+		ddz.ElemObj.shuangWangEffectArea.className = 'pai_effect_area cancel_animate';
+	}, 3000);
+}
+
+ddz.showFeiJiEffect = function(){
+	this.ElemObj.feijiEffectArea.className = 'pai_effect_area';
+	setTimeout(function(){
+		ddz.ElemObj.feijiEffectArea.className = 'pai_effect_area cancel_animate';
+	}, 3000);
+}
 ddz.showTotalMulValue = function(){
 	var qiangDiZhuCount = this.qiangDiZhuCount,
 		totalMulValue = 15, array =[];;

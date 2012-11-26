@@ -18,6 +18,7 @@
 position:absolute;
 width: 960px;
 height: 576px;
+//overflow: hidden;
 }
 #player1{
 	width:480px;
@@ -417,7 +418,7 @@ margin-right: -5px;
 }
 
 
-.cancel_mulEff_animate{
+.cancel_animate{
 -webkit-animation-name: none;
 }
 
@@ -513,6 +514,8 @@ left: 180px;
 width:94px;
 height:116px;
 background-image:url('img/poker.png');
+//-webkit-box-shadow: 0px 0px 10px 4px red;
+//box-shadow: 0px 0px 10px 4px red;
 //-webkit-transform:scale(0.8);
 }
 
@@ -737,3 +740,61 @@ background-position-x:-370px;
 .digital_9{
 background-position-x:-395px;
 }
+
+.lianPai, .lianDui{
+width:190px;
+height:92px;
+position:absolute;
+background-image:url('img/p_j.png');
+}
+
+.lianPai{
+background-position:-184px -144px;
+}
+
+.lianDui{
+background-position:-184px -245px;
+}
+
+.pai_effect_area{
+	background-image:url('img/p_j.png');
+	position:absolute;
+	-webkit-animation-duration: 2s;
+	-webkit-animation-delay: .0s;
+	-webkit-animation-timing-function: ease;
+	-webkit-animation-fill-mode: both;
+	opacity:0;
+}
+
+#shuangwang_effect_area{
+	width:130px;
+	height:410px;
+	background-position: 0 -15px;
+	top:83px;
+	left:415px;
+	-webkit-animation-name:shuangwangFadeDownOut;
+}
+
+#feiji_effect_area{
+	width:280px;
+	height:140px;
+	background-position:  -128px 0;
+	top:218px;
+	left:340px;
+	-webkit-animation-name:feiJiFadeLeftOut;
+}
+
+
+
+#sizhang_effect_area{
+width:458px;
+height:312px;
+background-image:url('img/ani_bomb.png');
+position:absolute;
+top:132px;
+left:251px;
+background-position-x:-40px;
+display:none;
+}
+
+
