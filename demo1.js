@@ -2276,11 +2276,13 @@ Player.prototype.placeCardSelected = function(){
 				ddz.ElemObj.siZhangEffectArea.style.display='block';
 				ddz.showSiZhangEffect(ddz.bombEffectPositionXArray.concat());break;
 			}
-			case 'shuangWang':break;{
-				ddz.showSiZhangEffect();break;
+			case 'shuangWang':{
+				ddz.showShuangWangEffect();break;
 			}
-			case 'feiJi':{
-			ddz.showFeiJiEffect();break;
+			case 'feiJi':
+			case 'feiJiDai1':
+			case 'feiJiDai2':{
+				ddz.showFeiJiEffect();break;
 			}
 			case 'lianPai':
 			case 'lianDui':{
@@ -2382,6 +2384,7 @@ var Card = function(index){
 var JIAO_DIZHU = 0, QIANG_DIZHU = 1, GIVE_UP = -1, FA_PAI = 0, CHU_PAI = 1;
 
 var ddz = {	
+	chuPaing:false,
 	playerArray:[],
 	dipai:[],
 	diZhuIndex: -1,
@@ -2530,10 +2533,11 @@ ddz.prepareUIBeforeStartGame = function(){
 		player.chuPaiObj.area.style.display ='block';
 		if(player === ddz.diZhu){
 			player.chuPaiObj.clockArea.style.display ='block';
+			player.clearSelectedCards();
 			player.placeCards();
 		}
 		player.showMyFigure();
-	})
+	});	
 }
 
 ddz.showDiPai = function(){
@@ -2556,7 +2560,7 @@ ddz.showSiZhangEffect = function(positionXArray){
 		style.backgroundPositionX = curPositionX;
 		setTimeout(function(){
 			ddz.showSiZhangEffect(positionXArray);
-		}, 500)
+		}, 400)
 	}else{
 		style.display = 'none';
 	}
@@ -2565,14 +2569,14 @@ ddz.showShuangWangEffect = function(){
 	this.ElemObj.shuangWangEffectArea.className = 'pai_effect_area';
 	setTimeout(function(){
 		ddz.ElemObj.shuangWangEffectArea.className = 'pai_effect_area cancel_animate';
-	}, 3000);
+	}, 2000);
 }
 
 ddz.showFeiJiEffect = function(){
 	this.ElemObj.feijiEffectArea.className = 'pai_effect_area';
 	setTimeout(function(){
 		ddz.ElemObj.feijiEffectArea.className = 'pai_effect_area cancel_animate';
-	}, 3000);
+	}, 2000);
 }
 ddz.showTotalMulValue = function(){
 	var qiangDiZhuCount = this.qiangDiZhuCount,
@@ -2600,6 +2604,8 @@ ddz.startGame = function(){
 	//this.curIndex = this.diZhuIndex;	
 	this.diZhu.assignDiPai();
 	this.prepareUIBeforeStartGame();	
+	this.chuPaing = true;
+	
 	this.gameControl();	
 }
 
