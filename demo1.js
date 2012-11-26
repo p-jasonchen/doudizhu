@@ -1706,13 +1706,16 @@ Player.prototype.doNonAIChuPai = function(){
 
 Player.prototype.buChuPai = function(){
 	var chuPaiInfo = ddz.chuPaiInfo;
+	
+	
 	if(!chuPaiInfo.paiType || chuPaiInfo.strongPlayer === this){
 		this.forceChuPaiWhenTimeout();
 	}else{
-		this.selectedCardArray.length = 0;
+		this.clearSelectedCards();
 		var timer = this.chuPaiObj.timer;
 		timer && timer.stop();			
-		this.placeCardSelected();	
+		this.placeCards();
+		this.placeCardSelected();
 		setTimeout( function(){ddz.gameControl()}, 0);
 	}
 }
@@ -1741,6 +1744,11 @@ Player.prototype.showBeforeChuPaiUI = function(){
 	var paopaoArea = htmlObj.paopaoArea;	
 	paopaoArea && (paopaoArea.style.display = 'none');	
 	this.cardContainerObj.innerHTML = '';	
+	if(!this.AIPlayer){
+		var className = 'action_btn gray_btn';
+		this.chuPaiObj.chuPaiBtn.className = className;	
+		this.chuPaiObj.chongXuanBtn.className = className;	
+	}
 }
 
 Player.prototype.showBeforeQiangDiZhuUI = function(){
