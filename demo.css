@@ -49,10 +49,11 @@ left:20px;
 left:352px;
 }
 .player_avatar{
-background:url('img/interface_c.png') -626px -709px; 
-padding:19px;
-width:70px;
-height:70px;
+background: url('img/interface_c.png') -626px -709px;
+padding: 20px;
+width: 70px;
+height: 70px;
+padding-left: 19px;
 }
 .player_name{
 
@@ -191,9 +192,14 @@ left: 460px;
 	left: 260px;
 }
 
-.chongxuan{
+.gray_btn .chongxuan{
 background-position: -337px -528px;
 }
+
+.red_btn .chongxuan{
+background-position: -238px -573px;
+}
+
 #tishi_btn{	
 
 	left:440px;
@@ -204,9 +210,15 @@ background-position: -0px -623px;
 #chupai_btn{
 	left: 610px;
 }
-.chupai{
+.gray_btn .chupai{
 background-position: -252px -530px;
 }
+
+.red_btn .chupai{
+background-position: -237px -480px;
+}
+
+
 .role_shouPaiBg{
 background-image: url(img/interface_a.png);
 width: 62px;
@@ -498,184 +510,184 @@ left: 180px;
 
 
 .card_img{
-width:98px;
-height:120px;
+width:94px;
+height:116px;
 background-image:url('img/poker.png');
 //-webkit-transform:scale(0.8);
 }
 
 .heitao3{
-background-position: 0 0px;
+background-position: -3px -1px;
 }
 .heitao4{
-background-position: -98px 0;
+background-position: -101px -1px;
 }
 .heitao5{
-background-position:  -196px 0;
+background-position:  -199px -1px;
 }
 .heitao6{
-background-position:  -294px 0;
+background-position:  -297px -1px;
 }
 .heitao7{
-background-position:  -392px 0;
+background-position:  -395px -1px;
 }
 .heitao8{
-background-position:  -490px 0;
+background-position:  -493px -1px;
 }
 .heitao9{
-background-position:  -588px 0;
+background-position:  -591px -1px;
 }
 .heitao10{
-background-position:  -686px 0;
+background-position:  -689px -1px;
 }
 .heitaoJ{
-background-position:  -784px 0;
+background-position:  -787px -1px;
 }
 .heitaoQ{
-background-position:  -882px 0;
+background-position:  -885px -1px;
 }
 .heitaoK{
-background-position:  -982px 0;
+background-position:  -985px -1px;
 }
 .heitaoA{
-background-position:  -1078px 0;
+background-position:  -1081px -1px;
 }
 .heitao2{
-background-position:  -1176px 0;
+background-position:  -1179px -1px;
 }
 
 .xiaowang{
-background-position:  -1274px 0;
+background-position:  -1277px -1px;
 }
 .hongxin3{
-background-position: 0 -123px;
+background-position: -3px -124px;
 }
 .hongxin4{
-background-position: -98px -123px;
+background-position: -101px -124px;
 }
 .hongxin5{
-background-position:  -196px -123px;
+background-position:  -199px -124px;
 }
 .hongxin6{
-background-position:  -294px -123px;
+background-position:  -297px -124px;
 }
 .hongxin7{
-background-position:  -392px -123px;
+background-position:  -395px -124px;
 }
 .hongxin8{
-background-position:  -490px -123px;
+background-position:  -493px -124px;
 }
 .hongxin9{
-background-position:  -588px -123px;
+background-position:  -591px -124px;
 }
 .hongxin10{
-background-position:  -686px -123px;
+background-position:  -689px -124px;
 }
 .hongxinJ{
-background-position:  -784px -123px;
+background-position:  -787px -124px;
 }
 .hongxinQ{
-background-position:  -882px -123px;
+background-position:  -885px -124px;
 }
 .hongxinK{
-background-position:  -982px -123px;
+background-position:  -985px -124px;
 }
 .hongxinA{
-background-position:  -1078px -123px;
+background-position:  -1081px -124px;
 }
 .hongxin2{
-background-position:  -1176px -123px;
+background-position:  -1179px -124px;
 }
 .dawang{
-background-position:  -1274px -123px;
+background-position:  -1275px -124px;
 }
 
 
 .meihua3{
-background-position: 0 -246px;
+background-position: -3px -247px;
 }
 .meihua4{
-background-position: -98px -246px;
+background-position: -101px -247px;
 }
 .meihua5{
-background-position:  -196px -246px;
+background-position:  -199px -247px;
 }
 .meihua6{
-background-position:  -294px -246px;
+background-position:  -297px -247px;
 }
 .meihua7{
-background-position:  -392px -246px;
+background-position:  -395px -247px;
 }
 .meihua8{
-background-position:  -490px -246px;
+background-position:  -493px -247px;
 }
 .meihua9{
-background-position:  -588px -246px;
+background-position:  -591px -247px;
 }
 .meihua10{
-background-position:  -686px -246px;
+background-position:  -689px -247px;
 }
 .meihuaJ{
-background-position:  -784px -246px;
+background-position:  -787px -247px;
 }
 .meihuaQ{
-background-position:  -882px -246px;
+background-position:  -885px -247px;
 }
 .meihuaK{
-background-position:  -982px -246px;
+background-position:  -985px -247px;
 }
 .meihuaA{
-background-position:  -1078px -246px;
+background-position:  -1081px -247px;
 }
 .meihua2{
-background-position:  -1176px -246px;
+background-position:  -1179px -247px;
 }
 
 .invisible_dipai{
-background-position:  -1274px -246px;
+background-position:  -1274px -247px;
 top:200px;
 left:431px;
 position: absolute;
 -webkit-transition: -webkit-transform 1s ease;
 }
 .fangkuai3{
-background-position: 0 -369px;
+background-position: -3px -370px;
 }
 .fangkuai4{
-background-position: -98px -369px;
+background-position: -101px -370px;
 }
 .fangkuai5{
-background-position:  -196px -369px;
+background-position:  -199px -370px;
 }
 .fangkuai6{
-background-position:  -294px -369px;
+background-position:  -297px -370px;
 }
 .fangkuai7{
-background-position:  -392px -369px;
+background-position:  -395px -370px;
 }
 .fangkuai8{
-background-position:  -490px -369px;
+background-position:  -493px -370px;
 }
 .fangkuai9{
-background-position:  -588px -369px;
+background-position:  -591px -370px;
 }
 .fangkuai10{
-background-position:  -686px -369px;
+background-position:  -689px -370px;
 }
 .fangkuaiJ{
-background-position:  -784px -369px;
+background-position:  -787px -370px;
 }
 .fangkuaiQ{
-background-position:  -882px -369px;
+background-position:  -885px -370px;
 }
 .fangkuaiK{
-background-position:  -982px -369px;
+background-position:  -985px -370px;
 }
 .fangkuaiA{
-background-position:  -1078px -369px;
+background-position:  -1081px -370px;
 }
 .fangkuai2{
-background-position:  -1176px -369px;
+background-position:  -1179px -370px;
 }
 
 #result{
@@ -720,7 +732,7 @@ background-position-x:-316px;
 background-position-x:-342px;
 }
 .digital_8{
-background-position-x:-369px;
+background-position-x:-370px;
 }
 .digital_9{
 background-position-x:-395px;

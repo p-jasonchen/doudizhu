@@ -750,7 +750,8 @@ var Player = function(opt){
 	this.qiangDiZhuObj.area.style.display = 'block';
 	
 	var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth;
-	this.faPaiXOffset = (shouPaiAreaWidth-100)/(17 -1); 
+	this.cardWidth = 94; //参看demo.css .card_img;
+	this.faPaiXOffset = (shouPaiAreaWidth-this.cardWidth)/(17 -1); 
 	this.curFaPaiLeft  = 0;
 	
 	this.cardDomElemArray = [];
@@ -794,11 +795,16 @@ Player.prototype.initChuPaiObj = function(){
 	var clockArea = CommonUtil.$query(selector,area);
 	clockArea.style.display = 'none';
 	
+	var chuPaiBtn = CommonUtil.$id('chupai_btn');
+	var chongXuanBtn = CommonUtil.$id('chongxuan_btn');
+	
 	htmlObj.area = area;
 	htmlObj.timeRemain = timeRemain;
 	htmlObj.clockArea = clockArea;
 	htmlObj.paopaoArea = paopaoArea;
 	htmlObj.textArea = textArea;
+	htmlObj.chuPaiBtn = chuPaiBtn;
+	htmlObj.chongXuanBtn = chongXuanBtn;
 	this.chuPaiObj = htmlObj;
 }
 
@@ -972,6 +978,7 @@ Player.prototype.chuSanZhang = function(sanZhang){
 
 Player.prototype.registeSelectCardAction = function(){
 	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;	
+		that  = this;
 	for(var i = 0, j = cardImgs.length; i < j; i++){
 		curCard = this.cardArray[i];		
 		curCard = cardImgs[i];		
@@ -990,14 +997,16 @@ Player.prototype.registeSelectCardAction = function(){
 				top = parseFloat(s.top || 0) - selectOffset + 'px';
 			}
 			s.top = top;
-		});
+			
+			ddz.player3.updateChuPaiActionUI();
+		});		
 	}
 }
 
 
 
 Player.prototype.registeChupaiAction = function(){
-	var that = this,  chupaiBtn = CommonUtil.$id(this.chupaiId);	
+	var that = this,  chupaiBtn = this.chuPaiObj.chuPaiBtn;	
 	chupaiBtn && chupaiBtn.addEventListener('click', function(e){		
 		// that.judgeChupaiType();		
 		 // ddz.placeCards();		
@@ -1713,7 +1722,16 @@ Player.prototype.forceChuPaiWhenTimeout = function(){
 	this.doChuPai();
 	
 }
-
+Player.prototype.updateChuPaiActionUI = function(){
+	var selectedCards = this.getSelectedCards();
+	var className = 'action_btn gray_btn';
+	if(selectedCards.length > 0 ){
+		className = 'action_btn red_btn';			
+	}
+	this.chuPaiObj.chuPaiBtn.className = className;	
+	this.chuPaiObj.chongXuanBtn.className = className;	
+	
+}
 
 Player.prototype.showBeforeChuPaiUI = function(){
 	var htmlObj = this.chuPaiObj;
@@ -2186,7 +2204,7 @@ Player.prototype.chupaiCmpFunction = function(pai1, pai2){
 
 Player.prototype.placeCards = function(type){
 	var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth,left = 0,
-		xOffset = (shouPaiAreaWidth-100)/(this.shouPaiCount -1); //减100是因为每张卡片宽度为100	
+		xOffset = (shouPaiAreaWidth-this.cardWidth)/(this.shouPaiCount -1); //减100是因为每张卡片宽度为100	
 	xOffset = (xOffset > 50 ? 50 : xOffset);
 	var	tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;left:{3}px'></div>";
 		
@@ -2219,7 +2237,7 @@ Player.prototype.placeCardSelected = function(){
 	if(  (size = selectedCardArray.length ) > 0){
 		var tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;left:{2}px'></div>";
 		var  cardContainerWidth = this.cardContainerObj.clientWidth,left = 0,
-		xOffset = (cardContainerWidth-100)/(size -1); //减100是因为每张卡片宽度为100	
+		xOffset = (cardContainerWidth-this.cardWidth)/(size -1); //减100是因为每张卡片宽度为100	
 		xOffset = (xOffset > 50 ? 50 : xOffset);
 		
 		for(var i = 0, j = selectedCardArray.length; i < j; i++){		
