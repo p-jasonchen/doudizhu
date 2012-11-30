@@ -83,8 +83,18 @@
 		//alert('scale:' + scale);
 		return  area;
 	}
+	
+	
 };
 
+
+/**
+ * 浏览器判断,如果是PC使用mouse机制
+ */
+var START_EV = NC.browser.hasTouch ? 'touchstart' : 'mousedown',
+    MOVE_EV = NC.browser.hasTouch ? 'touchmove' : 'mousemove',
+    END_EV = NC.browser.hasTouch ? 'touchend' : 'mouseup';
+	
 (function(ns){
     //倒计时类
     ns.CountDown=function(opt){
@@ -758,6 +768,8 @@ var Player = function(opt){
 	
 	this.cardDomElemArray = [];
 	
+	this.touchstartCrood = {x:0,y:0};
+	
 	
 }
 
@@ -806,7 +818,7 @@ Player.prototype.initChuPaiObj = function(){
 	htmlObj.paopaoArea = paopaoArea;
 	htmlObj.textArea = textArea;
 	htmlObj.chuPaiBtn = chuPaiBtn;
-	htmlObj.chongXuanBtn = chongXuanBtn;
+	htmlObj.chongXuanBtn = chongXuanBtn;	
 	this.chuPaiObj = htmlObj;
 }
 
@@ -981,12 +993,64 @@ Player.prototype.chuSanZhang = function(sanZhang){
 Player.prototype.registeSelectCardAction = function(){
 	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;	
 		that  = this;
-	for(var i = 0, j = cardImgs.length; i < j; i++){
-		curCard = this.cardArray[i];		
+	
+
+	this.shouPaiAreaObj.addEventListener(START_EV, function(evt){
+		var e = evt;
+		 var event = evt.touches ? evt.touches[0] : evt;			
+            that.touchstartCrood.x = event.clientX ;
+            that.touchstartCrood.y = event.clientY;
+			evt.stopPropagation();
+            evt.preventDefault();
+	
+	});
+	
+
+	this.shouPaiAreaObj.addEventListener(MOVE_EV, function(evt){
+		var e = evt;
+		evt.stopPropagation();
+        evt.preventDefault();
+	});
+	
+	this.shouPaiAreaObj.addEventListener(END_EV, function(evt){
+		var event = evt.changedTouches ? evt.changedTouches[0] : evt;
+		var touchendX = event.clientX, touchendY = event.clientY;
+		
+		if(touchendX >  that.touchstartCrood.x){
+			startLeft = that.touchstartCrood.x;
+			endLeft = touchendX;
+		}else{
+			startLeft = touchendX;
+			endLeft = that.touchstartCrood.x;
+		}
+		
+		var curCardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;
+		for(var i = 0, j = curCardImgs.length; i < j; i++){
+			curImg = curCardImgs[i];			 
+			
+			var s = curImg.style, selectOffset = 10, top, curImgLeft = s.left;
+			if(curImgLeft >= startLeft && curImgLeft <= touchendX){
+				if(curImg.selected){
+					curImg.mapCard.dead = false;
+					top = parseFloat(s.top || 0) + selectOffset + 'px';
+					curImg.selected = false;
+				}else{
+					curImg.mapCard.dead = true;
+					curImg.selected = true;
+					top = parseFloat(s.top || 0) - selectOffset + 'px';
+				}
+				s.top = top;
+			}
+		}
+		
+	});
+	
+	
+	for(var i = 0, j = cardImgs.length; i < j; i++){				
 		curCard = cardImgs[i];		
 		curCard.mapCard = this.cardArray[parseInt(curCard.getAttribute('index'))];
 		curCard.mapCard.mapImg = curCard;		
-		
+		/*
 		!this.AIPlayer && curCard.addEventListener('click', function(){
 			var s = this.style, selectOffset = 10, top;
 			if(this.selected){
@@ -1001,8 +1065,10 @@ Player.prototype.registeSelectCardAction = function(){
 			s.top = top;
 			
 			ddz.player3.updateChuPaiActionUI();
-		});		
+		});	
+		*/		
 	}
+	
 }
 
 
