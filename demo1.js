@@ -95,6 +95,10 @@ var START_EV = NC.browser.hasTouch ? 'touchstart' : 'mousedown',
     MOVE_EV = NC.browser.hasTouch ? 'touchmove' : 'mousemove',
     END_EV = NC.browser.hasTouch ? 'touchend' : 'mouseup';
 	
+var START_EV = 'touchstart',
+    MOVE_EV = 'touchmove',
+    END_EV = 'touchend' ;
+	
 (function(ns){
     //倒计时类
     ns.CountDown=function(opt){
@@ -990,81 +994,9 @@ Player.prototype.chuSanZhang = function(sanZhang){
 		return curCard.cardSeq;
 }
 
-Player.prototype.registeSelectCardAction = function(){
-	if(this.AIPlayer) return;
+Player.prototype.mapImg2Card = function(){
 	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;	
 		that  = this;
-	
-
-	this.shouPaiAreaObj.addEventListener(START_EV, function(evt){	
-	
-		console.log(START_EV);
-		var e = evt;
-		 var event = evt.touches ? evt.touches[0] : evt;			
-            that.touchstartCrood.x = event.clientX ;
-            that.touchstartCrood.y = event.clientY;
-			
-		
-	
-	});
-	//style.boxShadow='0 0 0 100px rgba(0, 0, 0, 0.31)inset';
-
-	this.shouPaiAreaObj.addEventListener(MOVE_EV, function(evt){	
-		evt.preventDefault();
-		//console.log(MOVE_EV);
-		var e = evt;		
-
-	});
-	
-	this.shouPaiAreaObj.addEventListener(END_EV, function(evt){	
-		console.log(END_EV);
-		var event = evt.changedTouches ? evt.changedTouches[0] : evt;
-		var touchendX = event.clientX, touchendY = event.clientY;
-		
-		if(touchendX >  that.touchstartCrood.x){
-			startLeft = that.touchstartCrood.x;
-			endLeft = touchendX;
-		}else{
-			startLeft = touchendX;
-			endLeft = that.touchstartCrood.x;
-		}
-		
-		var curCardImgs = CommonUtil.$class('card_img', that.shouPaiAreaObj), curCard;
-		if(curCardImgs.length > 1){
-			cardOffset = curCardImgs[1].getBoundingClientRect().left - curCardImgs[0].getBoundingClientRect().left;
-			
-			for(var i = 0, j = curCardImgs.length; i < j; i++){
-				curImg = curCardImgs[i];			 
-				
-				var s = curImg.style, selectOffset = 10, top,
-					rect = curImg.getBoundingClientRect(),
-					curImgLeft = rect.left;
-				if(curImgLeft + cardOffset >= startLeft && curImgLeft  <= endLeft){					
-					if(curImg.selected){
-						curImg.mapCard.dead = false;
-						top = parseFloat(s.top || 0) + selectOffset + 'px';
-						curImg.selected = false;
-					}else{
-						curImg.mapCard.dead = true;
-						curImg.selected = true;
-						top = parseFloat(s.top || 0) - selectOffset + 'px';
-					}
-					s.top = top;
-				}
-				/*
-				if(curImgLeft > endLeft || curImgLeft + cardOffset < startLeft){
-					break;
-				}
-				*/
-				
-			}	
-		}			
-		
-		
-		
-	});
-	
-	
 	for(var i = 0, j = cardImgs.length; i < j; i++){				
 		curCard = cardImgs[i];		
 		curCard.mapCard = this.cardArray[parseInt(curCard.getAttribute('index'))];
@@ -1087,6 +1019,102 @@ Player.prototype.registeSelectCardAction = function(){
 		});	
 		*/		
 	}
+}
+
+Player.prototype.registeSelectCardAction = function(){		
+
+	if(!this.AIPlayer){
+		var that = this;
+		this.shouPaiAreaObj.addEventListener(START_EV, function(evt){
+		
+			console.log(START_EV);
+			var e = evt;
+			 var event = evt.touches ? evt.touches[0] : evt;			
+				that.touchstartCrood.x = event.clientX ;
+				that.touchstartCrood.y = event.clientY;
+				that.touchSelectedCardImgs = [];
+				that.touching  = true;
+				
+			
+		
+		});	
+
+		this.shouPaiAreaObj.addEventListener(MOVE_EV, function(evt){
+			evt.preventDefault();
+			if(!that.touching) return;
+			var touchSelectedCardImgs = that.touchSelectedCardImgs;
+			//console.log(MOVE_EV);
+			var event = evt.changedTouches ? evt.changedTouches[0] : evt;
+			var touchendX = event.clientX, touchendY = event.clientY;
+			
+			if(touchendX >  that.touchstartCrood.x){
+				startLeft = that.touchstartCrood.x;
+				endLeft = touchendX;
+			}else{
+				startLeft = touchendX;
+				endLeft = that.touchstartCrood.x;
+			}
+			
+			var curCardImgs = CommonUtil.$class('card_img', that.shouPaiAreaObj), curCard;
+			
+			if(curCardImgs.length > 1){
+				cardOffset = curCardImgs[1].getBoundingClientRect().left - curCardImgs[0].getBoundingClientRect().left;
+				
+				for(var i = 0, j = curCardImgs.length; i < j; i++){
+					curImg = curCardImgs[i];			 
+					
+					var s = curImg.style, rect = curImg.getBoundingClientRect(),
+						curImgLeft = rect.left;
+					if(curImgLeft + cardOffset >= startLeft && curImgLeft  <= endLeft){					
+						s.boxShadow='0 0 0 100px rgba(0, 0, 0, 0.31)inset';
+						if(touchSelectedCardImgs.indexOf(curImg) == -1){
+							touchSelectedCardImgs.push(curImg);
+						}
+					}else{
+						s.boxShadow='';
+						if(touchSelectedCardImgs.indexOf(curImg) != -1){
+							touchSelectedCardImgs.pop();
+						}
+					}					
+					
+				}	
+			}				
+
+		});
+		
+		this.shouPaiAreaObj.addEventListener(END_EV, function(evt){	
+		console.log(END_EV);	
+		
+		var touchSelectedCardImgs = that.touchSelectedCardImgs, selectOffset = 10;
+		var curImg = evt.target;
+		if(touchSelectedCardImgs.indexOf(curImg) == -1){
+			touchSelectedCardImgs.push(curImg);
+		}
+		
+		
+		for(var i = 0, j = touchSelectedCardImgs.length; i < j; i++){
+			curImg = touchSelectedCardImgs[i];			 
+				
+				var s = curImg.style,top;				
+				s.boxShadow = '';
+				if(curImg.selected){
+					curImg.mapCard.dead = false;
+					top = parseFloat(s.top || 0) + selectOffset + 'px';
+					curImg.selected = false;
+				}else{
+					curImg.mapCard.dead = true;
+					curImg.selected = true;
+					top = parseFloat(s.top || 0) - selectOffset + 'px';
+				}
+					s.top = top;
+		}	
+
+		that.touching = false;
+		that.updateChuPaiActionUI();
+	});
+	
+	}
+	
 	
 }
 
@@ -1236,10 +1264,12 @@ Player.prototype.getSelectedCards = function(){
 }
 
 Player.prototype.clearSelectedCards = function(){
+	//if(this.AIPlayer) return;
 	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;
 	for(var i = 0, j = cardImgs.length; i < j; i++){
 		curCard = cardImgs[i].mapCard;
-		curCard.dead = false;		
+		curCard.dead = false;
+		
 	}
 	this.selectedCardArray.length = 0;
 }
@@ -1683,14 +1713,15 @@ Player.prototype.positiveTiShi = function(){
 }
 
 Player.prototype.doChongXuan = function(){
-	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;
-	for(var i = 0, j = cardImgs.length; i < j; i++){
-		curImg = cardImgs[i];
-		if(curImg.selected){
-			CommonUtil.fire(curImg,'click');
-		}
+	
+	var selectedCards = this.getSelectedCards();
+	for(var i = 0, j = selectedCards.length; i < j; i++){
+		curCard = selectedCards[i];			
+		curCard.dead = false;		
 	}
+	this.placeCards();
 	this.selectedCardArray.length = 0;
+	this.updateChuPaiActionUI();
 
 }
 
@@ -2332,7 +2363,7 @@ Player.prototype.placeCards = function(type){
 	this.shouPaiAreaObj.innerHTML = cardsHtml;
 	
 	
-	this.registeSelectCardAction();	
+	this.mapImg2Card();	
 }
 
 Player.prototype.displayShouPaiAfterFaPai = function(){
@@ -2695,8 +2726,8 @@ ddz.startGame = function(){
 	this.prepareUIBeforeStartGame();	
 	this.chuPaing = true;
 	
-	
-	//this.gameControl();	
+	ddz.player3.registeSelectCardAction();
+	 //this.gameControl();	
 }
 
 ddz.initEnv = function(){
