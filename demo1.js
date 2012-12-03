@@ -80,6 +80,7 @@
 		var scale =  (xRadio < yRadio) ? xRadio : yRadio;
 		var area = document.getElementById('game_area');
 		area.style.zoom  = scale;
+		ddz.scale = scale;
 		//alert('scale:' + scale);
 		return  area;
 	}
@@ -94,11 +95,11 @@
 var START_EV = NC.browser.hasTouch ? 'touchstart' : 'mousedown',
     MOVE_EV = NC.browser.hasTouch ? 'touchmove' : 'mousemove',
     END_EV = NC.browser.hasTouch ? 'touchend' : 'mouseup';
-	
+/*	
 var START_EV = 'touchstart',
     MOVE_EV = 'touchmove',
     END_EV = 'touchend' ;
-	
+*/	
 (function(ns){
     //倒计时类
     ns.CountDown=function(opt){
@@ -1025,8 +1026,9 @@ Player.prototype.registeSelectCardAction = function(){
 
 	if(!this.AIPlayer){
 		var that = this;
-		this.shouPaiAreaObj.addEventListener(START_EV, function(evt){
-		
+		this.shouPaiAreaObj.addEventListener(START_EV, function(evt){		
+			evt.preventDefault();
+			evt.stopPropagation();
 			console.log(START_EV);
 			var e = evt;
 			 var event = evt.touches ? evt.touches[0] : evt;			
@@ -1041,12 +1043,14 @@ Player.prototype.registeSelectCardAction = function(){
 
 		this.shouPaiAreaObj.addEventListener(MOVE_EV, function(evt){
 			evt.preventDefault();
+			evt.stopPropagation();
 			if(!that.touching) return;
 			var touchSelectedCardImgs = that.touchSelectedCardImgs;
-			//console.log(MOVE_EV);
+			console.log(MOVE_EV);
 			var event = evt.changedTouches ? evt.changedTouches[0] : evt;
 			var touchendX = event.clientX, touchendY = event.clientY;
 			
+			//console.log(touchendX);
 			if(touchendX >  that.touchstartCrood.x){
 				startLeft = that.touchstartCrood.x;
 				endLeft = touchendX;
@@ -1059,12 +1063,13 @@ Player.prototype.registeSelectCardAction = function(){
 			
 			if(curCardImgs.length > 1){
 				cardOffset = curCardImgs[1].getBoundingClientRect().left - curCardImgs[0].getBoundingClientRect().left;
-				
+				cardOffset *= ddz.scale;
+				//console.log('cardOffset:' + cardOffset);	
 				for(var i = 0, j = curCardImgs.length; i < j; i++){
 					curImg = curCardImgs[i];			 
 					
 					var s = curImg.style, rect = curImg.getBoundingClientRect(),
-						curImgLeft = rect.left;
+						curImgLeft = rect.left * ddz.scale;
 					if(curImgLeft + cardOffset >= startLeft && curImgLeft  <= endLeft){					
 						s.boxShadow='0 0 0 100px rgba(0, 0, 0, 0.31)inset';
 						if(touchSelectedCardImgs.indexOf(curImg) == -1){
@@ -1082,12 +1087,14 @@ Player.prototype.registeSelectCardAction = function(){
 
 		});
 		
-		this.shouPaiAreaObj.addEventListener(END_EV, function(evt){	
-		console.log(END_EV);	
+		this.shouPaiAreaObj.addEventListener(END_EV, function(evt){		
+			evt.preventDefault();
+			evt.stopPropagation();		
 		
+		console.log(END_EV);
 		var touchSelectedCardImgs = that.touchSelectedCardImgs, selectOffset = 10;
 		var curImg = evt.target;
-		if(touchSelectedCardImgs.indexOf(curImg) == -1){
+		if(touchSelectedCardImgs.indexOf(curImg) == -1){			
 			touchSelectedCardImgs.push(curImg);
 		}
 		
@@ -2727,7 +2734,7 @@ ddz.startGame = function(){
 	this.chuPaing = true;
 	
 	ddz.player3.registeSelectCardAction();
-	 //this.gameControl();	
+	this.gameControl();	
 }
 
 ddz.initEnv = function(){
