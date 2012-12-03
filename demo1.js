@@ -991,28 +991,33 @@ Player.prototype.chuSanZhang = function(sanZhang){
 }
 
 Player.prototype.registeSelectCardAction = function(){
+	if(this.AIPlayer) return;
 	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;	
 		that  = this;
 	
 
-	this.shouPaiAreaObj.addEventListener(START_EV, function(evt){
+	this.shouPaiAreaObj.addEventListener(START_EV, function(evt){	
+	
+		console.log(START_EV);
 		var e = evt;
 		 var event = evt.touches ? evt.touches[0] : evt;			
             that.touchstartCrood.x = event.clientX ;
             that.touchstartCrood.y = event.clientY;
-			evt.stopPropagation();
-            evt.preventDefault();
+			
+		
 	
 	});
-	
+	//style.boxShadow='0 0 0 100px rgba(0, 0, 0, 0.31)inset';
 
-	this.shouPaiAreaObj.addEventListener(MOVE_EV, function(evt){
-		var e = evt;
-		evt.stopPropagation();
-        evt.preventDefault();
+	this.shouPaiAreaObj.addEventListener(MOVE_EV, function(evt){	
+		evt.preventDefault();
+		//console.log(MOVE_EV);
+		var e = evt;		
+
 	});
 	
-	this.shouPaiAreaObj.addEventListener(END_EV, function(evt){
+	this.shouPaiAreaObj.addEventListener(END_EV, function(evt){	
+		console.log(END_EV);
 		var event = evt.changedTouches ? evt.changedTouches[0] : evt;
 		var touchendX = event.clientX, touchendY = event.clientY;
 		
@@ -1024,24 +1029,38 @@ Player.prototype.registeSelectCardAction = function(){
 			endLeft = that.touchstartCrood.x;
 		}
 		
-		var curCardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;
-		for(var i = 0, j = curCardImgs.length; i < j; i++){
-			curImg = curCardImgs[i];			 
+		var curCardImgs = CommonUtil.$class('card_img', that.shouPaiAreaObj), curCard;
+		if(curCardImgs.length > 1){
+			cardOffset = curCardImgs[1].getBoundingClientRect().left - curCardImgs[0].getBoundingClientRect().left;
 			
-			var s = curImg.style, selectOffset = 10, top, curImgLeft = s.left;
-			if(curImgLeft >= startLeft && curImgLeft <= touchendX){
-				if(curImg.selected){
-					curImg.mapCard.dead = false;
-					top = parseFloat(s.top || 0) + selectOffset + 'px';
-					curImg.selected = false;
-				}else{
-					curImg.mapCard.dead = true;
-					curImg.selected = true;
-					top = parseFloat(s.top || 0) - selectOffset + 'px';
+			for(var i = 0, j = curCardImgs.length; i < j; i++){
+				curImg = curCardImgs[i];			 
+				
+				var s = curImg.style, selectOffset = 10, top,
+					rect = curImg.getBoundingClientRect(),
+					curImgLeft = rect.left;
+				if(curImgLeft + cardOffset >= startLeft && curImgLeft  <= endLeft){					
+					if(curImg.selected){
+						curImg.mapCard.dead = false;
+						top = parseFloat(s.top || 0) + selectOffset + 'px';
+						curImg.selected = false;
+					}else{
+						curImg.mapCard.dead = true;
+						curImg.selected = true;
+						top = parseFloat(s.top || 0) - selectOffset + 'px';
+					}
+					s.top = top;
 				}
-				s.top = top;
-			}
-		}
+				/*
+				if(curImgLeft > endLeft || curImgLeft + cardOffset < startLeft){
+					break;
+				}
+				*/
+				
+			}	
+		}			
+		
+		
 		
 	});
 	
@@ -2676,7 +2695,8 @@ ddz.startGame = function(){
 	this.prepareUIBeforeStartGame();	
 	this.chuPaing = true;
 	
-	this.gameControl();	
+	
+	//this.gameControl();	
 }
 
 ddz.initEnv = function(){
