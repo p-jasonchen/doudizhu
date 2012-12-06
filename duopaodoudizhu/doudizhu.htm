@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0042)http://m.edianyou.com/h5game/doudizhu.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>斗地主_斗地主小游戏_手机小游戏</title>
+<meta name="Description" content="多泡游戏, 最多的html5，手机在线游戏网站。包括各种html5游戏,免费游戏,休闲游戏,手机在线游戏。">
+<meta name="Keywords" content="html5游戏, 免费游戏, 休闲游戏, 手机在线游戏">
+<meta name="viewport" content="user-scalable=no, width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" href="http://m.edianyou.com/h5game/doudizhu_files/images/icon.png">
+<link rel="apple-touch-startup-image" href="http://m.edianyou.com/h5game/doudizhu_files/images/icon.png">
+<style type="text/css">
+#game {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+#msg {
+	display: block;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	background: #fff url(./doudizhu_files/images/msg.jpg) no-repeat center center;
+}
+</style>
+<title>斗地主</title>
+<script type="text/javascript" src="./doudizhu_files/casual-0.1.min.js"></script>
+<link type="text/css" rel="stylesheet" href="data:text/css,">
+<script type="text/javascript" src="./doudizhu_files/GroupBitmap.js"></script>
+<script type="text/javascript" src="./doudizhu_files/ImageLoader.js"></script>
+<script type="text/javascript" src="./doudizhu_files/TweenUtil.js"></script>
+<script type="text/javascript" src="./doudizhu_files/Poker.js"></script>
+<script type="text/javascript" src="./doudizhu_files/Player.js"></script>
+<script type="text/javascript" src="./doudizhu_files/UI.js"></script>
+<script type="text/javascript" src="./doudizhu_files/Menu.js"></script>
+<script type="text/javascript" src="./doudizhu_files/Level.js"></script>
+<script type="text/javascript" src="./doudizhu_files/Rule.js"></script>
+<script type="text/javascript" src="./doudizhu_files/AI.js"></script>
+<script type="text/javascript" src="./doudizhu_files/R.js"></script>
+<script type="text/javascript" src="./doudizhu_files/gamehub1.js"></script>
+<script type="text/javascript" src="./doudizhu_files/ddz.js"></script>
+<script type="text/javascript" src="./doudizhu_files/ddz_single.js"></script>
+<script type="text/javascript" src="./doudizhu_files/ddz_gamble.js"></script>
+<script type="text/javascript" src="./doudizhu_files/ddz_play.js"></script>
+<script type="text/javascript" src="chrome-extension://bfbmjmiodbnnpllbbbfblcplfjjepjdn/js/injected.js"></script></head>
+
+<body>
+
+
+
+ <link rel="stylesheet" type="text/css" href="./doudizhu_files/popup.css"> 
+
+    <script type="text/javascript" src="./doudizhu_files/common.js"></script>
+
+    <script type="text/javascript" src="./doudizhu_files/popup.js"></script>
+
+    <script type="text/javascript" src="./doudizhu_files/gamehub.js"></script>
+
+
+
+    <script type="text/javascript">
+
+      var sid = "";
+
+      Gamehub.Settings.gameName = "DouDiZhu";
+
+      if (typeof StartGame == 'function') {
+
+        StartGame();
+
+      }
+
+      window.scrollTo(0, 1);
+
+</script>
+
+
+
+
+
+<div id="game" style="background-color: rgb(255, 255, 255); width: 1280px; height: 666px; ">
+
+  <canvas id="bg" width="480" height="320" style="position: absolute; left: 0px; top: 0px; "></canvas>
+
+  <canvas id="player" width="480" height="320" style="position: absolute; left: 0px; top: 0px; cursor: pointer; "></canvas>
+
+  <canvas id="info" width="480" height="220" style="position: absolute; left: 0px; top: 0px; "></canvas>
+
+  <canvas id="poker" width="480" height="100" style="position: absolute; left: 0px; top: 220px; "></canvas>
+
+  <canvas id="control" width="380" height="45" style="position: absolute; left: 50px; top: 170px; "></canvas>
+
+  <span id="name0" style="position: absolute; font-family: 宋体; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal; white-space: nowrap; left: 219px; top: 271px; color: rgb(255, 255, 255); display: none; z-index: 10; ">undefined</span><span id="level0" style="position: absolute; font-family: 宋体; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal; white-space: nowrap; left: 219px; top: 286px; color: rgb(84, 234, 239); display: none; z-index: 10; ">undefined</span><span id="score0" style="position: absolute; font-family: 宋体; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal; white-space: nowrap; display: block; z-index: 10; left: 4px; top: 215px; color: rgb(84, 234, 239); ">财富:0</span><span id="name1" style="position: absolute; font-family: 宋体; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal; white-space: nowrap; display: block; z-index: 10; left: 428px; top: 55px; color: rgb(255, 255, 255); ">韦小宝</span><span id="level1" style="position: absolute; font-family: 宋体; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal; white-space: nowrap; display: block; z-index: 10; left: 428px; top: 70px; color: rgb(84, 234, 239); ">帝王</span><span id="name2" style="position: absolute; font-family: 宋体; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal; white-space: nowrap; display: block; z-index: 10; left: 4px; top: 55px; color: rgb(255, 255, 255); ">小萝莉</span><span id="level2" style="position: absolute; font-family: 宋体; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; line-height: normal; white-space: nowrap; display: block; z-index: 10; left: 4px; top: 70px; color: rgb(84, 234, 239); ">中农</span><canvas id="bg" width="480" height="320" style="position: absolute; left: 0px; top: 0px; "></canvas><canvas id="player" width="480" height="320" style="position: absolute; left: 0px; top: 0px; cursor: pointer; "></canvas><canvas id="info" width="480" height="220" style="position: absolute; left: 0px; top: 0px; "></canvas><canvas id="poker" width="480" height="100" style="position: absolute; left: 0px; top: 220px; "></canvas><canvas id="control" width="380" height="45" style="position: absolute; left: 50px; top: 170px; cursor: pointer; "></canvas></div>
+
+<div id="msg"></div>
+
+<script type="text/javascript">
+
+  //Gamehub1.Settings.gameName = "DouDiZhu";
+
+  Gamehub1.Settings.score = "0";
+
+  //if (typeof StartGame != "undefined") {
+
+  //  StartGame();
+
+  //}
+
+  //Gamehub1.Score.submit(1);
+
+  //Gamehub1.Level.update("富农");
+
+</script>
+
+/* GA统计 */
+<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-25424360-1']);
+		_gaq.push(['_setDomainName', '.duopao.com']);
+		_gaq.push(['_addOrganic', 'soso', 'w']);
+		_gaq.push(['_addOrganic', 'yodao', 'q']);
+		_gaq.push(['_addOrganic', 'sogou', 'query']);
+		_gaq.push(['_addOrganic', 'so.360.cn', 'q']);
+		_gaq.push(['_trackPageview']);
+		 _gaq.push(['_trackPageLoadTime']);
+		
+		(function() {
+		  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	
+	</script>
+	<script type="text/javascript">
+		var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+		document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F0bde07579b8fa55c37b5a5d2540cb781' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+
+
+
+</body></html>

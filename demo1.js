@@ -2734,7 +2734,7 @@ ddz.startGame = function(){
 	this.chuPaing = true;
 	
 	ddz.player3.registeSelectCardAction();
-	this.gameControl();	
+	//this.gameControl();	
 }
 
 ddz.initEnv = function(){
