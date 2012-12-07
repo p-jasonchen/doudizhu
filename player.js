@@ -158,9 +158,7 @@ var Player = function(opt){
 	this.AIPlayer = ( typeof opt.AIPlayer  == 'undefined' ? true : opt.AIPlayer);	
 	this.index = opt.index;
 	this.cardArray = opt.cardArray;	
-	this.shouPaiCount = this.cardArray.length;
-	this.sortedPaiInfoArray = null;
-	this.initSortedPaiInfoArray();
+	this.shouPaiCount = this.cardArray.length;	
 	this.shouPaiAreaId = opt.shouPaiAreaId;
 	this.shouPaiAreaObj = CommonUtil.$id(opt.shouPaiAreaId);
 	
@@ -311,9 +309,9 @@ Player.prototype.showMyFigure = function(){
 
 Player.prototype.assignDiPai = function(){
 	var diPai = ddz.dipai;
-	CommonUtil.bubbleSort(diPai, this.cardCmpFunction);
+	AI.sort1(diPai);	
 	this.cardArray = this.cardArray.concat(diPai);
-	this.initSortedPaiInfoArray();
+	AI.sort1(this.cardArray);
 	this.shouPaiCount  = this.cardArray.length;
 }
 
@@ -713,6 +711,203 @@ Player.prototype.doChuPai = function(){
 	var timer = this.chuPaiObj.timer;
 		timer && timer.stop();
 	setTimeout( function(){ddz.gameControl()}, 0);
+}
+
+Player.prototype.positiveChuPai = function(){
+
+	var lastPlayer = this.index == 0 ? ddz.playerArray[2]
+			: this.index == 1 ? ddz.playerArray[0] : ddz.playerArray[1];
+	var nextPlayer = this.index == 0 ? ddz.playerArray[1]
+			: this.index == 1 ? ddz.playerArray[2] : ddz.playerArray[0];
+	var againstPlayer =  !this.isDiZhu ? ddz.diZhu
+			: lastPlayer.cardArray.length < nextPlayer.cardArray.length ? lastPlayer
+					: nextPlayer;
+					
+	var bestPokers = AI.findBestCards(this, null, null, true), bestPokers2;
+		if (bestPokers.length != this.cardArray.length) {
+			AI.analyzePlayerCards(againstPlayer);
+			var leftPokers = AI.filterPokers(this.cardArray, bestPokers);
+			if (Rule.getType(leftPokers)
+					&& leftPokers[0].cardSeq >= againstPlayer.cardArray[0].cardSeq) {
+				//当玩家只剩下2手牌的时候，如果对手最大的牌都大不过则出最大的��?
+				bestPokers2 = leftPokers;
+			} else {
+				//当对手的牌少��?个的时候，则出其没有或者打不起的牌��?对子或三��?
+				if (againstPlayer.cardArray.length <= 5) {
+					var pairs2 = AI.findAllByType(againstPlayer, GroupType.对子);
+					var pairs1 = AI.findAllByType(this, GroupType.对子,
+							pairs2[0]);
+					var triples2 = AI
+							.findAllByType(againstPlayer, GroupType.三张);
+					var triples1 = AI.findAllByType(this, GroupType.三张,
+							triples2[0]);
+					if (triples1.length > 0) {
+						var triple = triples1[triples1.length - 1];
+						bestPokers2 = AI.findPlusPoker(this, triple, 2, true);
+						if (!bestPokers2
+								|| bestPokers2[bestPokers2.length - 1].cardSeq >= 14)
+							bestPokers2 = AI.findPlusPoker(this, triple, 1,
+									false);
+						if (!bestPokers2
+								|| bestPokers2[bestPokers2.length - 1].cardSeq >= 15)
+							bestPokers2 = triple;
+					} else if (pairs1.length > 0) {
+						bestPokers2 = pairs1[pairs1.length - 1];
+					}
+				}
+
+				//freePlayer标记一个正在自由出��?againstPlayer无法打过)的电��?
+				if (bestPokers2)
+					ddz.freePlayer = this;
+
+				//当对手只剩下1��?张牌且无对子或三张可出，则从最大的单张开始出
+				if (!bestPokers2
+						&& (againstPlayer.cardArray.length == 1 || againstPlayer.cardArray.length == 2)) {
+					var singles = zAI.findAllByType(this, GroupType.单张);
+					if (singles.length > 0)
+						bestPokers2 = singles[0];
+				}
+			}
+		}
+
+		var cardArray = bestPokers2 || bestPokers;
+		this.selectCards(cardArray);
+		//Poker.select(cardArray, true);		
+}
+
+Player.prototype.negativeChuPai  = function(){
+
+	var lastPlayer = this.index == 0 ? ddz.playerArray[2]
+			: this.index == 1 ? ddz.playerArray[0] : ddz.playerArray[1];
+	var nextPlayer = this.index == 0 ? ddz.playerArray[1]
+			: this.index == 1 ? ddz.playerArray[2] : ddz.playerArray[0];
+	var againstPlayer =  !this.isDiZhu ? ddz.diZhu
+			: lastPlayer.cardArray.length < nextPlayer.cardArray.length ? lastPlayer
+					: nextPlayer;
+					
+	var chuPaiInfo = ddz.chuPaiInfo, chuPaiArray = chuPaiInfo.cardArray, chuPaiType = chuPaiInfo.paiType;
+	var selectedPokers = AI.findBestCards(this, chuPaiType,
+				chuPaiArray, true);
+		
+		if (selectedPokers && selectedPokers.length < this.cardArray.length) {
+			//如果上次出牌的是同盟玩家，则考虑是否要出��?
+			if (!this.isDiZhu && ddz.strongPlayer != ddz.diZhu) {
+				//如果上家没有压同盟玩家的牌且同盟玩家为自由出牌者，则放弃出牌让其获得牌��?
+				if (nextPlayer == chuPaiInfo.strongPlayer
+						&& nextPlayer == ddz.freePlayer) {
+					this.skipPlay();
+					return;
+				}
+
+				//如果下家除开炸弹外没有能大起上家的牌，则放弃出牌				
+				var nextPokers = AI.findBestCards(this, chuPaiType,	chuPaiArray, false);
+				if ((!nextPokers || nextPokers.length == 0) && AI.hasChance(95)) {
+					this.skipPlay();
+					return;
+				}
+
+				//如果同盟玩家的牌大于A，则不出��?			
+				var sorted = AI.sort1(selectedPokers);
+				if ((chuPaiArray.cardSeq >= 15 || sorted[0].cardSeq >= 16)
+						&& (this.cardArray.length - sorted.length > 4)
+						&& AI.hasChance(80)) {
+					this.skipPlay();
+					return;
+				}
+
+				//如果出了点数大于A的牌(非单��?后还比同盟玩家牌多，则放弃出��?
+				if (sorted.length > 1
+						&& sorted[0].cardSeq >= 14
+						&& this.cardArray.length - sorted.length > ddz.strongPlayer.cardArray.length
+						&& AI.hasChance(80)) {
+					this.skipPlay();
+					return;
+				}
+
+				//三张2在对家所剩牌数还比较多的时候不��?
+				if (sorted.length >= 3 && sorted[0].cardSeq == 15
+						&& sorted[1].cardSeq == 15 && sorted[2].cardSeq == 15
+						&& againstPlayer.cardArray.length > 5) {
+					this.skipPlay();
+					return;
+				}
+			}
+
+			//在对家还��?张牌以上时，如果剩余牌数大于一定数目的时候，不出炸弹或双��?
+			var type = Rule.getType(selectedPokers);
+			if (type == GroupType.炸弹 || type == GroupType.双王) {
+				//如果是单张且只有双王，则拆开出小��?
+				if (chuPaiType == GroupType.单张 && type == GroupType.双王
+						&& this.bomb.length == 0
+						&& againstPlayer.cardArray.length < 10) {
+					selectedPokers = selectedPokers[1];
+				} else if (againstPlayer.cardArray.length > 5) {
+					if (this.cardArray.length - selectedPokers.length > 8
+							&& AI.hasChance(90)) {
+						this.skipPlay();
+						return;
+					} else if (this.cardArray.length - selectedPokers.length > 5
+							&& AI.hasChance(60)) {
+						this.skipPlay();
+						return;
+					}
+				}
+			}
+
+			//当对手只剩下1��?张牌时，则从最大的开始出
+			if (againstPlayer.cardArray.length == 1
+					&& chuPaiType == GroupType.单张) {
+				var singles = AI.findAllByType(this, GroupType.单张,
+						chuPaiArray, false);
+				if (singles.length > 0)
+					selectedPokers = singles[0];
+			} else if (againstPlayer.cardArray.length == 2
+					&& chuPaiType == GroupType.对子
+					&& Rule.getType(againstPlayer.cardArray) == GroupType.对子) {
+
+				var pairs = AI.findAllByType(this, GroupType.对子,
+						chuPaiArray, false);
+				if (pairs.length > 0)
+					selectedPokers = pairs[0];
+			}
+
+			//准备出牌
+			//Poker.select(selectedPokers, true);
+			this.selectCards(selectedPokers);
+			//this.playPoker(player);
+		} else if (selectedPokers) {
+			
+			//Poker.select(selectedPokers, true);
+			//this.playPoker(player);
+		} else {
+			this.skipPlay();
+			
+		}
+}
+
+Player.prototype.skipPlay = function(){
+	this.selectedCardArray.length = 0;
+	this.placeCardSelected();
+	this.placeCards();
+}
+
+Player.prototype.selectCards = function(cards){
+	if( ! cards  instanceof Array) cards = [cards];
+	this.selectedCardArray = cards;
+	this.cardArray = AI.filterPokers(this.cardArray, cards);
+	
+	
+	var type = Rule.getType(cards);
+	var len = cards.length;
+	if (type == null || len == 0)
+		return;
+	
+	ddz.chuPaiInfo.cardArray = cards;
+	ddz.chuPaiInfo.strongPlayer = this;
+	ddz.chuPaiInfo.paiType = type;
+	
+	this.placeCardSelected();
+	this.placeCards();
 }
 
 Player.prototype.doNonAIChuPai = function(){	
