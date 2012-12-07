@@ -1,4 +1,4 @@
-﻿var CommonUtil = {
+﻿ var CommonUtil = {
 	format : function(){    
 		var args = arguments;    
 		return this.replace(/\{(\d+)\}/g,                    
@@ -520,33 +520,6 @@ Player.prototype.registeQiangDiZhuAction = function(){
 	});
 }
 
-Player.prototype.isNonAISelectedPaiOk = function(judger){
-	var chuPaiInfo = ddz.chuPaiInfo,
-		strongPlayer = chuPaiInfo.strongPlayer,	
-		ok = (judger.paiType != -1);		
-	if(ok){
-		ok = (strongPlayer === this);
-		if(!ok){
-			var judgerPaiType = judger.paiType, chuPaiType = chuPaiInfo.paiType;
-			if(judgerPaiType == 'shuangWang'){
-				ok = true;
-			}else if(chuPaiType != 'shuangWang'){
-				if(judgerPaiType == 'siZhang'){
-					if(chuPaiType == 'siZhang'){
-						ok = judger.startCardSeq > chuPaiInfo.startCardSeq ;						
-					}else{
-						ok = true;
-					}
-				}else{
-					ok = ( (judger.paiType == chuPaiInfo.paiType) &&
-							(judger.startCardSeq > chuPaiInfo.startCardSeq) );
-		
-				}
-			}
-		}
-	}
-	return ok;
-}
 
 Player.prototype.doTiShi = function(){
 	var chuPaiInfo = ddz.chuPaiInfo;
@@ -561,22 +534,30 @@ Player.prototype.nonAIChuPai = function(){
 	var selectCards = this.getSelectedCards() || [];
 	this.selectedCardArray = selectCards;
 	if(selectCards.length == 0)return;	
-	var judger = this.judgeChupaiType() || {}, 
-		that = this,
-		chuPaiInfo = ddz.chuPaiInfo;
-	var strongPlayer = chuPaiInfo.strongPlayer;
-	if(this.isNonAISelectedPaiOk(judger) ){	
-		chuPaiInfo.paiType = judger.paiType;
-		chuPaiInfo.startCardSeq = judger.startCardSeq;
-		chuPaiInfo.length = judger.length;
-		chuPaiInfo.curChuPaiPlayer=this;	
-		chuPaiInfo.strongPlayer	 = this;	
-		this.doNonAIChuPai();
-		
+	
+	var	chuPaiInfo = ddz.chuPaiInfo;
+	var strongPlayer = chuPaiInfo.strongPlayer, ok = false;
+	if(strongPlayer == this){
+		ok = true;
 	}else{
-		// this.buChuPai();
-		//this.this.selectedCardArray.length = 0;
+		var type = Rule.getType(selectCards);
+		if(type){
+			if(chuPaiInfo.paiType == type || type == GroupType.双王 || type == GroupType.炸弹){
+				ok = true;
+			}
+		}
 	}
+	if(ok){
+		chuPaiInfo.paiType = type;
+		this.selectCards(selectCards);	
+		var timer = this.chuPaiObj.timer;
+		timer && timer.stop();		
+		
+		setTimeout( function(){ddz.gameControl()}, 0);		
+	}else{
+		this.skipPlay();
+	}
+	
 }
 
 Player.prototype.getSelectedCards = function(){
@@ -891,11 +872,10 @@ Player.prototype.skipPlay = function(){
 	this.placeCards();
 }
 
-Player.prototype.selectCards = function(cards){
-	if( ! cards  instanceof Array) cards = [cards];
+Player.prototype.selectCards = function(cards){	
 	this.selectedCardArray = cards;
 	this.cardArray = AI.filterPokers(this.cardArray, cards);
-	
+	this.shouPaiCount = this.cardArray.length;
 	
 	var type = Rule.getType(cards);
 	var len = cards.length;
@@ -935,8 +915,7 @@ Player.prototype.buChuPai = function(){
 		this.clearSelectedCards();
 		var timer = this.chuPaiObj.timer;
 		timer && timer.stop();			
-		this.placeCards();
-		this.placeCardSelected();
+		this.skipPlay();
 		setTimeout( function(){ddz.gameControl()}, 0);
 	}
 }

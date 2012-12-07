@@ -469,6 +469,7 @@ AI.analyzePlayerCards = function(player){
 
 //按从大到小排序
 AI.sort1 = function(cards) {
+	if( ! cards  instanceof Array) cards = [cards];
 	cards.sort(function(a, b) {
 		var p = b.cardSeq - a.cardSeq;
 		if (p == 0)
