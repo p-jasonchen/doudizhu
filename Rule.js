@@ -66,8 +66,7 @@ Rule.compare = function(pa, pb) {
 }
 
 //获取指定牌的牌型
-Rule.getType = function(cardArray) {
-	if( ! cardArray  instanceof Array) cardArray = [cardArray];
+Rule.getType = function(cardArray) {	
 	//从大到小排序，便于牌型判断
 	AI.sort1(cardArray);
 

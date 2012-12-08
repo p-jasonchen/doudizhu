@@ -328,13 +328,12 @@ ddz.gameControl = function(){
 			curIndex = ( this.diZhuIndex++) % playerLength;
 			//nextIndex = (this.curIndex + 1) % playerLength;
 			//ddz.nextPlayer = playerArray[nextIndex];
-			// playerArray[curIndex].doChuPai();
-			this.playTurn = curIndex;
+			// playerArray[curIndex].doChuPai();			
 			playerArray[curIndex].startChuPaiTimer();
 			
 			//ddz.chuPaiInfo.isOver = true;
 		}else{
-			var player = this.chuPaiInfo.curChuPaiPlayer,
+			var player = this.chuPaiInfo.strongPlayer,
 				resultObj = CommonUtil.$id('result');
 				style = resultObj.style;				
 			if(player.isDiZhu){		

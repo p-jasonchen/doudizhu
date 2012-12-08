@@ -322,24 +322,8 @@ Player.prototype.mapImg2Card = function(){
 	for(var i = 0, j = cardImgs.length; i < j; i++){				
 		curCard = cardImgs[i];		
 		curCard.mapCard = this.cardArray[parseInt(curCard.getAttribute('index'))];
-		curCard.mapCard.mapImg = curCard;		
-		/*
-		!this.AIPlayer && curCard.addEventListener('click', function(){
-			var s = this.style, selectOffset = 10, top;
-			if(this.selected){
-				this.mapCard.dead = false;
-				top = parseFloat(s.top || 0) + selectOffset + 'px';
-				this.selected = false;
-			}else{
-				this.mapCard.dead = true;
-				this.selected = true;
-				top = parseFloat(s.top || 0) - selectOffset + 'px';
-			}
-			s.top = top;
-			
-			ddz.player3.updateChuPaiActionUI();
-		});	
-		*/		
+		curCard.mapCard.mapImg = curCard;	
+	
 	}
 }
 
@@ -425,12 +409,10 @@ Player.prototype.registeSelectCardAction = function(){
 				
 				var s = curImg.style,top;				
 				s.boxShadow = '';
-				if(curImg.selected){
-					curImg.mapCard.dead = false;
+				if(curImg.selected){					
 					top = parseFloat(s.top || 0) + selectOffset + 'px';
 					curImg.selected = false;
-				}else{
-					curImg.mapCard.dead = true;
+				}else{				
 					curImg.selected = true;
 					top = parseFloat(s.top || 0) - selectOffset + 'px';
 				}
@@ -552,7 +534,7 @@ Player.prototype.nonAIChuPai = function(){
 		this.selectCards(selectCards);	
 		var timer = this.chuPaiObj.timer;
 		timer && timer.stop();		
-		
+		ddz.chuPaiInfo.isOver  = (this.cardArray.length == 0);
 		setTimeout( function(){ddz.gameControl()}, 0);		
 	}else{
 		this.skipPlay();
@@ -572,30 +554,17 @@ Player.prototype.getSelectedCards = function(){
 	return selectCards;
 }
 
-Player.prototype.clearSelectedCards = function(){
-	//if(this.AIPlayer) return;
-	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;
-	for(var i = 0, j = cardImgs.length; i < j; i++){
-		curCard = cardImgs[i].mapCard;
-		curCard.dead = false;
-		
-	}
+Player.prototype.clearSelectedCards = function(){	
+	
 	this.selectedCardArray.length = 0;
 }
 
 
 
-Player.prototype.doChongXuan = function(){
-	
-	var selectedCards = this.getSelectedCards();
-	for(var i = 0, j = selectedCards.length; i < j; i++){
-		curCard = selectedCards[i];			
-		curCard.dead = false;		
-	}
+Player.prototype.doChongXuan = function(){	
 	this.placeCards();
 	this.selectedCardArray.length = 0;
 	this.updateChuPaiActionUI();
-
 }
 
 Player.prototype.doQiangDiZhu = function(){	
@@ -683,6 +652,8 @@ Player.prototype.doChuPai = function(){
 	}else{
 		this.negativeChuPai();
 	}
+	
+	ddz.chuPaiInfo.isOver = (this.cardArray.length == 0);
 	// this.selectedCardArray.length = 0;
 	/*
 	var clockArea = this.clockAreaObj, that = this;
@@ -744,7 +715,7 @@ Player.prototype.positiveChuPai = function(){
 				//当对手只剩下1��?张牌且无对子或三张可出，则从最大的单张开始出
 				if (!bestPokers2
 						&& (againstPlayer.cardArray.length == 1 || againstPlayer.cardArray.length == 2)) {
-					var singles = zAI.findAllByType(this, GroupType.单张);
+					var singles = AI.findAllByType(this, GroupType.单张);
 					if (singles.length > 0)
 						bestPokers2 = singles[0];
 				}
@@ -772,7 +743,7 @@ Player.prototype.negativeChuPai  = function(){
 		
 		if (selectedPokers && selectedPokers.length < this.cardArray.length) {
 			//如果上次出牌的是同盟玩家，则考虑是否要出��?
-			if (!this.isDiZhu && ddz.strongPlayer != ddz.diZhu) {
+			if (!this.isDiZhu && ddz.chuPaiInfo.strongPlayer != ddz.diZhu) {
 				//如果上家没有压同盟玩家的牌且同盟玩家为自由出牌者，则放弃出牌让其获得牌��?
 				if (nextPlayer == chuPaiInfo.strongPlayer
 						&& nextPlayer == ddz.freePlayer) {
@@ -799,7 +770,7 @@ Player.prototype.negativeChuPai  = function(){
 				//如果出了点数大于A的牌(非单��?后还比同盟玩家牌多，则放弃出��?
 				if (sorted.length > 1
 						&& sorted[0].cardSeq >= 14
-						&& this.cardArray.length - sorted.length > ddz.strongPlayer.cardArray.length
+						&& this.cardArray.length - sorted.length > ddz.chuPaiInfo.strongPlayer.cardArray.length
 						&& AI.hasChance(80)) {
 					this.skipPlay();
 					return;
@@ -873,7 +844,8 @@ Player.prototype.skipPlay = function(){
 }
 
 Player.prototype.selectCards = function(cards){	
-	this.selectedCardArray = cards;
+	if( ! (cards instanceof Array) ) cards = [cards];
+	this.selectedCardArray = [].concat(cards);
 	this.cardArray = AI.filterPokers(this.cardArray, cards);
 	this.shouPaiCount = this.cardArray.length;
 	
@@ -882,7 +854,7 @@ Player.prototype.selectCards = function(cards){
 	if (type == null || len == 0)
 		return;
 	
-	ddz.chuPaiInfo.cardArray = cards;
+	ddz.chuPaiInfo.cardArray = [].concat(cards);
 	ddz.chuPaiInfo.strongPlayer = this;
 	ddz.chuPaiInfo.paiType = type;
 	
@@ -890,20 +862,6 @@ Player.prototype.selectCards = function(cards){
 	this.placeCards();
 }
 
-Player.prototype.doNonAIChuPai = function(){	
-	this.shouPaiCount -= this.selectedCardArray.length;
-	var that  = this;
-	var timer = this.chuPaiObj.timer;
-		timer && timer.stop();
-	this.placeCardSelected();
-	that.placeCards();	
-	this.updateSortedPaiInfoArray();
-	if(this.sortedPaiInfoArray.length == 0){
-			ddz.chuPaiInfo.isOver = true;
-			CommonUtil.print('一方牌数为0，游戏结束');
-	}		
-	setTimeout( function(){ddz.gameControl()}, 0);
-}
 
 Player.prototype.buChuPai = function(){
 	var chuPaiInfo = ddz.chuPaiInfo;
@@ -1022,7 +980,7 @@ Player.prototype.startQiangDiZhuTimer = function(){
 	this.qiangDiZhuObj.timer = timer;	
 	this.showBeforeQiangDiZhuUI();
 	if(this.AIPlayer){
-		setTimeout(function(){that.doQiangDiZhu()}, 3000);		
+		setTimeout(function(){that.doQiangDiZhu()}, 1000);		
 	}else{
 	}	
 }
@@ -1041,7 +999,7 @@ Player.prototype.startChuPaiTimer = function(){
 	this.chuPaiObj.timer = timer;	
 	this.showBeforeChuPaiUI();
 	if(this.AIPlayer){
-		setTimeout(function(){that.doChuPai()}, 3000);		
+		setTimeout(function(){that.doChuPai()}, 1000);		
 	}else{
 	}	
 	
@@ -1057,12 +1015,10 @@ Player.prototype.placeCards = function(type){
 		
 	var curPlayer = this.cardArray;	
 		
-	for(var i = 0, j = curPlayer.length; i < j; i++){
-		if(!curPlayer[i].dead){
+	for(var i = 0, j = curPlayer.length; i < j; i++){		
 			tStr = CommonUtil.format.call(template,curPlayer[i].className, i, top, left);
 			htmls.push(tStr);
-			left+= xOffset;	
-		}		
+			left+= xOffset;			
 	}
 	var cardsHtml = htmls.join('');	
 	if(this.isDiZhu){
@@ -1094,28 +1050,56 @@ Player.prototype.placeCardSelected = function(){
 		}
 		var cardsHtml = htmls.join('');	
 		
-		var paiType = ddz.chuPaiInfo.paiType;
+		var paiType = ddz.chuPaiInfo.paiType, classType = undefined;
 		switch(paiType){			
-			case 'siZhang':{
+			case GroupType.炸弹:{
 				ddz.ElemObj.siZhangEffectArea.style.display='block';
 				ddz.showSiZhangEffect(ddz.bombEffectPositionXArray.concat());break;
 			}
-			case 'shuangWang':{
+			case GroupType.双王:{
 				ddz.showShuangWangEffect();break;
 			}
-			case 'feiJi':
-			case 'feiJiDai1':
-			case 'feiJiDai2':{
+			case GroupType.二连飞机:
+			case GroupType.三连飞机:
+			case GroupType.四连飞机:
+			case GroupType.五连飞机:
+			case GroupType.六连飞机:
+			case GroupType.飞机带翅膀:
+			case GroupType.飞机带二对:
+			case GroupType.三连飞机带翅膀:
+			case GroupType.三连飞机带三对:
+			case GroupType.四连飞机带翅膀:
+			case GroupType.四连飞机带四对:
+			case GroupType.五连飞机带翅膀:
+			{
 				ddz.showFeiJiEffect();break;
 			}
-			case 'lianPai':
-			case 'lianDui':{
+			case GroupType.十二张顺子:
+			case GroupType.十一张顺子:
+			case GroupType.十张顺子:
+			case GroupType.九张顺子:
+			case GroupType.八张顺子:
+			case GroupType.七张顺子:
+			case GroupType.六张顺子:
+			case GroupType.五张顺子:{
+				classType = 'lianPai';
+			}
+			
+			case GroupType.三连对:
+			case GroupType.四连对:
+			case GroupType.五连对:
+			case GroupType.六连对:
+			case GroupType.七连对:
+			case GroupType.八连对:
+			case GroupType.九连对:
+			case GroupType.十连对:{
+					classType = classType || 'lianDui';
 					paiWidth = left - xOffset + this.cardWidth;
 					paiHeight = this.cardHeight;
 					left = (paiWidth- 190)/2;//190文字顺子的宽度,参看.lianpai css.
 					xtop = (paiHeight-92)/2;
 					template = "<div class='{0}' style='left:{1}px;top:{2}px'></div>";
-					tStr = CommonUtil.format.call(template,paiType, left,xtop);
+					tStr = CommonUtil.format.call(template,classType, left,xtop);
 					cardsHtml += tStr;
 					break;
 				}
