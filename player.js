@@ -524,20 +524,25 @@ Player.prototype.nonAIChuPai = function(){
 	}else{
 		var type = Rule.getType(selectCards);
 		if(type){
-			if(chuPaiInfo.paiType == type || type == GroupType.双王 || type == GroupType.炸弹){
+			if(type == GroupType.双王 || type == GroupType.炸弹){
+				ok = true;
+			}else if(chuPaiInfo.paiType == type && chuPaiInfo.cardArray[0].cardSeq < selectCards[0].cardSeq){
 				ok = true;
 			}
 		}
 	}
+	var timer = this.chuPaiObj.timer;
+		timer && timer.stop();	
+		
 	if(ok){
 		chuPaiInfo.paiType = type;
 		this.selectCards(selectCards);	
-		var timer = this.chuPaiObj.timer;
-		timer && timer.stop();		
+			
 		ddz.chuPaiInfo.isOver  = (this.cardArray.length == 0);
 		setTimeout( function(){ddz.gameControl()}, 0);		
 	}else{
 		this.skipPlay();
+		setTimeout( function(){ddz.gameControl()}, 0);
 	}
 	
 }
