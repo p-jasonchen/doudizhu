@@ -215,6 +215,16 @@ Player.prototype.initChuPaiObj = function(){
 	this.chuPaiObj = htmlObj;
 }
 
+Player.prototype.showQiangDiZhuArea = function(show){
+	var show  = show ? 'block' : 'none';
+	this.qiangDiZhuObj.area.style.display = show;
+}
+
+Player.prototype.showChuPaiArea = function(show){
+	var show = show ? 'block' : 'none';
+	this.chuPaiObj.area.style.display = show;
+}
+
 Player.prototype.pushOneCard = function(card){
 	this.cardArray.push(card);
 	this.shouPaiCount++;
@@ -491,6 +501,7 @@ Player.prototype.doTiShi = function(){
 		cards = this.negativeSelectCards();		
 	}
 	if(cards && cards.length > 0){
+		this.placeCards()
 		this.setCards2SelectedStatus(cards, true);
 		this.updateChuPaiActionUI(false);
 	}else{
@@ -506,14 +517,17 @@ Player.prototype.setCards2SelectedStatus = function(cards, selected){
 	if(cards){
 		for(var i = cards.length -1; i >=0; i-- ){
 				curImg = cards[i].mapImg;
-				curImg.selected = selected;
+				
 				var s = curImg.style, top = '';
-				if(selected){
-					top = parseFloat(s.top || 0) - ddz.selectOffset + 'px';
-				}else{
-					top = parseFloat(s.top || 0) + ddz.selectOffset + 'px';
+				if(curImg.selected != selected){
+					if(selected){
+						top = parseFloat(s.top || 0) - ddz.selectOffset + 'px';
+					}else{
+						top = parseFloat(s.top || 0) + ddz.selectOffset + 'px';
+					}
+					s.top = top;
+					curImg.selected = selected;
 				}
-				s.top = top;
 		}
 	}
 }
@@ -1004,7 +1018,7 @@ Player.prototype.startQiangDiZhuTimer = function(){
 	this.qiangDiZhuObj.timer = timer;	
 	this.showBeforeQiangDiZhuUI();
 	if(this.AIPlayer){
-		setTimeout(function(){that.doQiangDiZhu()}, 1000);		
+		setTimeout(function(){that.doQiangDiZhu()}, 2000);		
 	}else{
 	}	
 }
@@ -1023,7 +1037,7 @@ Player.prototype.startChuPaiTimer = function(){
 	this.chuPaiObj.timer = timer;	
 	this.showBeforeChuPaiUI();
 	if(this.AIPlayer){
-		setTimeout(function(){that.doChuPai()}, 1000);		
+		setTimeout(function(){that.doChuPai()}, 2000);		
 	}else{
 	}	
 	

@@ -30,8 +30,9 @@
 <section id='game_area'>
 	<div id='absolute_game_area'>
 	<section id='common_area'>
+		<div  id='start_div' class='action_btn red_btn'><div class='text_2char kaishi'></div></div>
 		<div id='mul_eff_div' class='cancel_animate mul_eff_2'></div>
-		<div id='invisible_dipai_area'>
+		<div id='invisible_dipai_area' style='display:none;'>
 			<div class='invisible_dipai card_img'></div>
 			<div class='invisible_dipai card_img'></div>
 			<div class='invisible_dipai card_img'></div>
@@ -244,7 +245,8 @@
 	-->
 <script type='text/javascript'>
 	CommonUtil.adjustSize();
-			ddz.initEnv();
+	ddz.initElemObj();
+	ddz.initEnv();
 			//ddz.startGame();
 			//ddz.qiangDiZhuControl();
 </script>

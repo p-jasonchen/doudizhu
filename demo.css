@@ -161,13 +161,22 @@ left:120px;
 	margin-left: 8px;
 }
 
-.action_container .action_btn{
+ .action_btn{
 	width:136px;
 	height:78px;
 	background-image:url('img/btn.png');
 	position: absolute;
 }
 
+.red_btn .kaishi{
+	background-position: 0px -348px;	
+}
+
+#start_div{
+top:249px;
+left:412px;
+z-index:100;
+}
 .green_btn{
 	background-position: 0px -85px;	
 }
@@ -224,6 +233,8 @@ background-position: -252px -530px;
 .red_btn .chupai{
 background-position: -237px -480px;
 }
+
+
 
 
 .role_shouPaiBg{
@@ -711,6 +722,11 @@ display:none;
 z-index: 100;
 position: absolute;
 margin:48px  136px;
+
+-webkit-animation-duration: 2s;
+-webkit-animation-delay: .0s;
+-webkit-animation-timing-function: ease;
+-webkit-animation-fill-mode: both;
 }
 
 .digital_img{

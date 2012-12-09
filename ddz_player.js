@@ -143,19 +143,8 @@ ddz.assignCardsControl = function(){
 }
 
 ddz.initQiangDiZhuEnv = function(){
-
-	
 	
 	this.qiangDiZhuIndex = Math.floor(Math.random() * 3);
-	this.ElemObj.mulEff = CommonUtil.$id('mul_eff_div');
-	this.ElemObj.totalMulEffArea = CommonUtil.$id('total_mul_value_container');
-	this.ElemObj.visibleDiPaiArea = CommonUtil.$id('visible_dipai_area');
-	this.ElemObj.invisibleDiPaiArea = CommonUtil.$id('invisible_dipai_area');
-	
-	this.ElemObj.siZhangEffectArea = CommonUtil.$id('sizhang_effect_area');
-	this.ElemObj.shuangWangEffectArea = CommonUtil.$id('shuangwang_effect_area');
-	this.ElemObj.feijiEffectArea = CommonUtil.$id('feiji_effect_area');
-	
 
 	
 	AI.sort1(this.player1.cardArray);
@@ -164,7 +153,7 @@ ddz.initQiangDiZhuEnv = function(){
 	
 	this.player1.placeCards();
 	this.player2.placeCards();
-	this.player3.placeCards();
+	this.player3.placeCards();	
 	
 	this.player3.registeChupaiAction();	
 	this.player3.registeQiangDiZhuAction();
@@ -304,10 +293,37 @@ ddz.startGame = function(){
 }
 
 
+ddz.initElemObj = function(){
+	this.ElemObj.mulEff = CommonUtil.$id('mul_eff_div');
+	this.ElemObj.totalMulEffArea = CommonUtil.$id('total_mul_value_container');
+	this.ElemObj.visibleDiPaiArea = CommonUtil.$id('visible_dipai_area');
+	this.ElemObj.invisibleDiPaiArea = CommonUtil.$id('invisible_dipai_area');
+	this.ElemObj.startDivArea = CommonUtil.$id('start_div');
+	
+	this.ElemObj.startDivArea.addEventListener('click',function(){	
+		ddz.ElemObj.invisibleDiPaiArea.style.display = 'block';
+		ddz.ElemObj.startDivArea.style.display = 'none';			
+		ddz.createRandomCards();
+		ddz.assignCardsControl();
+	 });
+	
+	 
+	 
+	
+	this.ElemObj.siZhangEffectArea = CommonUtil.$id('sizhang_effect_area');
+	this.ElemObj.shuangWangEffectArea = CommonUtil.$id('shuangwang_effect_area');
+	this.ElemObj.feijiEffectArea = CommonUtil.$id('feiji_effect_area');
+	
+}
+
 ddz.initEnv = function(){
-	this.initPlayers();	
-	this.createRandomCards();
-	this.assignCardsControl();
+	this.initPlayers();		
+	 
+	//this.ElemObj.invisibleDiPaiArea.style.display = 'none';	
+	//this.ElemObj.startDivArea.style.display='block';
+	
+	
+	 
 }
 
 ddz.qiangDiZhuControl = function(){
@@ -341,7 +357,21 @@ ddz.gameControl = function(){
 			if(player.isDiZhu){		
 				style.backgroundPositionY = '0px';
 			}
-			style.display = 'block';		
+			style.display = 'block';	
+			resultObj.className='fadeOut';
+			setTimeout(function(){
+				ddz.ElemObj.invisibleDiPaiArea.style.display = 'none';
+				ddz.ElemObj.startDivArea.style.display = 'block';		
+				
+				ddz.player1.showQiangDiZhuArea(true);
+				ddz.player2.showQiangDiZhuArea(true);
+				ddz.player3.showQiangDiZhuArea(true);
+				
+				ddz.player1.showChuPaiArea(false);
+				ddz.player2.showChuPaiArea(false);
+				ddz.player3.showChuPaiArea(false);
+				
+			},2000);
 		}		
 }
 
