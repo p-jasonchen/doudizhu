@@ -25,37 +25,7 @@
 	$queryAll:function(selector, e){
 		e = e || document;
 		return e.querySelectorAll(selector);
-	},
-	
-	bubbleSort: function(dataArray, cmpFunc){
-		var length = dataArray.length, temp, data1 ,data2, ret=0;
-		for(var i = 0; i < length - 1; i++){
-			for (var j = length -1; j >=1;j--) {
-				
-				data1 = dataArray[j], data2 = dataArray[j-1];
-				ret = cmpFunc(data1, data2);
-				if(ret > 0){
-					temp = data1;
-					dataArray[j] = data2;
-					dataArray[j-1] = temp;
-				}					
-			}
-		}
-		return dataArray;
-	},
-	
-	fire: function (elem, type){  
-		var evt;  
-		if(document.createEventObject){// IE浏览器支持fireEvent方法  
-			elem.fireEvent('on'+type);  
-		}else{// 其他标准浏览器使用dispatchEvent方法  
-			evt = document.createEvent('HTMLEvents');  
-			// initEvent接受3个参数：  
-			// 事件类型，是否冒泡，是否阻止浏览器的默认行为  
-			evt.initEvent(type, true, true);  
-			elem.dispatchEvent(evt);  
-		}  
-	},
+	},	
 	
 	print: function(text){
 		var player = ddz.chuPaiInfo.curChuPaiPlayer;
@@ -397,7 +367,7 @@ Player.prototype.registeSelectCardAction = function(){
 			evt.stopPropagation();		
 		
 		console.log(END_EV);
-		var touchSelectedCardImgs = that.touchSelectedCardImgs, selectOffset = 10;
+		var touchSelectedCardImgs = that.touchSelectedCardImgs, selectOffset = ddz.selectOffset;
 		var curImg = evt.target;
 		if(touchSelectedCardImgs.indexOf(curImg) == -1){			
 			touchSelectedCardImgs.push(curImg);
@@ -436,7 +406,7 @@ Player.prototype.registeChupaiAction = function(){
 		// that.judgeChupaiType();		
 		 // ddz.placeCards();		
 		
-		that.nonAIChuPai();
+		that.nonAIChuPai();		
 		
 		//that.clockAreaObj && (that.clockAreaObj.style.display = 'none');
 		
@@ -455,15 +425,22 @@ Player.prototype.registeChupaiAction = function(){
 			default:
 		}
 		*/
-		that.buChuPai();
+		that.buChuPai();		
 		//that.clockAreaObj && (that.clockAreaObj.style.display = 'none');
 		
 	});
 	
 	chongXuanBtn = CommonUtil.$id(this.chongxuanId);	
 	chongXuanBtn && chongXuanBtn.addEventListener('click', function(e){	
-		that.doChongXuan();
+		that.doChongXuan();		
 	});	
+	
+	
+	tiShiBtn = CommonUtil.$id(this.tishiId);
+	tiShiBtn && tiShiBtn.addEventListener('click', function(e){
+		if(!that.tiShiIng)
+			that.doTiShi();
+	});
 }
 
 Player.prototype.registeQiangDiZhuAction = function(){
@@ -504,12 +481,40 @@ Player.prototype.registeQiangDiZhuAction = function(){
 
 
 Player.prototype.doTiShi = function(){
+	this.tiShiIng = true;
 	var chuPaiInfo = ddz.chuPaiInfo;
-	var strongPlayer = chuPaiInfo.strongPlayer;
+	var strongPlayer = chuPaiInfo.strongPlayer, cards;
 	if(strongPlayer == this){
+		cards = this.positiveSelectCards();
 		
 	}else{
-		var curPaiType = chuPaiInfo.paiType;
+		cards = this.negativeSelectCards();		
+	}
+	if(cards && cards.length > 0){
+		this.setCards2SelectedStatus(cards, true);
+		this.updateChuPaiActionUI(false);
+	}else{
+		this.skipPlay();
+		this.tiShiIng = false;
+		var timer = this.chuPaiObj.timer;
+		timer && timer.stop();		
+		setTimeout( function(){ddz.gameControl()}, 0);
+	}
+}
+
+Player.prototype.setCards2SelectedStatus = function(cards, selected){
+	if(cards){
+		for(var i = cards.length -1; i >=0; i-- ){
+				curImg = cards[i].mapImg;
+				curImg.selected = selected;
+				var s = curImg.style, top = '';
+				if(selected){
+					top = parseFloat(s.top || 0) - ddz.selectOffset + 'px';
+				}else{
+					top = parseFloat(s.top || 0) + ddz.selectOffset + 'px';
+				}
+				s.top = top;
+		}
 	}
 }
 Player.prototype.nonAIChuPai = function(){
@@ -670,7 +675,15 @@ Player.prototype.doChuPai = function(){
 	setTimeout( function(){ddz.gameControl()}, 0);
 }
 
+
+
+
 Player.prototype.positiveChuPai = function(){
+	var cards = this.positiveSelectCards();
+	this.selectCards(cards);
+}
+
+Player.prototype.positiveSelectCards = function(){
 
 	var lastPlayer = this.index == 0 ? ddz.playerArray[2]
 			: this.index == 1 ? ddz.playerArray[0] : ddz.playerArray[1];
@@ -728,11 +741,20 @@ Player.prototype.positiveChuPai = function(){
 		}
 
 		var cardArray = bestPokers2 || bestPokers;
-		this.selectCards(cardArray);
-		//Poker.select(cardArray, true);		
+		return cardArray;
+			
 }
 
-Player.prototype.negativeChuPai  = function(){
+Player.prototype.negativeChuPai = function(){
+	var cards = this.negativeSelectCards();
+	if(cards){
+		this.selectCards(cards);
+	}else{
+		this.skipPlay();
+	}
+
+}
+Player.prototype.negativeSelectCards  = function(){
 
 	var lastPlayer = this.index == 0 ? ddz.playerArray[2]
 			: this.index == 1 ? ddz.playerArray[0] : ddz.playerArray[1];
@@ -752,14 +774,14 @@ Player.prototype.negativeChuPai  = function(){
 				//如果上家没有压同盟玩家的牌且同盟玩家为自由出牌者，则放弃出牌让其获得牌��?
 				if (nextPlayer == chuPaiInfo.strongPlayer
 						&& nextPlayer == ddz.freePlayer) {
-					this.skipPlay();
+					//this.skipPlay();
 					return;
 				}
 
 				//如果下家除开炸弹外没有能大起上家的牌，则放弃出牌				
 				var nextPokers = AI.findBestCards(this, chuPaiType,	chuPaiArray, false);
 				if ((!nextPokers || nextPokers.length == 0) && AI.hasChance(95)) {
-					this.skipPlay();
+					//this.skipPlay();
 					return;
 				}
 
@@ -768,7 +790,7 @@ Player.prototype.negativeChuPai  = function(){
 				if ((chuPaiArray.cardSeq >= 15 || sorted[0].cardSeq >= 16)
 						&& (this.cardArray.length - sorted.length > 4)
 						&& AI.hasChance(80)) {
-					this.skipPlay();
+					//this.skipPlay();
 					return;
 				}
 
@@ -777,7 +799,7 @@ Player.prototype.negativeChuPai  = function(){
 						&& sorted[0].cardSeq >= 14
 						&& this.cardArray.length - sorted.length > ddz.chuPaiInfo.strongPlayer.cardArray.length
 						&& AI.hasChance(80)) {
-					this.skipPlay();
+					//this.skipPlay();
 					return;
 				}
 
@@ -785,7 +807,7 @@ Player.prototype.negativeChuPai  = function(){
 				if (sorted.length >= 3 && sorted[0].cardSeq == 15
 						&& sorted[1].cardSeq == 15 && sorted[2].cardSeq == 15
 						&& againstPlayer.cardArray.length > 5) {
-					this.skipPlay();
+					//this.skipPlay();
 					return;
 				}
 			}
@@ -805,7 +827,7 @@ Player.prototype.negativeChuPai  = function(){
 						return;
 					} else if (this.cardArray.length - selectedPokers.length > 5
 							&& AI.hasChance(60)) {
-						this.skipPlay();
+						//this.skipPlay();
 						return;
 					}
 				}
@@ -830,16 +852,10 @@ Player.prototype.negativeChuPai  = function(){
 
 			//准备出牌
 			//Poker.select(selectedPokers, true);
-			this.selectCards(selectedPokers);
-			//this.playPoker(player);
-		} else if (selectedPokers) {
-			
-			//Poker.select(selectedPokers, true);
-			//this.playPoker(player);
-		} else {
-			this.skipPlay();
-			
-		}
+			//this.selectCards(selectedPokers);
+			//return selectedPokers;		
+		} 
+		return selectedPokers;
 }
 
 Player.prototype.skipPlay = function(){
@@ -888,7 +904,10 @@ Player.prototype.forceChuPaiWhenTimeout = function(){
 	this.doChuPai();
 	
 }
-Player.prototype.updateChuPaiActionUI = function(){
+Player.prototype.updateChuPaiActionUI = function(resetTiShi){
+	if(typeof resetTiShi == 'undefined' || resetTiShi){
+		this.tiShiIng = false;
+	}
 	var selectedCards = this.getSelectedCards();
 	var className = 'action_btn gray_btn';
 	if(selectedCards.length > 0 ){

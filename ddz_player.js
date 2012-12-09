@@ -84,7 +84,9 @@ var ddz = {
 	},
 	chuPaiInfo : {
 		isOver : false
-	}
+	},
+	selectOffset:10
+	
 	
 };
 /*
@@ -194,7 +196,7 @@ ddz.initPlayers = function(){
 					chupaiId:'chupai_btn',
 					buchuId:'buchu_btn',
 					chongxuanId:'chongxuan_btn',
-					tishiId:'tishiId',
+					tishiId:'tishi_btn',
 					AIPlayer:false,
 					cardArray:[],	
 					playerId:'player3',
