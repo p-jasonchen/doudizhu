@@ -353,6 +353,8 @@ ddz.initElemObj = function(){
 	this.ElemObj.invisibleDiPaiArea = CommonUtil.$id('invisible_dipai_area');
 	this.ElemObj.startDivArea = CommonUtil.$id('start_div');
 	
+	
+	
 	ddz.initEnv();	
 	this.ElemObj.startDivArea.addEventListener('click',function(){	
 		ddz.ElemObj.invisibleDiPaiArea.style.display = 'block';
@@ -360,6 +362,30 @@ ddz.initElemObj = function(){
 		ddz.createRandomCards();
 		ddz.assignCardsControl();
 	 });
+	 
+	 
+	 this.ElemObj.resultObj =  CommonUtil.$id('result');
+	 this.ElemObj.resultObj.addEventListener('webkitAnimationEnd',function(){				
+				this.style.display='none';
+				ddz.ElemObj.invisibleDiPaiArea.style.display = 'none';
+				ddz.ElemObj.invisibleDiPaiArea.className = '';
+				ddz.ElemObj.startDivArea.style.display = 'block';	
+				ddz.ElemObj.visibleDiPaiArea.style.display='none';
+				
+				ddz.player1.showQiangDiZhuArea(true);
+				ddz.player2.showQiangDiZhuArea(true);
+				ddz.player3.showQiangDiZhuArea(true);
+				
+				ddz.player1.showChuPaiArea(false);
+				ddz.player2.showChuPaiArea(false);
+				ddz.player3.showChuPaiArea(false);
+				
+				ddz.player3.unregisteListeners();
+				
+				ddz.reset();
+				ddz.initEnv();	
+				
+	});
 	
 	 
 	 
@@ -407,7 +433,7 @@ ddz.gameControl = function(){
 		}else{			
 			this.accountScore();
 			var player = this.chuPaiInfo.strongPlayer,
-				resultObj = CommonUtil.$id('result');
+				resultObj = this.ElemObj.resultObj;
 				style = resultObj.style;				
 			if(player.isDiZhu){		
 				style.backgroundPositionY = '0px';
@@ -415,30 +441,7 @@ ddz.gameControl = function(){
 				style.backgroundPositionY = '484px';
 			}
 			style.display = 'block';	
-			resultObj.className='fadeOut';
-			resultObj.addEventListener('webkitAnimationEnd',function(){			
-				
-				this.style.display='none';
-				ddz.ElemObj.invisibleDiPaiArea.style.display = 'none';
-				ddz.ElemObj.invisibleDiPaiArea.className = '';
-				ddz.ElemObj.startDivArea.style.display = 'block';	
-				ddz.ElemObj.visibleDiPaiArea.style.display='none';
-				
-				ddz.player1.showQiangDiZhuArea(true);
-				ddz.player2.showQiangDiZhuArea(true);
-				ddz.player3.showQiangDiZhuArea(true);
-				
-				ddz.player1.showChuPaiArea(false);
-				ddz.player2.showChuPaiArea(false);
-				ddz.player3.showChuPaiArea(false);
-				
-				ddz.player3.unregisteListeners();
-				
-				ddz.reset();
-				ddz.initEnv();	
-				
-			})
-			
+			resultObj.className='fadeOut';			
 		}		
 }
 
