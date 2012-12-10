@@ -64,6 +64,8 @@ padding-left: 19px;
 }
 .player_name{
 text-align: center;
+font-weight: bold;
+color: chartreuse;
 }
 
 

@@ -118,7 +118,8 @@ ddz.reset = function(){
 	var dipaiDomArray = CommonUtil.$queryAll('#invisible_dipai_area .invisible_dipai');
 	
 	dipaiDomArray[0].className = 'invisible_dipai card_img';
-	dipaiDomArray[2].className = 'invisible_dipai card_img';	
+	dipaiDomArray[2].className = 'invisible_dipai card_img';
+	this.showTotalMulValue();
 	
 	
 }
@@ -339,11 +340,10 @@ ddz.initElemObj = function(){
 	this.ElemObj.invisibleDiPaiArea = CommonUtil.$id('invisible_dipai_area');
 	this.ElemObj.startDivArea = CommonUtil.$id('start_div');
 	
+	ddz.initEnv();	
 	this.ElemObj.startDivArea.addEventListener('click',function(){	
 		ddz.ElemObj.invisibleDiPaiArea.style.display = 'block';
-		ddz.ElemObj.startDivArea.style.display = 'none';		
-		ddz.reset();
-		ddz.initEnv();		
+		ddz.ElemObj.startDivArea.style.display = 'none';	
 		ddz.createRandomCards();
 		ddz.assignCardsControl();
 	 });
@@ -403,7 +403,7 @@ ddz.gameControl = function(){
 			}
 			style.display = 'block';	
 			resultObj.className='fadeOut';
-			resultObj.addEventListener('webkitAnimationEnd',function(){
+			resultObj.addEventListener('webkitAnimationEnd',function(){			
 				
 				this.style.display='none';
 				ddz.ElemObj.invisibleDiPaiArea.style.display = 'none';
@@ -420,6 +420,9 @@ ddz.gameControl = function(){
 				ddz.player3.showChuPaiArea(false);
 				
 				ddz.player3.unregisteListeners();
+				
+				ddz.reset();
+				ddz.initEnv();	
 				
 			})
 			

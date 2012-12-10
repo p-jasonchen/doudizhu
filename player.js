@@ -224,6 +224,7 @@ Player.prototype.initChuPaiObj = function(){
 	
 	var showLevelArea = CommonUtil.$query('.player_name', area);
 	var title = Level.getLevel(this.score).title;
+	console.log(this.score);
 	showLevelArea.innerHTML = title;
 	
 	htmlObj.area = area;
