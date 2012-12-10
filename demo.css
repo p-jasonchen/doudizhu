@@ -63,7 +63,7 @@ height: 70px;
 padding-left: 19px;
 }
 .player_name{
-
+text-align: center;
 }
 
 
@@ -831,3 +831,19 @@ display:none;
 }
 
 
+#tip_area{
+	background-image:url('img/interface_b.jpg');
+	width:420px;
+	height:48px;
+}
+.bugouda_after_action{
+background-position:0 -421px;
+}
+
+.paitype_error{
+background-position:0 -520px;
+}
+
+.bugouda_before_action{
+background-position:0 -470px;
+}

@@ -24,6 +24,7 @@
 <script type='text/javascript' src='ddz_player.js?v=6'></script>
 <script type='text/javascript' src='AI.js?v=6'></script>
 <script type='text/javascript' src='Rule.js?v=6'></script>
+<script type='text/javascript' src='Level.js?v=6'></script>
 <title>HTML5 斗地主</title>
 <body>
 <div id='setScreen'></div>
@@ -47,13 +48,12 @@
 		
 		<div class='difen_chars'></div>
 		<div id='difen_value_container'>
-			<div class='digital_img digital_5'></div>
+			<div class='digital_img digital_4'></div>
 		</div>
 		
 		<div class='total_mul_chars'></div>
-		<div id='total_mul_value_container'>			
-				<div class='digital_img digital_1'></div>
-				<div class='digital_img digital_5'></div>					
+		<div id='total_mul_value_container'>				
+				<div class='digital_img digital_1'></div>					
 		</div>
 		<div id='shuangwang_effect_area' class='pai_effect_area cancel_animate'></div>	
 		<div id='feiji_effect_area' class='pai_effect_area cancel_animate'></div>
@@ -64,7 +64,7 @@
 		<div class='qiangdizhu_area'>
 			<div class='player_info'>
 				<img class='player_avatar' src='img/2.png'/>
-				<div class='player_name'></div>					
+				<div class='player_name'></div>	
 			</div>
 			<div class='clock'>
 				<div class='time_remain'></div>
@@ -78,6 +78,7 @@
 			<div class='role'>
 				<div class='role_avatar'></div>
 				<div class='role_body'></div>
+				<div class='player_name'></div>	
 				<div class='role_shouPaiBg'></div><div class='role_shouPaiNum'>12</div>					
 			</div>
 			<div class='clock'>
@@ -111,6 +112,7 @@
 			<div class='role'>
 				<div class='role_avatar'></div>
 				<div class='role_body'></div>
+				<div class='player_name'></div>	
 				<div class='role_shouPaiBg'></div><div class='role_shouPaiNum'>12</div>			
 			</div>
 			<div class='clock'>
@@ -150,7 +152,8 @@
 		<div class='wrapper'>			
 			<div class='role'>
 				<div class='role_avatar'></div>
-				<div class='role_body'></div>					
+				<div class='role_body'></div>
+				<div class='player_name'></div>					
 			</div>
 			<div class='paopao_container'>
 				<div class='paopao'><div class='text buchu'></div></div>

@@ -85,7 +85,10 @@ var ddz = {
 	chuPaiInfo : {
 		isOver : false
 	},
-	selectOffset:10	
+	selectOffset:10,
+	diFen:4,
+	totalMulValue:1
+	
 	
 	
 };
@@ -93,7 +96,7 @@ var ddz = {
 ddz.reset = function(){
 	this.diZhu = null;
 	this.cards = [];
-	this.player1 = this.player2 = this.player3 = null;
+	//this.player1 = this.player2 = this.player3 = null;
 	this.chuPaing = false;
 	this.playerArray = [];
 	this.dipai = [];
@@ -190,40 +193,46 @@ ddz.initQiangDiZhuEnv = function(){
 }
 
 ddz.initPlayers = function(){
-	var player1 = new Player({					
-					//chupaiId:'chupai',	
-					cardArray:[],
-					shouPaiAreaId:'player1_shoupai_area',
-					cardContainerId:'player1_card_container',
-					playerId:'player1',
-					buChuContainerClass:'buchu_container',
-					shouPaiNumClass:'role_shouPaiNum',
-					index:0
-				});	
-	var player2 = new Player({						
-					// chupaiId:'chupai',		
-					cardArray:[],
-					shouPaiAreaId:'player1_shoupai_area',
-					cardContainerId:'player2_card_container',
-					playerId:'player2',
-					buChuContainerClass:'buchu_container',
-					shouPaiNumClass:'role_shouPaiNum',					
-					index:1					
-				});	
+	var opt = {					
+				//chupaiId:'chupai',	
+				cardArray:[],
+				shouPaiAreaId:'player1_shoupai_area',
+				cardContainerId:'player1_card_container',
+				playerId:'player1',
+				buChuContainerClass:'buchu_container',
+				shouPaiNumClass:'role_shouPaiNum',
+				index:0
+			};
+	this.player1 && (opt.score = this.player1.score);
+	var player1 = new Player(opt);	
 	
-	var player3 = new Player({					
-					chupaiId:'chupai_btn',
-					buchuId:'buchu_btn',
-					chongxuanId:'chongxuan_btn',
-					tishiId:'tishi_btn',
-					AIPlayer:false,
-					cardArray:[],	
-					playerId:'player3',
-					shouPaiAreaId:'player3_shoupai_area',
-					cardContainerId:'player3_card_container',
-					buChuContainerClass:'buchu_container',					
-					index:2				
-				});	
+	opt = {		
+				cardArray:[],
+				shouPaiAreaId:'player1_shoupai_area',
+				cardContainerId:'player2_card_container',
+				playerId:'player2',
+				buChuContainerClass:'buchu_container',
+				shouPaiNumClass:'role_shouPaiNum',					
+				index:1					
+			}
+	this.player2 && (opt.score = this.player2.score);
+	var player2 = new Player(opt);	
+	
+	opt = {	
+			chupaiId:'chupai_btn',
+			buchuId:'buchu_btn',
+			chongxuanId:'chongxuan_btn',
+			tishiId:'tishi_btn',
+			AIPlayer:false,
+			cardArray:[],	
+			playerId:'player3',
+			shouPaiAreaId:'player3_shoupai_area',
+			cardContainerId:'player3_card_container',
+			buChuContainerClass:'buchu_container',					
+			index:2				
+		}
+	this.player3 && (opt.score = this.player3.score);
+	var player3 = new Player(opt);	
 	
 	this.player1 = player1, this.player2 = player2, this.player3 = player3;
 	this.playerArray.push(player1);
@@ -292,11 +301,11 @@ ddz.showFeiJiEffect = function(){
 }
 ddz.showTotalMulValue = function(){
 	var qiangDiZhuCount = this.qiangDiZhuCount,
-		totalMulValue = 15, array =[];;
+		totalMulValue = 1, array =[];;
 	
 	while(qiangDiZhuCount--)
 		totalMulValue += totalMulValue;
-	
+	this.totalMulValue = totalMulValue;
 	while(totalMulValue > 0){
 		remain = totalMulValue % 10;
 		totalMulValue = Math.floor(totalMulValue / 10);
@@ -383,7 +392,7 @@ ddz.gameControl = function(){
 			
 			//ddz.chuPaiInfo.isOver = true;
 		}else{			
-			
+			this.accountScore();
 			var player = this.chuPaiInfo.strongPlayer,
 				resultObj = CommonUtil.$id('result');
 				style = resultObj.style;				
@@ -415,5 +424,28 @@ ddz.gameControl = function(){
 			})
 			
 		}		
+}
+
+ddz.accountScore = function(){
+	var chuPaiInfo = this.chuPaiInfo, player = chuPaiInfo.strongPlayer,
+	index = player.index, totalScore = this.totalMulValue * this.diFen;	
+	if(player.isDiZhu){
+		player.score += totalScore;
+		for(var i = 2; i>= 0 ; i--){
+			if(i != index){
+				this.playerArray[i].score -= (totalScore / 2);
+			}
+		}		
+	}else{
+		for(var i = 2; i>= 0 ; i--){
+			player = this.playerArray[i];
+			if(player.isDiZhu){
+				player.score -= totalScore;
+			}else{
+				player.score += (totalScore / 2);
+			}
+		}	
+	}
+	
 }
 

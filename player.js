@@ -124,6 +124,7 @@ var  ChuPaiInfo = function(paiType, player){
 
 var Player = function(opt){
 	opt = opt || {};
+	this.score = opt.score || 0;
 	this.listenerMap = [];
 	this.AIPlayer = ( typeof opt.AIPlayer  == 'undefined' ? true : opt.AIPlayer);	
 	this.index = opt.index;
@@ -164,6 +165,8 @@ var Player = function(opt){
 	this.touchstartCrood = {x:0,y:0};
 	
 	
+	
+	
 }
 
 Player.prototype.initQiangDiZhuObj = function(){
@@ -181,6 +184,11 @@ Player.prototype.initQiangDiZhuObj = function(){
 	var negativeBtn = CommonUtil.$query('#negative_btn', area);	
 	var positiveBtn = CommonUtil.$query('#positive_btn', area);
 	
+	var showLevelArea = CommonUtil.$query('.player_name', area);
+	
+	var title = Level.getLevel(this.score).title;
+	showLevelArea.innerHTML = title;
+	
 	
 	htmlObj.area = area;
 	htmlObj.timeRemain = timeRemain;
@@ -191,6 +199,7 @@ Player.prototype.initQiangDiZhuObj = function(){
 	htmlObj.negativeactionTextArea = negativeactionTextArea;
 	htmlObj.negativeBtn = negativeBtn;
 	htmlObj.positiveBtn = positiveBtn;
+	htmlObj.showLevelArea = showLevelArea;
 	
 	htmlObj.status = JIAO_DIZHU;	
 	
@@ -213,6 +222,10 @@ Player.prototype.initChuPaiObj = function(){
 	var tiShiBtn = CommonUtil.$id('tishi_btn');
 	var buchuBtn = CommonUtil.$id('buchu_btn');
 	
+	var showLevelArea = CommonUtil.$query('.player_name', area);
+	var title = Level.getLevel(this.score).title;
+	showLevelArea.innerHTML = title;
+	
 	htmlObj.area = area;
 	htmlObj.timeRemain = timeRemain;
 	htmlObj.clockArea = clockArea;
@@ -222,6 +235,7 @@ Player.prototype.initChuPaiObj = function(){
 	htmlObj.chongXuanBtn = chongXuanBtn;
 	htmlObj.tiShiBtn = tiShiBtn;
 	htmlObj.buchuBtn = buchuBtn;	
+	htmlObj.showLevelArea = showLevelArea;
 	
 	
 	this.chuPaiObj = htmlObj;
