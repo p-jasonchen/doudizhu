@@ -85,10 +85,40 @@ var ddz = {
 	chuPaiInfo : {
 		isOver : false
 	},
-	selectOffset:10
+	selectOffset:10	
 	
 	
 };
+
+ddz.reset = function(){
+	this.diZhu = null;
+	this.cards = [];
+	this.player1 = this.player2 = this.player3 = null;
+	this.chuPaing = false;
+	this.playerArray = [];
+	this.dipai = [];
+	this.diZhuIndex =  -1;
+	this.qiangDiZhuIndex= -1;
+	this.fapaiIndex=0;
+	this.qiangDiZhuStatus = JIAO_DIZHU;
+	this.qiangDiZhuCount = 0;
+	this.negativeActionNum = 0;
+	this.chuPaiInfo = {
+		isOver : false
+	};
+	
+	ddz.ElemObj.shuangWangEffectArea.className = 'pai_effect_area cancel_animate';
+	ddz.ElemObj.feijiEffectArea.className = 'pai_effect_area cancel_animate';
+	ddz.ElemObj.mulEff.className = 'mul_eff_2 cancel_animate';	
+	
+	
+	var dipaiDomArray = CommonUtil.$queryAll('#invisible_dipai_area .invisible_dipai');
+	
+	dipaiDomArray[0].className = 'invisible_dipai card_img';
+	dipaiDomArray[2].className = 'invisible_dipai card_img';	
+	
+	
+}
 /*
  定义一个拥有54个元素的一维数，依次赋值为1------53， 随机54次，每次随机出一个数字，和第i个位置的数字交换
 */
@@ -153,10 +183,10 @@ ddz.initQiangDiZhuEnv = function(){
 	
 	this.player1.placeCards();
 	this.player2.placeCards();
-	this.player3.placeCards();	
-	
+	this.player3.placeCards();		
 	this.player3.registeChupaiAction();	
-	this.player3.registeQiangDiZhuAction();
+	this.player3.registeQiangDiZhuAction();	
+	
 }
 
 ddz.initPlayers = function(){
@@ -226,7 +256,7 @@ ddz.showDiPai = function(){
 	});
 	
 	this.ElemObj.visibleDiPaiArea.innerHTML = html;
-	
+	this.ElemObj.visibleDiPaiArea.style.display='block';
 	this.ElemObj.visibleDiPaiArea.className = 'fadeInUpBigWithScale';
 	
 }	
@@ -302,7 +332,9 @@ ddz.initElemObj = function(){
 	
 	this.ElemObj.startDivArea.addEventListener('click',function(){	
 		ddz.ElemObj.invisibleDiPaiArea.style.display = 'block';
-		ddz.ElemObj.startDivArea.style.display = 'none';			
+		ddz.ElemObj.startDivArea.style.display = 'none';		
+		ddz.reset();
+		ddz.initEnv();		
 		ddz.createRandomCards();
 		ddz.assignCardsControl();
 	 });
@@ -350,18 +382,25 @@ ddz.gameControl = function(){
 			playerArray[curIndex].startChuPaiTimer();
 			
 			//ddz.chuPaiInfo.isOver = true;
-		}else{
+		}else{			
+			
 			var player = this.chuPaiInfo.strongPlayer,
 				resultObj = CommonUtil.$id('result');
 				style = resultObj.style;				
 			if(player.isDiZhu){		
 				style.backgroundPositionY = '0px';
+			}else{	
+				style.backgroundPositionY = '484px';
 			}
 			style.display = 'block';	
 			resultObj.className='fadeOut';
-			setTimeout(function(){
+			resultObj.addEventListener('webkitAnimationEnd',function(){
+				
+				this.style.display='none';
 				ddz.ElemObj.invisibleDiPaiArea.style.display = 'none';
-				ddz.ElemObj.startDivArea.style.display = 'block';		
+				ddz.ElemObj.invisibleDiPaiArea.className = '';
+				ddz.ElemObj.startDivArea.style.display = 'block';	
+				ddz.ElemObj.visibleDiPaiArea.style.display='none';
 				
 				ddz.player1.showQiangDiZhuArea(true);
 				ddz.player2.showQiangDiZhuArea(true);
@@ -371,7 +410,10 @@ ddz.gameControl = function(){
 				ddz.player2.showChuPaiArea(false);
 				ddz.player3.showChuPaiArea(false);
 				
-			},2000);
+				ddz.player3.unregisteListeners();
+				
+			})
+			
 		}		
 }
 
