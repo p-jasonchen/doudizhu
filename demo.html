@@ -25,8 +25,13 @@
 <script type='text/javascript' src='AI.js?v=6'></script>
 <script type='text/javascript' src='Rule.js?v=6'></script>
 <script type='text/javascript' src='Level.js?v=6'></script>
+<script type='text/javascript' src='res_manager.js?v=6'></script>
+
 <title>HTML5 斗地主</title>
 <body>
+<script type='text/javascript'>	
+	loadRes();
+</script>
 <div id='setScreen'></div>
 <section id='game_area'>
 	<div id='absolute_game_area'>
@@ -53,7 +58,7 @@
 		
 		<div class='total_mul_chars'></div>
 		<div id='total_mul_value_container'>				
-				<div class='digital_img digital_1'></div>					
+				<div class='digital_img digital_2'></div>					
 		</div>
 		<div id='shuangwang_effect_area' class='pai_effect_area cancel_animate'></div>	
 		<div id='feiji_effect_area' class='pai_effect_area cancel_animate'></div>
@@ -247,8 +252,9 @@
 	</script>
 	-->
 <script type='text/javascript'>
-	CommonUtil.adjustSize();
-	ddz.initElemObj();	
+	CommonUtil.adjustSize();	
+	//loadRes();
+	//ddz.initElemObj();	
 			//ddz.startGame();
 			//ddz.qiangDiZhuControl();
 </script>

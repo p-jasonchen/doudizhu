@@ -87,7 +87,7 @@ var ddz = {
 	},
 	selectOffset:10,
 	diFen:4,
-	totalMulValue:1,
+	totalMulValue:2,
 	mulEffectPai: 0
 	
 	
@@ -310,7 +310,7 @@ ddz.showFeiJiEffect = function(){
 }
 ddz.showTotalMulValue = function(){
 	var qiangDiZhuCount = this.qiangDiZhuCount + this.mulEffectPai,
-		totalMulValue = 1, array =[];
+		totalMulValue = 2, array =[];
 	
 	while(qiangDiZhuCount--)
 		totalMulValue += totalMulValue;
@@ -364,36 +364,34 @@ ddz.initElemObj = function(){
 	 });
 	 
 	 
-	 this.ElemObj.resultObj =  CommonUtil.$id('result');
-	 this.ElemObj.resultObj.addEventListener('webkitAnimationEnd',function(){				
-				this.style.display='none';
-				ddz.ElemObj.invisibleDiPaiArea.style.display = 'none';
-				ddz.ElemObj.invisibleDiPaiArea.className = '';
-				ddz.ElemObj.startDivArea.style.display = 'block';	
-				ddz.ElemObj.visibleDiPaiArea.style.display='none';
-				
-				ddz.player1.showQiangDiZhuArea(true);
-				ddz.player2.showQiangDiZhuArea(true);
-				ddz.player3.showQiangDiZhuArea(true);
-				
-				ddz.player1.showChuPaiArea(false);
-				ddz.player2.showChuPaiArea(false);
-				ddz.player3.showChuPaiArea(false);
-				
-				ddz.player3.unregisteListeners();
-				
-				ddz.reset();
-				ddz.initEnv();	
-				
-	});
-	
-	 
+	 this.ElemObj.resultObj =  CommonUtil.$id('result'); 
 	 
 	
 	this.ElemObj.siZhangEffectArea = CommonUtil.$id('sizhang_effect_area');
 	this.ElemObj.shuangWangEffectArea = CommonUtil.$id('shuangwang_effect_area');
 	this.ElemObj.feijiEffectArea = CommonUtil.$id('feiji_effect_area');
 	
+}
+
+ddz.onTurnOver = function(){
+	ddz.ElemObj.resultObj.style.display='none';
+	ddz.ElemObj.invisibleDiPaiArea.style.display = 'none';
+	ddz.ElemObj.invisibleDiPaiArea.className = '';
+	ddz.ElemObj.startDivArea.style.display = 'block';	
+	ddz.ElemObj.visibleDiPaiArea.style.display='none';
+	
+	ddz.player1.showQiangDiZhuArea(true);
+	ddz.player2.showQiangDiZhuArea(true);
+	ddz.player3.showQiangDiZhuArea(true);
+	
+	ddz.player1.showChuPaiArea(false);
+	ddz.player2.showChuPaiArea(false);
+	ddz.player3.showChuPaiArea(false);
+	
+	ddz.player3.unregisteListeners();
+	
+	ddz.reset();
+	ddz.initEnv();	
 }
 
 ddz.initEnv = function(){
@@ -430,8 +428,7 @@ ddz.gameControl = function(){
 			playerArray[curIndex].startChuPaiTimer();
 			
 			//ddz.chuPaiInfo.isOver = true;
-		}else{			
-			this.accountScore();
+		}else{				
 			var player = this.chuPaiInfo.strongPlayer,
 				resultObj = this.ElemObj.resultObj;
 				style = resultObj.style;				
@@ -440,8 +437,8 @@ ddz.gameControl = function(){
 			}else{	
 				style.backgroundPositionY = '484px';
 			}
-			style.display = 'block';	
-			resultObj.className='fadeOut';			
+			style.display = 'block';			
+			this.accountScore();
 		}		
 }
 
@@ -449,22 +446,41 @@ ddz.accountScore = function(){
 	var chuPaiInfo = this.chuPaiInfo, player = chuPaiInfo.strongPlayer,
 	index = player.index, totalScore = this.totalMulValue * this.diFen;	
 	if(player.isDiZhu){
-		player.score += totalScore;
+		player.scoreChange = totalScore;
 		for(var i = 2; i>= 0 ; i--){
 			if(i != index){
-				this.playerArray[i].score -= (totalScore / 2);
+				this.playerArray[i].scoreChange = -(totalScore / 2);
 			}
 		}		
 	}else{
 		for(var i = 2; i>= 0 ; i--){
 			player = this.playerArray[i];
 			if(player.isDiZhu){
-				player.score -= totalScore;
+				player.scoreChange = -totalScore;
 			}else{
-				player.score += (totalScore / 2);
+				player.scoreChange = (totalScore / 2);
 			}
 		}	
 	}
+	var remainTime = this.diFen;
+	this.accountScoreAnimation(remainTime);
 	
+}
+
+ddz.accountScoreAnimation = function(remainTime){
+	if(remainTime != 0){	
+		for(var i = 2; i>= 0 ; i--){
+			player = this.playerArray[i];
+			player.score += (player.scoreChange / this.diFen);
+			player.chuPaiObj.showLevelArea.innerHTML = player.score;
+		}
+		setTimeout(function(){
+			ddz.accountScoreAnimation(--remainTime);
+		}, 200)
+	}else{
+		setTimeout(function(){
+			ddz.onTurnOver();
+		},1000);
+	}
 }
 
