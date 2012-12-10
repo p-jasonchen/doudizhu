@@ -1040,10 +1040,12 @@ Player.prototype.showAfterQiangDiZhuUI = function(){
 		
 		var mulEff = ddz.ElemObj.mulEff;				
 		mulEff.className = 'mul_eff_2';	
+		
 		setTimeout(function(){
 			var mulEff = ddz.ElemObj.mulEff;				
 			mulEff.className = 'mul_eff_2 cancel_animate';	
 		},500);
+		
 		
 		
 	}	
@@ -1158,10 +1160,12 @@ Player.prototype.placeCardSelected = function(){
 		var paiType = ddz.chuPaiInfo.paiType, classType = undefined;
 		switch(paiType){			
 			case GroupType.炸弹:{
+				ddz.mulEffectPai++;
 				ddz.ElemObj.siZhangEffectArea.style.display='block';
 				ddz.showSiZhangEffect(ddz.bombEffectPositionXArray.concat());break;
 			}
 			case GroupType.双王:{
+				ddz.mulEffectPai++;
 				ddz.showShuangWangEffect();break;
 			}
 			case GroupType.二连飞机:

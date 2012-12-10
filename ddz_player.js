@@ -87,7 +87,8 @@ var ddz = {
 	},
 	selectOffset:10,
 	diFen:4,
-	totalMulValue:1
+	totalMulValue:1,
+	mulEffectPai: 0
 	
 	
 	
@@ -106,6 +107,7 @@ ddz.reset = function(){
 	this.qiangDiZhuStatus = JIAO_DIZHU;
 	this.qiangDiZhuCount = 0;
 	this.negativeActionNum = 0;
+	this.mulEffectPai = 0;
 	this.chuPaiInfo = {
 		isOver : false
 	};
@@ -280,7 +282,13 @@ ddz.showSiZhangEffect = function(positionXArray){
 			ddz.showSiZhangEffect(positionXArray);
 		}, 400)
 	}else{
-		style.display = 'none';
+		style.display = 'none';		
+		this.ElemObj.mulEff.className='mul_eff_2';
+		setTimeout(function(){
+			var mulEff = ddz.ElemObj.mulEff;				
+			mulEff.className = 'mul_eff_2 cancel_animate';	
+		},500);
+		this.showTotalMulValue();
 	}
 }
 ddz.showShuangWangEffect = function(){
@@ -301,8 +309,8 @@ ddz.showFeiJiEffect = function(){
 	}, 2000);
 }
 ddz.showTotalMulValue = function(){
-	var qiangDiZhuCount = this.qiangDiZhuCount,
-		totalMulValue = 1, array =[];;
+	var qiangDiZhuCount = this.qiangDiZhuCount + this.mulEffectPai,
+		totalMulValue = 1, array =[];
 	
 	while(qiangDiZhuCount--)
 		totalMulValue += totalMulValue;
@@ -335,6 +343,11 @@ ddz.startGame = function(){
 
 ddz.initElemObj = function(){
 	this.ElemObj.mulEff = CommonUtil.$id('mul_eff_div');
+	/*
+	this.ElemObj.mulEff.addEventListener('webkitAnimationEnd',function(){
+		this.className = 'mul_eff_2 cancel_animate';
+	});
+	*/
 	this.ElemObj.totalMulEffArea = CommonUtil.$id('total_mul_value_container');
 	this.ElemObj.visibleDiPaiArea = CommonUtil.$id('visible_dipai_area');
 	this.ElemObj.invisibleDiPaiArea = CommonUtil.$id('invisible_dipai_area');
