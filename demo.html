@@ -4,10 +4,7 @@
 <meta http-equiv="Cache-control" content="no-cache" />
  <meta name="viewport" content="width=device-width,initial-scale=1.0, user-scalable=no">
 
-<meta name="oupengmobile" content="game,fullscreen,lockrotation,portrait" />
-<meta name="tencent-x5-page-decoration" content= "landscape"/>
-<meta name="oupengmobile" content="game,fullscreen,lockrotation,landscape" />
-<meta name="x5-orientation" content="landscape"/>
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="white">
 <!-- For WindowsPhone 7 -->
@@ -16,24 +13,25 @@
 <META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
 <META HTTP-EQUIV="expires" CONTENT="0"> 
-<link href="demo.css?v=4" rel="stylesheet" type="text/css" />
+<link href="demo.css?v=1" rel="stylesheet" type="text/css" />
 <link href="animate.css?v=1" rel="stylesheet" type="text/css" />
-<script type='text/javascript' src='nc.js?v=5'></script>
-
-<script type='text/javascript' src='player.js?v=6'></script>
-<script type='text/javascript' src='ddz_player.js?v=6'></script>
-<script type='text/javascript' src='AI.js?v=6'></script>
-<script type='text/javascript' src='Rule.js?v=6'></script>
-<script type='text/javascript' src='Level.js?v=6'></script>
-<script type='text/javascript' src='res_manager.js?v=6'></script>
+<script type='text/javascript' src='nc.js?v=1'></script>
+<script type='text/javascript' src='utils.js?v=-1'></script>
+<script type='text/javascript' src='player.js?v=1'></script>
+<script type='text/javascript' src='ddz_player.js?v=1'></script>
+<script type='text/javascript' src='AI.js?v=1'></script>
+<script type='text/javascript' src='Rule.js?v=1'></script>
+<script type='text/javascript' src='Level.js?v=1'></script>
+<script type='text/javascript' src='res_manager.js?v=1'></script>
 
 <title>HTML5 斗地主</title>
 <body>
-<script type='text/javascript'>	
+<script type='text/javascript'>		
 	loadRes();
+	orientationCheck(CommonUtil.adjustSize);
 </script>
-<div id='setScreen'></div>
-<section id='game_area'>
+<div id='setScreen' style='display:none;margin: 160px 120px;position: absolute;color: red;'>请设置横屏</div>
+<section id='game_area' style='opacity:0'>
 	<div id='absolute_game_area'>
 	<section id='common_area'>
 		<div  id='start_div' class='action_btn red_btn'><div class='text_2char kaishi'></div></div>
@@ -182,81 +180,6 @@
 	<div id='result'>
 	</div>
 </section>
-<!--
-<script type="text/javascript">
-		//var ww = window.innerWidth;
-		//var dw = 392;
-		var that = this;
-		//alert(document.body.clientHeight);
-		//alert(window.screen.height);
-		//alert(document.body.offsetHeight);
-		
-		function startLoadingGame()
-		{
-			document.getElementById("setScreen").style.display = "none";
-			//document.getElementById("loginWindow").style.display = "";
-			//loadRes(); 
-			CommonUtil.adjustSize();
-			 ddz.assignCards();	
-			 ddz.startGame();
-		};
-		//document.getElementById("loginWindow").style.marginTop = String(wh*0.5 - dh*0.5)+"px";
-		//document.getElementById("setScreen").style.marginLeft = String(ww*0.5 - dw*0.5)+"px";
-		var supportsOrientationChange = "onorientationchange" in window,  
-			    orientationEvent = supportsOrientationChange ? "orientationchange" : "resize";  			
-			//var textnode = document.createTextNode(String(Math.abs(window.orientation)));
-			//alert(Math.abs(window.orientation)+"____")
-			//Math.abs(window.orientation)==0?document.getElementById("setScreen").style.display = "":that.startLoadingGame();
-			
-			setTimeout(function(){
-				(window.innerWidth > window.innerHeight) ? that.startLoadingGame():document.getElementById("setScreen").style.display = "";
-			},500)
-			//var t = setTimeout('changeScreen()',200);
-			//document.body.appendChild(textnode);
-			// 监听事件  
-			window.addEventListener(orientationEvent, function() {  
-				
-			    var ua = navigator.userAgent;  
-			    var deviceType="";  
-			  	//alert(Math.abs(window.orientation)+"___2")
-			    //判断设备类型   
-			  
-			    if (ua.indexOf("iPad") > 0 || ua.indexOf("iPhone") > 0) {  
-			       deviceType = "isIpad";  
-			    } else if (ua.indexOf("Android") > 0) {  
-			       deviceType = "isAndroid";  
-			    } else {  
-			       //alert("既不是ipad，也不是安卓！");  
-			       return;  
-			    }  
-			     // 判断横竖屏   
-			  	//alert(Math.abs(window.orientation)+"__2__"+deviceType)
-			    if ("isIpad" == deviceType) {  
-			       if (Math.abs(window.orientation) == 90) {  
-			          	that.startLoadingGame();						
-			       } else {  
-			       		//alert("请设置横屏4"); 
-			       }  
-			    } else if ("isAndroid" == deviceType ) {  
-			       if (Math.abs(window.orientation) != 90) {  
-			           	//alert("请设置横屏2");
-			       } else {
-				      that.startLoadingGame();
-					  	
-			       } ; 
-			    };  
-			}, false); 
 
-			
-		//loadRes();
-	</script>
-	-->
-<script type='text/javascript'>
-	CommonUtil.adjustSize();	
-	//loadRes();
-	//ddz.initElemObj();	
-			//ddz.startGame();
-			//ddz.qiangDiZhuControl();
-</script>
 </body>
 </html>
