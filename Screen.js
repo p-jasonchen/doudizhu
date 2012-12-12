@@ -18,7 +18,7 @@
             func&&this.cb.push({cb:func,delegate:host||window});
         },
         publish:function(){
-            window.log('resize callback length:'+this.cb.length);
+            //window.log('resize callback length:'+this.cb.length);
             for(var i=0;i<this.cb.length;i++){
                 if(this.cb[i]){
                     this.cb[i].cb.call(this.cb[i].delegate);
@@ -41,19 +41,19 @@
             container.style.minWidth = window.innerWidth+ 'px';
         }
         root.ScreenAdapter.publish();
-        window.log && window.log('resize window:'+( ScreenAdapter.pageContHeight));
+        //window.log && window.log('resize window:'+( ScreenAdapter.pageContHeight));
 
     }
-    window.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('DOMContentLoaded', function() {		
         _setPageBody();
         setTimeout(_hideNavi, 10);
     });
     function _hideNavi() {
         window.scrollTo(0, 0);
     }
-    function _resize(){
+    function _resize(){				
         if(_resizeTimer){clearTimeout(_resizeTimer);_resizeTimer=null;}
-        _resizeTimer=setTimeout(function(){_setPageBody();},10);
+        _resizeTimer=setTimeout(function(){_setPageBody();},500);
     }
     window.addEventListener('resize', _resize);
     window.addEventListener('orientationchange',_resize);

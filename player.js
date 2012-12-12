@@ -754,7 +754,7 @@ Player.prototype.positiveSelectCards = function(){
 
 				//当对手只剩下1��?张牌且无对子或三张可出，则从最大的单张开始出
 				if (!bestPokers2
-						&& (againstPlayer.cardArray.length == 1 || againstPlayer.cardArray.length == 2)) {
+						&& (againstPlayer.cardArray.length == 1 || againstPlayer.cardArray.length == 1)) {
 					var singles = AI.findAllByType(this, GroupType.单张);
 					if (singles.length > 0)
 						bestPokers2 = singles[0];

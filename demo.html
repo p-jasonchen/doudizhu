@@ -3,8 +3,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta http-equiv="Cache-control" content="no-cache" />
  <meta name="viewport" content="width=device-width,initial-scale=1.0, user-scalable=no">
-
-
+<meta name="tencent-x5-page-decoration" content= "landscape"/>
+<meta name="oupengmobile" content="game,fullscreen,lockrotation,landscape" />
+<meta name="x5-orientation" content="landscape"/>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="white">
 <!-- For WindowsPhone 7 -->
@@ -13,28 +14,29 @@
 <META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
 <META HTTP-EQUIV="expires" CONTENT="0"> 
-<link href="demo.css?v=1" rel="stylesheet" type="text/css" />
+<link href="demo.css?v=2" rel="stylesheet" type="text/css" />
 <link href="animate.css?v=1" rel="stylesheet" type="text/css" />
 <script type='text/javascript' src='nc.js?v=1'></script>
-<script type='text/javascript' src='utils.js?v=-1'></script>
+<script type='text/javascript' src='utils.js?v=-2'></script>
 <script type='text/javascript' src='player.js?v=1'></script>
 <script type='text/javascript' src='ddz_player.js?v=1'></script>
 <script type='text/javascript' src='AI.js?v=1'></script>
 <script type='text/javascript' src='Rule.js?v=1'></script>
 <script type='text/javascript' src='Level.js?v=1'></script>
 <script type='text/javascript' src='res_manager.js?v=1'></script>
-<script type='text/javascript' src='Screen.js?v=1'></script>
 <script type='text/javascript' src='log.js?v=1'></script>
+<script type='text/javascript' src='Screen.js?v=-2'></script>
 
 
 <title>HTML5 斗地主</title>
 <body>
-<script type='text/javascript'>		
-	loadRes();
-	orientationCheck(CommonUtil.adjustSize);
+<script type='text/javascript'>	
+	ScreenAdapter.register(updateUIAccordToOrientation);	
+	loadRes();	
 </script>
+<div id='pageBoby' >
 <div id='setScreen' style='display:none;margin: 160px 120px;position: absolute;color: red;'>请设置横屏</div>
-<section id='game_area' style='opacity:0'>
+<section id='game_area' style='display:none;'>
 	<div id='absolute_game_area'>
 	<section id='common_area'>
 		<div  id='start_div' class='action_btn red_btn'><div class='text_2char kaishi'></div></div>
@@ -183,6 +185,6 @@
 	<div id='result'>
 	</div>
 </section>
-
+</div>
 </body>
 </html>

@@ -95,6 +95,7 @@ var ddz = {
 };
 
 ddz.reset = function(){
+	this.started = false;
 	this.diZhu = null;
 	this.cards = [];
 	//this.player1 = this.player2 = this.player3 = null;
@@ -357,6 +358,7 @@ ddz.initElemObj = function(){
 	
 	ddz.initEnv();	
 	this.ElemObj.startDivArea.addEventListener('click',function(){	
+		ddz.started = true;
 		ddz.ElemObj.invisibleDiPaiArea.style.display = 'block';
 		ddz.ElemObj.startDivArea.style.display = 'none';	
 		ddz.createRandomCards();
@@ -483,4 +485,3 @@ ddz.accountScoreAnimation = function(remainTime){
 		},1000);
 	}
 }
-
