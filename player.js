@@ -566,27 +566,33 @@ Player.prototype.nonAIChuPai = function(){
 		ddz.chuPaiInfo.isOver  = (this.cardArray.length == 0);
 		setTimeout( function(){ddz.gameControl()}, 0);		
 	}else{
-		//this.skipPlay();
-		//setTimeout( function(){ddz.gameControl()}, 0);
+		var className = 'paitype_error';
 		if(type){
-			//吃不起
-			this.showActionTip('bugouda_after_action');
+			//牌型不对
+			if(chuPaiInfo.paiType != type){
+				className = 'paitype_error';
+			}else if(chuPaiInfo.cardArray[0].cardSeq >= selectCards[0].cardSeq){
+				className = 'bugouda_after_action';
+			}
 			
 		}else{
 			//牌型不对
-			this.showActionTip('paitype_error');
+			className = 'paitype_error';
 		}
+		this.showActionTip(className);
+		this.doChongXuan();
 	}
 	
 }
 
 Player.prototype.showActionTip = function(className){
+	var that = this;
 	if(!this.AIPlayer){
 		tipArea = this.chuPaiObj.tipArea;
 		tipArea.style.display='block';
 		tipArea.className = className;
 		setTimeout(function(){
-			tipArea = this.chuPaiObj.tipArea;
+			tipArea = that.chuPaiObj.tipArea;
 			tipArea.className='cancel_animate';
 			tipArea.style.display='none';
 		},3000)
