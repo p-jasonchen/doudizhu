@@ -179,6 +179,10 @@ Player.prototype.initChuPaiObj = function(){
 	htmlObj.buchuBtn = buchuBtn;	
 	htmlObj.showLevelArea = showLevelArea;
 	
+	if(!this.AIPlayer){
+		htmlObj.tipArea = CommonUtil.$id('player3_tip_area');
+	}
+	
 	
 	this.chuPaiObj = htmlObj;
 }
@@ -551,12 +555,13 @@ Player.prototype.nonAIChuPai = function(){
 			}
 		}
 	}
-	var timer = this.chuPaiObj.timer;
-		timer && timer.stop();	
+	
 		
 	if(ok){
 		chuPaiInfo.paiType = type;
 		this.selectCards(selectCards);	
+		var timer = this.chuPaiObj.timer;
+		timer && timer.stop();	
 			
 		ddz.chuPaiInfo.isOver  = (this.cardArray.length == 0);
 		setTimeout( function(){ddz.gameControl()}, 0);		
@@ -565,15 +570,28 @@ Player.prototype.nonAIChuPai = function(){
 		//setTimeout( function(){ddz.gameControl()}, 0);
 		if(type){
 			//吃不起
-			
+			this.showActionTip('bugouda_after_action');
 			
 		}else{
 			//牌型不对
+			this.showActionTip('paitype_error');
 		}
 	}
 	
 }
 
+Player.prototype.showActionTip = function(className){
+	if(!this.AIPlayer){
+		tipArea = this.chuPaiObj.tipArea;
+		tipArea.style.display='block';
+		tipArea.className = className;
+		setTimeout(function(){
+			tipArea = this.chuPaiObj.tipArea;
+			tipArea.className='cancel_animate';
+			tipArea.style.display='none';
+		},3000)
+	}
+}
 Player.prototype.getSelectedCards = function(){
 	var selectCards = [];
 	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;

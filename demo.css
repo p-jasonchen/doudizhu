@@ -533,6 +533,24 @@ left: 180px;
 }
 
 
+#player3_tip_area{
+position: absolute;
+background-image:url('img/interface_b.jpg');
+width:420px;
+height:48px;
+top: 168px;
+left: 128px;
+display:none;
+-webkit-animation-name: fadeOut;
+-webkit-animation-delay: .0s;
+-webkit-animation-duration: 3s;
+-webkit-animation-timing-function: ease;
+-webkit-animation-fill-mode: both;
+opacity:0;
+}
+
+.
+
 
 
 .card_img{
@@ -833,11 +851,7 @@ display:none;
 }
 
 
-#tip_area{
-	background-image:url('img/interface_b.jpg');
-	width:420px;
-	height:48px;
-}
+
 .bugouda_after_action{
 background-position:0 -421px;
 }
