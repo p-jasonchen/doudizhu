@@ -968,10 +968,9 @@ Player.prototype.showBeforeChuPaiUI = function(){
 	var htmlObj = this.chuPaiObj;
 	var clockArea = htmlObj.clockArea;
 	clockArea && (clockArea.style.display = 'block');		
-	
-	var paopaoArea = htmlObj.paopaoArea;	
-	paopaoArea && (paopaoArea.style.display = 'none');	
 	this.cardContainerObj.innerHTML = '';	
+	var paopaoArea = htmlObj.paopaoArea;	
+	paopaoArea && (paopaoArea.style.display = 'none');		
 	if(!this.AIPlayer){
 		this.updateChuPaiActionUI();
 	}
@@ -1057,6 +1056,22 @@ Player.prototype.startQiangDiZhuTimer = function(){
 	}	
 }
 Player.prototype.startChuPaiTimer = function(){
+	if(!this.AIPlayer){
+		var chuPaiInfo = ddz.chuPaiInfo;
+		var strongPlayer = chuPaiInfo.strongPlayer, cards;
+		if(strongPlayer != this){
+			cards = this.negativeSelectCards();
+			if(cards && !(cards instanceof Array)) cards = [cards];
+			if(!cards || cards.length == 0){
+				this.showActionTip('bugouda_before_action');
+				this.cardContainerObj.innerHTML = '';	
+				//this.showBeforeChuPaiUI();
+				ddz.gameControl();
+				return;
+			}
+			
+		}
+	}
 	var vt = 1000 * 30, that = this;
 	/*
 	var clockArea = this.clockAreaObj;
@@ -1073,6 +1088,7 @@ Player.prototype.startChuPaiTimer = function(){
 	if(this.AIPlayer){
 		setTimeout(function(){that.doChuPai()}, 2000);		
 	}else{
+		
 	}	
 	
 }
