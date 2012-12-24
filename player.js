@@ -293,7 +293,59 @@ Player.prototype.assignDiPai = function(){
 	this.shouPaiCount  = this.cardArray.length;
 }
 
-
+Player.prototype.autoSelectReleativeCard = function(cardImg){
+	var selectedCards= this.getSelectedCards();
+	//排除三带牌的 带牌 时的选牌行为
+	if(selectedCards.length > 0) return;
+	var chuPaiInfo = ddz.chuPaiInfo,
+		strongPlayer = chuPaiInfo.strongPlayer, 
+		cardSelected = cardImg.mapCard,
+		selectStatus = !cardImg.selected;	
+	var cardsOk;
+	if(strongPlayer != this){
+		if(cardSelected.cardSeq > chuPaiInfo.cardArray[0].cardSeq){
+			var selectedPos = this.cardArray.indexOf(cardSelected);
+			if(chuPaiInfo.paiType == GroupType.对子 || chuPaiInfo.paiType == GroupType.三张 
+				||chuPaiInfo.paiType == GroupType.三带一 || chuPaiInfo.paiType == GroupType.三带二){
+				var firstPos = 0, size = size = this.cardArray.length
+				for(; firstPos < size; firstPos++ ){
+					if(this.cardArray[firstPos].cardSeq == cardSelected.cardSeq){
+						break;
+					}
+				}
+				var diff = selectedPos- firstPos, yOffset = selectStatus ?  -ddz.selectOffset : ddz.selectOffset;
+				if(chuPaiInfo.paiType == GroupType.对子){
+					var otherCard = (diff == 0 ? this.cardArray[selectedPos + 1] : this.cardArray[selectedPos-1]);
+					otherCard.mapImg.selected = selectStatus;
+					var s = otherCard.mapImg.style;
+					s.top = parseFloat(s.top || 0) + yOffset + 'px';
+					cardsOk = [otherCard, cardSelected];
+				}else{
+					var otherCard1, otherCard2;
+					if(diff == 0){
+						otherCard1 = this.cardArray[selectedPos+1];
+						otherCard2 = this.cardArray[selectedPos+2];
+					}else if(diff == 1){
+						otherCard1 = this.cardArray[selectedPos-1];
+						otherCard2 = this.cardArray[selectedPos+1];
+					}else{
+						otherCard1 = this.cardArray[selectedPos-1];
+						otherCard2 = this.cardArray[selectedPos-2];
+					}
+					otherCard1.mapImg.selected = selectStatus;
+					otherCard2.mapImg.selected = selectStatus;
+					var s = otherCard1.mapImg.style;
+					s.top = parseFloat(s.top || 0) + yOffset + 'px';
+					var s = otherCard2.mapImg.style;
+					s.top = parseFloat(s.top || 0) + yOffset + 'px';
+					cardsOk = [otherCard1, otherCard2,cardSelected];
+					
+				}
+			}
+		}
+	}
+	
+}
 Player.prototype.mapImg2Card = function(){
 	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;	
 		that  = this;
@@ -318,7 +370,8 @@ Player.prototype.registeSelectCardAction = function(){
 				that.touchstartCrood.x = event.clientX ;
 				that.touchstartCrood.y = event.clientY;
 				that.touchSelectedCardImgs = [];
-				that.touching  = true;		
+				that.touching  = true;	
+			that.autoSelectReleativeCard(evt.target);
 		}
 		this.registeListener(this.shouPaiAreaObj, listener, START_EV);	
 		
@@ -1080,8 +1133,8 @@ Player.prototype.startChuPaiTimer = function(){
     var timer = new CommonUtil.CountDown({overTime:vt, runCallBack:function (remainSec) {
 			that.chuPaiObj.timeRemain.innerText = remainSec;
         }, overTimeCallback:function () {               
-				that.clearSelectedCards();
-				that.doChuPai();
+				//that.clearSelectedCards();
+				//that.doChuPai();
     }});
 	this.chuPaiObj.timer = timer;	
 	this.showBeforeChuPaiUI();
