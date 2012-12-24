@@ -1041,10 +1041,16 @@ Player.prototype.showBeforeChuPaiUI = function(){
 }
 
 Player.prototype.showBeforeQiangDiZhuUI = function(){
-	if(!this.AIPlayer && ddz.qiangDiZhuStatus == QIANG_DIZHU){
-		this.qiangDiZhuObj.positiveActionTextArea.className = 'text_3char qiang_dizhu';
-		
-		this.qiangDiZhuObj.negativeactionTextArea.className = 'text_2char buqiang';
+	if(!this.AIPlayer){
+		if(ddz.qiangDiZhuStatus == QIANG_DIZHU){
+			this.qiangDiZhuObj.positiveActionTextArea.className = 'text_3char qiang_dizhu';
+			
+			this.qiangDiZhuObj.negativeactionTextArea.className = 'text_2char buqiang';
+		}else{
+			this.qiangDiZhuObj.positiveActionTextArea.className = 'text_3char jiao_dizhu';
+			
+			this.qiangDiZhuObj.negativeactionTextArea.className = 'text_2char bujiao';
+		}
 	}
 	
 	//ddz.ElemObj.mulEff.style.display = 'none';
