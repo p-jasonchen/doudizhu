@@ -161,7 +161,7 @@ Player.prototype.initChuPaiObj = function(){
 	var chuPaiBtn = CommonUtil.$id('chupai_btn');
 	var chongXuanBtn = CommonUtil.$id('chongxuan_btn');
 	var tiShiBtn = CommonUtil.$id('tishi_btn');
-	var buchuBtn = CommonUtil.$id('buchu_btn');
+	var buChuBtn = CommonUtil.$id('buchu_btn');
 	
 	var showLevelArea = CommonUtil.$query('.player_name', area);
 	var title = Level.getLevel(this.score).title;
@@ -176,7 +176,7 @@ Player.prototype.initChuPaiObj = function(){
 	htmlObj.chuPaiBtn = chuPaiBtn;
 	htmlObj.chongXuanBtn = chongXuanBtn;
 	htmlObj.tiShiBtn = tiShiBtn;
-	htmlObj.buchuBtn = buchuBtn;	
+	htmlObj.buChuBtn = buChuBtn;	
 	htmlObj.showLevelArea = showLevelArea;
 	
 	if(!this.AIPlayer){
@@ -483,24 +483,27 @@ Player.prototype.registeChupaiAction = function(){
 	var chuPaiBtn = this.chuPaiObj.chuPaiBtn;
 	if(chuPaiBtn){
 		listener = function(){
-			that.nonAIChuPai();
+			if(!that.chuPaiObj.chuPaiBtn.disabled)
+				that.nonAIChuPai();
 		}
 		this.registeListener(chuPaiBtn, listener);
 		
 	}
 	
-	var buchuBtn = this.chuPaiObj.buchuBtn;
-	if(buchuBtn){
+	var buChuBtn = this.chuPaiObj.buChuBtn;
+	if(buChuBtn){
 		listener = function(){
-			that.buChuPai();	
+			if(!that.chuPaiObj.buChuBtn.disabled)
+				that.buChuPai();	
 		}
-		this.registeListener(buchuBtn, listener);		
+		this.registeListener(buChuBtn, listener);		
 	}
 	
 	var chongXuanBtn = this.chuPaiObj.chongXuanBtn;
 	if(chongXuanBtn){
 		listener = function(){
-			that.doChongXuan();		
+			if(!that.chuPaiObj.chongXuanBtn.disabled)
+				that.doChongXuan();		
 		}
 		this.registeListener(chongXuanBtn, listener);
 		
@@ -509,7 +512,7 @@ Player.prototype.registeChupaiAction = function(){
 	var tiShiBtn = this.chuPaiObj.tiShiBtn;
 	if(tiShiBtn){
 		listener = function(){
-			if(!that.tiShiIng)
+			if(!that.chuPaiObj.tiShiBtn.disabled)
 				that.doTiShi();	
 		}
 		this.registeListener(tiShiBtn, listener);
@@ -1007,11 +1010,19 @@ Player.prototype.updateChuPaiActionUI = function(resetTiShi){
 	if(typeof resetTiShi == 'undefined' || resetTiShi){
 		this.tiShiIng = false;
 	}
-	var selectedCards = this.getSelectedCards();
-	var className = 'action_btn gray_btn';
-	if(selectedCards.length > 0 ){
-		className = 'action_btn red_btn';			
-	}
+	var selectedCards = this.getSelectedCards();	
+	var className, chuPaiInfo = ddz.chuPaiInfo, disabled = (chuPaiInfo.strongPlayer == this);
+	
+	this.chuPaiObj.buChuBtn.disabled = disabled;
+	this.chuPaiObj.tiShiBtn.disabled = disabled;		
+	this.chuPaiObj.buChuBtn.className = disabled ? 'action_btn gray_btn' : 'action_btn green_btn';
+	this.chuPaiObj.tiShiBtn.className = disabled ? 'action_btn gray_btn' : 'action_btn red_btn';
+	
+	
+	disabled = (selectedCards.length == 0)
+	this.chuPaiObj.chuPaiBtn.disabled = disabled;
+	this.chuPaiObj.chongXuanBtn.disabled = disabled;
+	className = disabled ? 'action_btn gray_btn' : 'action_btn red_btn';
 	this.chuPaiObj.chuPaiBtn.className = className;	
 	this.chuPaiObj.chongXuanBtn.className = className;	
 	
@@ -1118,6 +1129,7 @@ Player.prototype.startChuPaiTimer = function(){
 			if(!cards || cards.length == 0){
 				this.showActionTip('bugouda_before_action');
 				this.cardContainerObj.innerHTML = '';	
+				this.chuPaiObj.paopaoArea.style.display='none';
 				//this.showBeforeChuPaiUI();
 				ddz.gameControl();
 				return;

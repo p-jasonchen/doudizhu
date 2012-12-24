@@ -236,6 +236,22 @@ background-position: -252px -530px;
 background-position: -237px -480px;
 }
 
+.gray_btn .buchu{
+background-position: -156px -576px;
+}
+
+.green_btn .buchu{
+background-position: -0px -576px;
+}
+
+.gray_btn .tishi{
+background-position: -163px -625px;
+}
+
+.red_btn .tishi{
+background-position: -0px -625px;
+}
+
 
 
 
@@ -457,9 +473,7 @@ background-position-y:-305px;
 -webkit-animation-name: '';
 }
 
-.action_btn .buchu{
-background-position:0  -576px;
-}
+
 
 .action_btn .bujiao{
 background-position:0  -481px;
