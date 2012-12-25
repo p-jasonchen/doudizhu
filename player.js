@@ -550,32 +550,24 @@ Player.prototype.registeQiangDiZhuAction = function(){
 }
 
 
-Player.prototype.doTiShi = function(){
-	this.tiShiIng = true;
-	var chuPaiInfo = ddz.chuPaiInfo;
-	var strongPlayer = chuPaiInfo.strongPlayer, cards;
-	if(strongPlayer == this){
-		cards = this.positiveSelectCards();
-		
+Player.prototype.doTiShi = function(){	
+	var pokers = this.tiShiPokers || [];	
+	var length  =  pokers.length;
+	if(length > 0){		
+		this.placeCards();
+		this.setCards2SelectedStatus(pokers[this.tiShiIndex++ % length], true);
+		this.updateChuPaiActionUI();
 	}else{
-		cards = this.negativeSelectCards();		
-	}
-	if(cards && !(cards instanceof Array)) cards = [cards];
-	if(cards && cards.length > 0){
-		this.placeCards()
-		this.setCards2SelectedStatus(cards, true);
-		this.updateChuPaiActionUI(false);
-	}else{
-		this.skipPlay();
-		this.tiShiIng = false;
+		this.skipPlay();		
 		var timer = this.chuPaiObj.timer;
 		timer && timer.stop();		
 		setTimeout( function(){ddz.gameControl()}, 0);
-	}
+	}	
 }
 
-Player.prototype.setCards2SelectedStatus = function(cards, selected){
+Player.prototype.setCards2SelectedStatus = function(cards, selected){	
 	if(cards){
+		if( ! (cards instanceof Array) ) cards = [cards];
 		for(var i = cards.length -1; i >=0; i-- ){
 				curImg = cards[i].mapImg;
 				
@@ -1006,10 +998,7 @@ Player.prototype.forceChuPaiWhenTimeout = function(){
 	this.doChuPai();
 	
 }
-Player.prototype.updateChuPaiActionUI = function(resetTiShi){
-	if(typeof resetTiShi == 'undefined' || resetTiShi){
-		this.tiShiIng = false;
-	}
+Player.prototype.updateChuPaiActionUI = function(){	
 	var selectedCards = this.getSelectedCards();	
 	var className, chuPaiInfo = ddz.chuPaiInfo, disabled = (chuPaiInfo.strongPlayer == this);
 	
@@ -1128,11 +1117,15 @@ Player.prototype.startQiangDiZhuTimer = function(){
 Player.prototype.startChuPaiTimer = function(){
 	if(!this.AIPlayer){
 		var chuPaiInfo = ddz.chuPaiInfo;
-		var strongPlayer = chuPaiInfo.strongPlayer, cards;
-		if(strongPlayer != this){
-			cards = this.negativeSelectCards();
-			if(cards && !(cards instanceof Array)) cards = [cards];
-			if(!cards || cards.length == 0){
+		var strongPlayer = chuPaiInfo.strongPlayer;
+		if(strongPlayer != this){		
+			var chuPaiArray = chuPaiInfo.cardArray, 
+			chuPaiType = chuPaiInfo.paiType,
+			pokers = AI.findAllByType(ddz.player3, chuPaiType,
+				chuPaiArray, true) || [];			
+			this.tiShiPokers = pokers.reverse();
+			this.tiShiIndex = 0;
+			if(pokers.length == 0){
 				this.showActionTip('bugouda_before_action');
 				this.cardContainerObj.innerHTML = '';	
 				this.chuPaiObj.paopaoArea.style.display='none';
@@ -1144,10 +1137,7 @@ Player.prototype.startChuPaiTimer = function(){
 		}
 	}
 	var vt = 1000 * 30, that = this;
-	/*
-	var clockArea = this.clockAreaObj;
-	clockArea && (clockArea.style.display = 'block');
-	*/
+	
     var timer = new CommonUtil.CountDown({overTime:vt, runCallBack:function (remainSec) {
 			that.chuPaiObj.timeRemain.innerText = remainSec;
         }, overTimeCallback:function () {               
