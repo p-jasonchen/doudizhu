@@ -95,10 +95,10 @@ var Player = function(opt){
 	
 	this.qiangDiZhuObj.area.style.display = 'block';
 	
-	//var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth;
+	var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth;
 	this.cardWidth = 95; //参看demo.css .card_img;
 	this.cardHeight = 116;
-	// this.faPaiXOffset = (shouPaiAreaWidth-this.cardWidth)/(17 -1); 
+	this.faPaiXOffset = (shouPaiAreaWidth-this.cardWidth)/(17 -1); 
 	this.curFaPaiLeft  = 0;
 	
 	this.cardDomElemArray = [];
