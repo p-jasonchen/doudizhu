@@ -67,7 +67,14 @@ function updateUIAccordToOrientation(){
 	if( ScreenAdapter.orientation==ScreenAdapter.Horizontal){
 		CommonUtil.adjustSize();
 		CommonUtil.$id('setScreen').style.display = "none";
-		CommonUtil.$id('game_area').style.display = 'block';		
+		CommonUtil.$id('game_area').style.display = 'block';
+		
+		var player3 = ddz.player3;
+		if(player3){
+			var  shouPaiAreaWidth = player3.shouPaiAreaObj.clientWidth;
+			player3.faPaiXOffset = (shouPaiAreaWidth-player3.cardWidth)/(17 -1);
+		}
+	
 	}else if(!ddz.started){
 		CommonUtil.$id('setScreen').style.display = "block";
 		CommonUtil.$id('game_area').style.display = 'none';

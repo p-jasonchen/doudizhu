@@ -253,10 +253,8 @@ Player.prototype.creatDomEleFromCard  = function(card){
 	
 	webkitTransform = 'translate(' + transX + 'px, ' + transY+ 'px)';
 	
-	var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth;
-	var faPaiXOffset = (shouPaiAreaWidth-this.cardWidth)/(17 -1); 
 	
-	this.curFaPaiLeft += faPaiXOffset;	
+	this.curFaPaiLeft += this.faPaiXOffset;	
 	
 	ele.webkitTransform = webkitTransform;
 	
