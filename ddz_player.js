@@ -481,7 +481,7 @@ ddz.accountScoreAnimation = function(remainTime){
 		}, 200)
 	}else{
 		setTimeout(function(){
-			ddz.onTurnOver();
+			//ddz.onTurnOver();
 		},1000);
 	}
 }

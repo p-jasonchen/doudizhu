@@ -301,7 +301,7 @@ Player.prototype.autoSelectReleativeCard = function(cardImg){
 		strongPlayer = chuPaiInfo.strongPlayer, 
 		cardSelected = cardImg.mapCard,
 		selectStatus = !cardImg.selected;	
-	var cardsOk;
+	var autoSelectedCards;
 	if(strongPlayer != this){
 		if(cardSelected.cardSeq > chuPaiInfo.cardArray[0].cardSeq){
 			var selectedPos = this.cardArray.indexOf(cardSelected);
@@ -319,7 +319,7 @@ Player.prototype.autoSelectReleativeCard = function(cardImg){
 					otherCard.mapImg.selected = selectStatus;
 					var s = otherCard.mapImg.style;
 					s.top = parseFloat(s.top || 0) + yOffset + 'px';
-					cardsOk = [otherCard, cardSelected];
+					autoSelectedCards = [otherCard];
 				}else{
 					var otherCard1, otherCard2;
 					if(diff == 0){
@@ -338,13 +338,13 @@ Player.prototype.autoSelectReleativeCard = function(cardImg){
 					s.top = parseFloat(s.top || 0) + yOffset + 'px';
 					var s = otherCard2.mapImg.style;
 					s.top = parseFloat(s.top || 0) + yOffset + 'px';
-					cardsOk = [otherCard1, otherCard2,cardSelected];
+					autoSelectedCards = [otherCard1, otherCard2];
 					
-				}
+				}				
 			}
 		}
 	}
-	
+	return autoSelectedCards;
 }
 Player.prototype.mapImg2Card = function(){
 	var cardImgs = CommonUtil.$class('card_img', this.shouPaiAreaObj), curCard;	
@@ -370,8 +370,8 @@ Player.prototype.registeSelectCardAction = function(){
 				that.touchstartCrood.x = event.clientX ;
 				that.touchstartCrood.y = event.clientY;
 				that.touchSelectedCardImgs = [];
-				that.touching  = true;	
-			that.autoSelectReleativeCard(evt.target);
+				that.touching  = true;			
+			that.autoSelectStartTarget = evt.target;
 		}
 		this.registeListener(this.shouPaiAreaObj, listener, START_EV);	
 		
@@ -432,14 +432,21 @@ Player.prototype.registeSelectCardAction = function(){
 			var curImg = evt.target;
 			if(touchSelectedCardImgs.indexOf(curImg) == -1 && curImg != that.shouPaiAreaObj){			
 				touchSelectedCardImgs.push(curImg);
+			}			
+			
+			var autoSelectedCards = [];
+			if(curImg === that.autoSelectStartTarget){
+				autoSelectedCards = (that.autoSelectReleativeCard(curImg) || autoSelectedCards);				
 			}
 			
-			
 			for(var i = 0, j = touchSelectedCardImgs.length; i < j; i++){
-				curImg = touchSelectedCardImgs[i];			 
+				curImg = touchSelectedCardImgs[i];	
+				var s = curImg.style,top;				
+					s.boxShadow = '';				
+				if(autoSelectedCards.indexOf(curImg.mapCard) != -1) {					
+					continue;
+				}
 					
-					var s = curImg.style,top;				
-					s.boxShadow = '';
 					if(curImg.selected){					
 						top = parseFloat(s.top || 0) + selectOffset + 'px';
 						curImg.selected = false;
@@ -450,7 +457,7 @@ Player.prototype.registeSelectCardAction = function(){
 						s.top = top;
 			}	
 
-			that.touching = false;
+			that.touching = false;			
 			that.updateChuPaiActionUI();
 		};
 	this.registeListener(this.shouPaiAreaObj, listener, END_EV);	
@@ -1118,7 +1125,8 @@ Player.prototype.startChuPaiTimer = function(){
 	if(!this.AIPlayer){
 		var chuPaiInfo = ddz.chuPaiInfo;
 		var strongPlayer = chuPaiInfo.strongPlayer;
-		if(strongPlayer != this){		
+		if(strongPlayer != this){
+			AI.analyzePlayerCards(this);
 			var chuPaiArray = chuPaiInfo.cardArray, 
 			chuPaiType = chuPaiInfo.paiType,
 			pokers = AI.findAllByType(ddz.player3, chuPaiType,
@@ -1187,15 +1195,23 @@ Player.prototype.placeCardSelected = function(){
 	var selectedCardArray = this.selectedCardArray || [];	
 	var paopaoArea = this.chuPaiObj.paopaoArea;	
 	if(  (size = selectedCardArray.length ) > 0){
-		var tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;left:{2}px'></div>";
-		var  cardContainerWidth = this.cardContainerObj.clientWidth,left = 0,
+		var tStr, htmls = [],template = "<div class='card_img {0}' index={1} style='position:absolute;left:{2}px;top:{3}px;'></div>";
+		var  cardContainerWidth = this.cardContainerObj.clientWidth,left = 0, top = 0,
 		xOffset = (cardContainerWidth-this.cardWidth)/(size -1); //减100是因为每张卡片宽度为100	
 		xOffset = (xOffset > 50 ? 50 : xOffset);
 		
-		for(var i = 0, j = selectedCardArray.length; i < j; i++){		
-				tStr = CommonUtil.format.call(template,selectedCardArray[i].className, i, left);
-				htmls.push(tStr);
-				left+= xOffset;				
+		if(xOffset < 30){
+			xOffset = 30;			
+		}
+		for(var i = 0, j = selectedCardArray.length; i < j; i++){
+			if(left + this.cardWidth > cardContainerWidth){
+					left = 0;
+					top = 40;
+			}		
+			tStr = CommonUtil.format.call(template,selectedCardArray[i].className, i, left, top);
+			htmls.push(tStr);
+			left+= xOffset;	
+				
 		}
 		var cardsHtml = htmls.join('');	
 		
