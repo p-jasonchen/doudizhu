@@ -1205,7 +1205,7 @@ Player.prototype.placeCardSelected = function(){
 		}
 		for(var i = 0, j = selectedCardArray.length; i < j; i++){
 			if(left + this.cardWidth > cardContainerWidth){
-					left = 0;
+					left = xOffset;
 					top = 40;
 			}		
 			tStr = CommonUtil.format.call(template,selectedCardArray[i].className, i, left, top);

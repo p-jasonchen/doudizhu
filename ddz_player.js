@@ -90,9 +90,23 @@ var ddz = {
 	totalMulValue:2,
 	mulEffectPai: 0
 	
-	
-	
 };
+
+ddz.detectBrowser = function() {
+	this.ua = navigator.userAgent;
+	this.isIE = (/msie/i).test(this.ua);
+	this.isFirefox = (/firefox/i).test(this.ua);
+	this.isChrome = (/chrome/i).test(this.ua);
+	this.isSafari = (/safari/i).test(this.ua) && !this.isChrome;
+	this.isMobile = (/mobile/i).test(this.ua);
+	this.isIOS = (/ios/i).test(this.ua);
+	this.isIpad = (/ipad/i).test(this.ua);
+	this.isIpod = (/ipod/i).test(this.ua);
+	this.isIphone = (/iphone/i).test(this.ua) && !this.isIpod;
+	this.isAndroid = (/android/i).test(this.ua);
+	this.supportStorage = window.localStorage != undefined;
+	this.supportOrient = "orientation" in window;
+}
 
 ddz.reset = function(){
 	this.started = false;
@@ -197,7 +211,17 @@ ddz.initQiangDiZhuEnv = function(){
 }
 
 ddz.initPlayers = function(){
-	var opt = {					
+	var score0 = score1 = scroe2 = 0;
+	if(this.player1){
+		score0 = this.player1.score;
+		score1 = this.player2.score;
+		score2 = this.player3.score;
+	}else if(this.supportStorage){
+		score0 = parseInt(localStorage.getItem('player0') || 0);
+		score1 = parseInt(localStorage.getItem('player1') || 0);
+		score2 = parseInt(localStorage.getItem('player2') || 0);
+	}
+	var opt = {	
 				//chupaiId:'chupai',	
 				cardArray:[],
 				shouPaiAreaId:'player1_shoupai_area',
@@ -205,9 +229,9 @@ ddz.initPlayers = function(){
 				playerId:'player1',
 				buChuContainerClass:'buchu_container',
 				shouPaiNumClass:'role_shouPaiNum',
-				index:0
-			};
-	this.player1 && (opt.score = this.player1.score);
+				index:0,
+				score:score0
+			};	
 	var player1 = new Player(opt);	
 	
 	opt = {		
@@ -217,9 +241,9 @@ ddz.initPlayers = function(){
 				playerId:'player2',
 				buChuContainerClass:'buchu_container',
 				shouPaiNumClass:'role_shouPaiNum',					
-				index:1					
-			}
-	this.player2 && (opt.score = this.player2.score);
+				index:1,
+				score:score1				
+			}	
 	var player2 = new Player(opt);	
 	
 	opt = {	
@@ -233,9 +257,9 @@ ddz.initPlayers = function(){
 			shouPaiAreaId:'player3_shoupai_area',
 			cardContainerId:'player3_card_container',
 			buChuContainerClass:'buchu_container',					
-			index:2				
-		}
-	this.player3 && (opt.score = this.player3.score);
+			index:2,
+			score:score2			
+		}	
 	var player3 = new Player(opt);	
 	
 	this.player1 = player1, this.player2 = player2, this.player3 = player3;
@@ -430,7 +454,8 @@ ddz.gameControl = function(){
 			playerArray[curIndex].startChuPaiTimer();
 			
 			//ddz.chuPaiInfo.isOver = true;
-		}else{				
+		}else{		
+			/*
 			var player = this.chuPaiInfo.strongPlayer,
 				resultObj = this.ElemObj.resultObj;
 				style = resultObj.style;				
@@ -439,14 +464,46 @@ ddz.gameControl = function(){
 			}else{	
 				style.backgroundPositionY = '484px';
 			}
-			style.display = 'block';			
+			style.display = 'block';
+			*/
 			this.accountScore();
 		}		
 }
 
+ddz.saveScore = function(){
+	if (this.supportStorage) {
+	
+		var pArray = this.playerArray, curPlayer ,key;
+		for(var i = pArray.length -1; i>= 0; i--){
+			curPlayer = pArray[i];
+			key = 'player' + i;
+			
+			//在ipad上如果直接setItem会报错QUOTA_EXCEEDED_ERR 
+			if (this.isIpad)
+				localStorage.removeItem(key);
+			localStorage.setItem(key, curPlayer.score + curPlayer.scoreChange);			
+		}
+		
+	}	
+}
+
 ddz.accountScore = function(){
+	
 	var chuPaiInfo = this.chuPaiInfo, player = chuPaiInfo.strongPlayer,
 	index = player.index, totalScore = this.totalMulValue * this.diFen;	
+	
+	if(ddz.player1 == player){
+		ddz.player2.selectedCardArray = ddz.player2.cardArray;
+		ddz.player2.placeCardSelected();
+	}else if(ddz.player2 == player){
+		ddz.player1.selectedCardArray = ddz.player1.cardArray;
+		ddz.player1.placeCardSelected();
+	}else{
+		ddz.player1.selectedCardArray = ddz.player1.cardArray;
+		ddz.player1.placeCardSelected();
+		ddz.player2.selectedCardArray = ddz.player2.cardArray;
+		ddz.player2.placeCardSelected();
+	}
 	if(player.isDiZhu){
 		player.scoreChange = totalScore;
 		for(var i = 2; i>= 0 ; i--){
@@ -464,6 +521,8 @@ ddz.accountScore = function(){
 			}
 		}	
 	}
+	
+	this.saveScore();
 	var remainTime = this.diFen;
 	this.accountScoreAnimation(remainTime);
 	
@@ -481,7 +540,16 @@ ddz.accountScoreAnimation = function(remainTime){
 		}, 200)
 	}else{
 		setTimeout(function(){
+			var player = ddz.chuPaiInfo.strongPlayer,
+				resultObj = ddz.ElemObj.resultObj;
+				style = resultObj.style;				
+			if(player.isDiZhu){		
+				style.backgroundPositionY = '0px';
+			}else{	
+				style.backgroundPositionY = '484px';
+			}
+			style.display = 'block';
 			//ddz.onTurnOver();
-		},1000);
+		},2000);
 	}
 }
