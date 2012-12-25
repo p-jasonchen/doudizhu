@@ -549,7 +549,9 @@ ddz.accountScoreAnimation = function(remainTime){
 				style.backgroundPositionY = '484px';
 			}
 			style.display = 'block';
-			//ddz.onTurnOver();
+			setTimeout(function(){
+				ddz.onTurnOver();
+			}, 2000);
 		},2000);
 	}
 }

@@ -95,10 +95,10 @@ var Player = function(opt){
 	
 	this.qiangDiZhuObj.area.style.display = 'block';
 	
-	var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth;
+	//var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth;
 	this.cardWidth = 95; //参看demo.css .card_img;
 	this.cardHeight = 116;
-	this.faPaiXOffset = (shouPaiAreaWidth-this.cardWidth)/(17 -1); 
+	// this.faPaiXOffset = (shouPaiAreaWidth-this.cardWidth)/(17 -1); 
 	this.curFaPaiLeft  = 0;
 	
 	this.cardDomElemArray = [];
@@ -253,7 +253,10 @@ Player.prototype.creatDomEleFromCard  = function(card){
 	
 	webkitTransform = 'translate(' + transX + 'px, ' + transY+ 'px)';
 	
-	this.curFaPaiLeft += this.faPaiXOffset;	
+	var  shouPaiAreaWidth = this.shouPaiAreaObj.clientWidth;
+	var faPaiXOffset = (shouPaiAreaWidth-this.cardWidth)/(17 -1); 
+	
+	this.curFaPaiLeft += faPaiXOffset;	
 	
 	ele.webkitTransform = webkitTransform;
 	
@@ -694,7 +697,7 @@ Player.prototype.doQiangDiZhu = function(){
 				ddz.negativeActionNum++;
 			}
 		}else{
-			if(rand == 2){
+			if(rand == 2 && ddz.qiangDiZhuCount < 5){
 				className = 'text qiang_dizhu';
 				this.qiangDiZhuObj.status = QIANG_DIZHU;
 				ddz.qiangDiZhuCount++;				
@@ -1149,8 +1152,8 @@ Player.prototype.startChuPaiTimer = function(){
     var timer = new CommonUtil.CountDown({overTime:vt, runCallBack:function (remainSec) {
 			that.chuPaiObj.timeRemain.innerText = remainSec;
         }, overTimeCallback:function () {               
-				//that.clearSelectedCards();
-				//that.doChuPai();
+				that.clearSelectedCards();
+				that.doChuPai();
     }});
 	this.chuPaiObj.timer = timer;	
 	this.showBeforeChuPaiUI();
