@@ -308,20 +308,22 @@ Player.prototype.autoSelectReleativeCard = function(cardImg){
 			var selectedPos = this.cardArray.indexOf(cardSelected);
 			if(chuPaiInfo.paiType == GroupType.对子 || chuPaiInfo.paiType == GroupType.三张 
 				||chuPaiInfo.paiType == GroupType.三带一 || chuPaiInfo.paiType == GroupType.三带二){
-				var firstPos = 0, size = size = this.cardArray.length
+				var firstPos = 0, size =  this.cardArray.length
 				for(; firstPos < size; firstPos++ ){
 					if(this.cardArray[firstPos].cardSeq == cardSelected.cardSeq){
 						break;
 					}
-				}
+				}				
 				var diff = selectedPos- firstPos, yOffset = selectStatus ?  -ddz.selectOffset : ddz.selectOffset;
-				if(chuPaiInfo.paiType == GroupType.对子){
-					var otherCard = (diff == 0 ? this.cardArray[selectedPos + 1] : this.cardArray[selectedPos-1]);
-					otherCard.mapImg.selected = selectStatus;
-					var s = otherCard.mapImg.style;
-					s.top = parseFloat(s.top || 0) + yOffset + 'px';
-					autoSelectedCards = [otherCard];
-				}else{
+				if(chuPaiInfo.paiType == GroupType.对子){					
+						var otherCard = (diff == 0 ? this.cardArray[selectedPos + 1] : this.cardArray[selectedPos-1]);
+						if(otherCard.cardSeq == cardSelected.cardSeq){
+							otherCard.mapImg.selected = selectStatus;
+							var s = otherCard.mapImg.style;
+							s.top = parseFloat(s.top || 0) + yOffset + 'px';
+							autoSelectedCards = [otherCard];
+						}						
+				}else{					
 					var otherCard1, otherCard2;
 					if(diff == 0){
 						otherCard1 = this.cardArray[selectedPos+1];
@@ -333,13 +335,16 @@ Player.prototype.autoSelectReleativeCard = function(cardImg){
 						otherCard1 = this.cardArray[selectedPos-1];
 						otherCard2 = this.cardArray[selectedPos-2];
 					}
-					otherCard1.mapImg.selected = selectStatus;
-					otherCard2.mapImg.selected = selectStatus;
-					var s = otherCard1.mapImg.style;
-					s.top = parseFloat(s.top || 0) + yOffset + 'px';
-					var s = otherCard2.mapImg.style;
-					s.top = parseFloat(s.top || 0) + yOffset + 'px';
-					autoSelectedCards = [otherCard1, otherCard2];
+					if(otherCard1.cardSeq == cardSelected.cardSeq &&
+						otherCard2.cardSeq == cardSelected.cardSeq){
+						otherCard1.mapImg.selected = selectStatus;
+						otherCard2.mapImg.selected = selectStatus;
+						var s = otherCard1.mapImg.style;
+						s.top = parseFloat(s.top || 0) + yOffset + 'px';
+						var s = otherCard2.mapImg.style;
+						s.top = parseFloat(s.top || 0) + yOffset + 'px';
+						autoSelectedCards = [otherCard1, otherCard2];
+					}
 					
 				}				
 			}
@@ -1150,8 +1155,8 @@ Player.prototype.startChuPaiTimer = function(){
     var timer = new CommonUtil.CountDown({overTime:vt, runCallBack:function (remainSec) {
 			that.chuPaiObj.timeRemain.innerText = remainSec;
         }, overTimeCallback:function () {               
-				that.clearSelectedCards();
-				that.doChuPai();
+				// that.clearSelectedCards();
+				// that.doChuPai();
     }});
 	this.chuPaiObj.timer = timer;	
 	this.showBeforeChuPaiUI();
