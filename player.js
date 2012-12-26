@@ -406,12 +406,12 @@ Player.prototype.registeSelectCardAction = function(){
 					var s = curImg.style, rect = curImg.getBoundingClientRect(),
 						curImgLeft = rect.left * ddz.scale;
 					if(curImgLeft + cardOffset >= startLeft && curImgLeft  <= endLeft){					
-						s.boxShadow='0 0 0 100px rgba(0, 0, 0, 0.31)inset';
+						s.webkitBoxShadow='0 0 0 100px rgba(0, 0, 0, 0.31)inset';
 						if(touchSelectedCardImgs.indexOf(curImg) == -1){
 							touchSelectedCardImgs.push(curImg);
 						}
 					}else{
-						s.boxShadow='';
+						s.webkitBoxShadow='';
 						if(touchSelectedCardImgs.indexOf(curImg) != -1){
 							touchSelectedCardImgs.pop();
 						}
@@ -443,7 +443,7 @@ Player.prototype.registeSelectCardAction = function(){
 			for(var i = 0, j = touchSelectedCardImgs.length; i < j; i++){
 				curImg = touchSelectedCardImgs[i];	
 				var s = curImg.style,top;				
-					s.boxShadow = '';				
+					s.webkitBoxShadow = '';				
 				if(autoSelectedCards.indexOf(curImg.mapCard) != -1) {					
 					continue;
 				}
